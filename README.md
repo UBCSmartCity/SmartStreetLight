@@ -1,15 +1,9 @@
-# Smart-City-Living
+# Smart City Living
+A sub-division of an engineering design team from UBC, UBC Smart City Living attempts to build an integrated IOT products which allows a more modern & smarter living environment. 
 
-Smart City Living
-Objective
-Build an integrated smart IOT product which allows a smarter living environment.  
+## Ambient
+*Ambient* is a product that automates the lighting of a given environment using veml3328 light sensors and STM32F4-Disc board. 
 
-Products
-Face ID Door Lock
-Temperature Control
-Air Quality Control
-Ambient Lighting (Jan 23)
- 
+### Initial Design 
 
-Ambient Lighting
-Build a lighting control device that mimics True Tone, but instead for the entire house. 
+4 sensors attached to a window that absorbs outside light. The input is then processed through an algorithm that determines the most appropriate output of indoor light bulbs. 
