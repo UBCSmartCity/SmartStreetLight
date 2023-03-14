@@ -3,6 +3,8 @@
 "3328\main.o"
 "3328\stm32f4xx_it.o"
 "3328\stm32f4xx_hal_msp.o"
+"3328\veml3328_hardware.o"
+"3328\veml3328_software.o"
 "3328\stm32f4xx_hal_i2c.o"
 "3328\stm32f4xx_hal_i2c_ex.o"
 "3328\stm32f4xx_hal_rcc.o"

@@ -1,5 +1,6 @@
-3328/main.o: ..\Core\Src\main.c ..\Core\Src\veml3328_hardware.h \
-  ..\Core\Inc\main.h ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal.h \
+3328/veml3328_hardware.o: ..\Core\Src\veml3328_hardware.c \
+  ..\Core\Src\veml3328_hardware.h ..\Core\Inc\main.h \
+  ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal.h \
   ..\Core\Inc\stm32f4xx_hal_conf.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_rcc.h \
   ..\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_def.h \

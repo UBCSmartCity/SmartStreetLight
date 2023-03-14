@@ -409,6 +409,26 @@
               <FileType>1</FileType>
               <FilePath>../Core/Src/stm32f4xx_hal_msp.c</FilePath>
             </File>
+            <File>
+              <FileName>veml3328_hardware.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\veml3328_hardware.c</FilePath>
+            </File>
+            <File>
+              <FileName>veml3328_hardware.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\Src\veml3328_hardware.h</FilePath>
+            </File>
+            <File>
+              <FileName>veml3328_software.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\veml3328_software.c</FilePath>
+            </File>
+            <File>
+              <FileName>veml3328_software.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Core\Src\veml3328_software.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
