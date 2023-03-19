@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "veml3328_hardware.h" 
 #include "veml3328_software.h" 
+#include "math.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -60,11 +61,28 @@ static void MX_TIM1_Init(void);
 /* USER CODE BEGIN 0 */
 
 /* USER CODE END 0 */
-uint16_t dutyCycle = 50;
+uint16_t dutyCycle = 40;
+uint16_t avg = 0;
+uint16_t ref = 0;
+int i = 0;
 /**
   * @brief  The application entry point.
   * @retval int
   */
+
+uint16_t config_env(void);
+
+uint16_t config_env(void){
+	while (i < 500){
+			veml3328_rd_rgb();
+			i++;
+			HAL_Delay(10);
+			avg = g_data;
+	}
+	
+	return avg;
+}	
+	
 int main(void)
 {
 	/*STM32 Init*/
@@ -74,29 +92,39 @@ int main(void)
   MX_I2C1_Init();
 	MX_TIM1_Init();
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+		
 	
+	
+  htim1.Instance -> CCR1 = dutyCycle;
+	
+
+
 	/*Sensor Init*/
 	while (veml3328_init() == 0) {
 		return 0;
 	}
 	
-  veml3328_config(0000);
+	veml3328_config(0000);
+	ref = config_env();
 	
 	/*read from sensor*/
 	while(1){
-		htim1.Instance -> CCR1 = dutyCycle;
 		veml3328_rd_rgb();
-		veml3328_rd_lux();
+		uint16_t dutyCycle = 40;
+		htim1.Instance -> CCR1 = dutyCycle;
 		
-		if (g_data > 0x00F0){
-			dutyCycle = 85;
-			HAL_Delay(5);
+		while (g_data < ref - 10){
+			dutyCycle = 80;
+			htim1.Instance -> CCR1 = dutyCycle;
+			HAL_Delay(1);
+			veml3328_rd_rgb();
 		}
 		
-		if (g_data < 0x0075){
-			dutyCycle = 15;
-			if (dutyCycle == 100) {dutyCycle = 10;}
-			HAL_Delay(5);
+		while (g_data > ref + 10){
+			dutyCycle = 10;
+			htim1.Instance -> CCR1 = dutyCycle;
+			HAL_Delay(1);
+			veml3328_rd_rgb();
 		}
 	}
 }
