@@ -19,3 +19,4 @@ Sensor - VEML3328
 - Demo the sensor behaviour using a simple LED. Also, model a room using a cardboard box. 
   - Reconfigure the sensor threshold value for every reset to adopt its value in a new lighting environment. 
 
+![image](https://user-images.githubusercontent.com/63937643/227747542-e552e37f-3340-44ba-83e8-d0fcb4a89523.png)
