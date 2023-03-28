@@ -16,7 +16,9 @@ Sensor - VEML3328
 
 #### March 2023
 
-- Demo the sensor behaviour using a simple LED. Also, model a room using a cardboard box. 
-  - Reconfigure the sensor threshold value for every reset to adopt its value in a new lighting environment. 
+- Demo the sensor behaviour by manipulating the PWM signal from sensor input.
+  - The threshold values for light changes are reconfigured after each reset. 
+  
+  
 
 ![image](https://user-images.githubusercontent.com/63937643/227748010-a660aa50-5d34-43ca-bd4f-f38160efa235.png)
