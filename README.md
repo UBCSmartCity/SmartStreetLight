@@ -1,5 +1,5 @@
 # Smart City Living
-A sub-division of UBC Smart City. UBC Smart City - Living attempts to build integrated IOT products which allow a more modern & smarter living environment. 
+A sub-division of UBC Smart City. Attempt to build integrated IOT products which allow a more modern & smarter living environment. 
 
 ## Ambient Lighting Control
 A product that automates the lighting of a given environment, mimicking true tone technology.
@@ -22,3 +22,7 @@ Sensor - VEML3328
   
 
 ![image](https://user-images.githubusercontent.com/63937643/227748010-a660aa50-5d34-43ca-bd4f-f38160efa235.png)
+
+
+- Use ESP8266 to establish connection between STM32 and smart light bulb. 
+  - Use already made bulb for initial design, and move on to desgning our own if possible. 
