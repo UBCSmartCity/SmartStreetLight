@@ -24,5 +24,11 @@ Sensor - VEML3328
 ![image](https://user-images.githubusercontent.com/63937643/227748010-a660aa50-5d34-43ca-bd4f-f38160efa235.png)
 
 
-- Use ESP8266 to establish connection between STM32 and smart light bulb. 
+- Use ESP8266 to establish connection between STM32 and smart light bulb. Send and receive packets
   - Use already made bulb for initial design, and move on to desgning our own if possible. 
+
+#### April 2023
+
+- Sensor Header -> make sensor configuration one-line thing
+- Implement hysteresis on the demo
+- Smart Light Bulb Header -> Try to make a generalized header that allows ESP8266 to connect to various companies product
