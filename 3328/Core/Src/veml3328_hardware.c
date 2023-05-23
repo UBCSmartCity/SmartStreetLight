@@ -1,3 +1,10 @@
+/*
+Author: Peter Kim
+Date:21/05/2023 
+Description: 
+	Read, write, configure, and run power cycles on veml3328
+*/
+
 #include "veml3328_hardware.h" 
 #include "veml3328_software.h" 
 
@@ -6,11 +13,13 @@ HAL_StatusTypeDef r,g,b;
 uint16_t conf, r_data, g_data, b_data;
 double r_lux;
 
-// write to reg in i2c
+// I2C Write
 HAL_StatusTypeDef veml3328_wr(uint8_t registerAddress, uint16_t value) {
 	HAL_StatusTypeDef status;
 
-	status = HAL_I2C_Mem_Write(&hi2c1, veml3328_addr<< 1, registerAddress, sizeof(registerAddress), (uint8_t*)&value, sizeof(value), 100);
+	
+	/* We left-shift the adress bit to make room for read/write bit */
+	status = HAL_I2C_Mem_Write(&hi2c1, veml3328_addr<<1, registerAddress, sizeof(registerAddress), (uint8_t*)&value, sizeof(value), 100);
 	if (status) {
 		return status;
 	}
@@ -18,11 +27,11 @@ HAL_StatusTypeDef veml3328_wr(uint8_t registerAddress, uint16_t value) {
 	return status;
 }
 
-// read from reg in i2c
+// I2C Read
 HAL_StatusTypeDef veml3328_rd(uint8_t registerAddress, uint16_t* value) {
 	HAL_StatusTypeDef status;
 
-	status = HAL_I2C_Mem_Read(&hi2c1, veml3328_addr << 1, registerAddress, sizeof(registerAddress), (uint8_t*)value, sizeof(*value), 100);
+	status = HAL_I2C_Mem_Read(&hi2c1, veml3328_addr<<1, registerAddress, sizeof(registerAddress), (uint8_t*)value, sizeof(*value), 100);
 	if (status) {
 		return status;
 	}
