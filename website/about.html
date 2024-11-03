@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automatic Weather Station</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="icon" href="assets/Icon.png" type="image/png">
+  <link rel="apple-touch-icon" href="assets/Icon.png">
+  <meta name="google-site-verification" content="LEG3Rx9PyPZzUVvMXUo1elkyCv_hz1olrUGshqy0T_4" />
+  <style>
+    .hidden {
+      display: none;
+    }
+
+    .loading {
+      visibility: hidden;
+    }
+
+  </style>
+</head>
+<body>
+
+    <div class="info flow-up">
+    <header>
+      <body class="loading">
+      <main>
+        <div class="current">
+        <section class="location">
+          <div class="city flow-up">Makerlab, HCMC</div>
+          <div class="date flow-up"></div>
+          <div id="temperature"></div> 
+          <div class="details">
+            <div class="col">
+              <img src="images/humidity.png">
+              <div>
+                <p id="humidity" class="humidity"></p>
+              </div>
+            </div>
+            
+            <div class="col">
+              <img src="images/UV.png">
+              <div>
+                <p id="UV" class="humidity"></p>
+              </div>
+              </div>
+              
+              </div>
+            </div><a href="https://raw.githubusercontent.com/dngvmnh/Automatic_Weather_Station/main/assets/UVI.png" target="_blank" class="aqi-button flow-up">Refer to Ultraviolet Index Levels</a></div>
+
+            </div>   
+          <script>
+            const channelID = '2604448';
+            const apiKey = 'UQNBZGODZAF499TP';
+            
+            async function getData1() {
+                const url = `https://api.thingspeak.com/channels/${channelID}/fields/1/last.json?api_key=${apiKey}`;
+                try {
+                  const response = await fetch(url);
+                  const data = await response.json();
+                  return data.field1;
+                } catch (error) {
+                  console.error(`Error fetching data from field 1:`, error);
+                }
+            }
+            async function getData2() {
+                const url = `https://api.thingspeak.com/channels/${channelID}/fields/2/last.json?api_key=${apiKey}`;
+                try {
+                  const response = await fetch(url);
+                  const data = await response.json();
+                  return data.field2;
+                } catch (error) {
+                  console.error(`Error fetching data from field 2:`, error);
+                }
+            }
+            async function getData3() {
+                const url = `https://api.thingspeak.com/channels/${channelID}/fields/3/last.json?api_key=${apiKey}`;
+                try {
+                  const response = await fetch(url);
+                  const data = await response.json();
+                  return data.field3;
+                } catch (error) {
+                  console.error(`Error fetching data from field 3:`, error);
+                }
+            }
+
+            async function updateWeatherData() {
+              const temperatureElement = document.getElementById('temperature');
+              const humidityElement = document.getElementById('humidity');
+              const UVElement = document.getElementById('UV');
+              
+              try {
+                const temperature = await getData1();
+                const humidity = await getData2();
+                const UV = await getData3();
+                
+                temperatureElement.innerText = (temperature !== undefined && !isNaN(temperature)) ? `${temperature}°C` : 'Data not available';
+                temperatureElement.className = 'temp';
+
+                humidityElement.innerText = (humidity !== undefined && !isNaN(humidity)) ? `${parseFloat(humidity).toFixed(2)}%` : 'Data not available';
+                humidityElement.className = 'humidity';
+
+                UVElement.innerText = (UV !== undefined && !isNaN(UV)) ? `${UV}` : 'Data not available';
+                UVElement.className = 'UV';
+              } catch (error) {
+                console.error('Error updating weather data:', error);
+              }
+            }
+
+            window.onload = updateWeatherData;
+        </script>
+
+        </section></body>
+    <div class="big-container"> 
+      <div class="container">
+        <div class="container-title flow-up">Temperature</div>
+        <div class="iframe-container">
+          <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/2604448/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="container-title flow-up">Humidity</div>
+        <div class="iframe-container">
+          <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/2604448/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="container-title flow-up">Ultraviolet Intensity</div>
+        <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/2604448/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+      </div>
+
+      <div class="container">
+        <div class="container-title flow-up">Luminous Intensity</div>
+        <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/2604448/charts/4?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+      </div>
+
+      <div class="container">
+        <div class="container-title flow-up">Atmospheric Pressure</div>
+        <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/2604448/charts/5?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+      </div>
+
+      <div class="container">
+        <div class="container-title flow-up">Elevation</div>
+        <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/2604448/charts/6?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+      </div>
+    </div>
+    
+    <div class="down-arrow">
+      <a href="index.html">
+        <i class="fas fa-chevron-down"></i>
+      </a>
+    </div>
+
+    <div class="footer">
+      <h3>© Automatic Weather Station, built by Vu Minh Dang and Tran Thuc Bao, open-sourced by Makerlab.</h3>
+      <div class="social-media">
+        <a href="https://github.com/dngvmnh/automatic_weather_station"><img src="assets/AWS.png" class="icon_1" /></a>
+        <a href="https://github.com/makerlabvn"><i class="sm fa-brands fa-github"></i></a>
+        <a href="https://www.facebook.com/makerlabvn/"><i class="sm fa-brands fa-facebook"></i></a>
+        <a href="https://www.makerlab.vn/"><img src="assets/maker_lab_vn.png" class="icon" /></a>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.body.classList.remove('loading');
+      }, 500); 
+    });
+  </script>
+</body>
+</body>
+</html>
