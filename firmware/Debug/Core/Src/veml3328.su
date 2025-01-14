@@ -1,0 +1,7 @@
+../Core/Src/veml3328.c:9:19:veml3328_wr	40	static
+../Core/Src/veml3328.c:21:19:veml3328_rd	40	static
+../Core/Src/veml3328.c:33:19:veml3328_init	16	static
+../Core/Src/veml3328.c:55:6:veml3328_config	16	static
+../Core/Src/veml3328.c:61:6:veml3328_rd_lux	8	static
+../Core/Src/veml3328.c:66:6:veml3328_rd_rgb	8	static
+../Core/Src/veml3328.c:73:5:convert	32	static
