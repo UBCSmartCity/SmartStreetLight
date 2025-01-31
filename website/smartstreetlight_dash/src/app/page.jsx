@@ -15,50 +15,46 @@ export default function Home() {
   const data = testData; // fetch from db 
 
 
+  // TODO: remove overflow causing scroll bars 
+  // TODO: merge energy and power into one component
+
   return (
 
 
-    <div className="h-screen w-screen p-5 text-center">
+    <div className="h-screen w-screen text-center">
 
       <Header></Header>
 
       <main className="flex h-screen">
-        <div className="flex flex-col items-center">
-          <div className="bg-gray-700 p-6 rounded-lg shadow-lg w-full max-w-md">
+
+
+        <div className="flex flex-col items-center m-5">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
             {/* Controls Component */}
             <Controls />
 
             {/* List of Information */}
             <p className="text-cyan-400 mt-4">Light Status</p>
-            <p className="text-gray-300">ON</p>
+            <p className="text-gray-300">{testData[0].lightStatus}</p>
 
             <p className="text-cyan-400 mt-4">Brightness Level</p>
-            <p className="text-gray-300">75%</p>
+            <p className="text-gray-300">{`${testData[0].brightnessLevel}%`}</p>
 
             <p className="text-cyan-400 mt-4">Battery Status</p>
-            <p className="text-gray-300">Charging</p>
+            <p className="text-gray-300">{testData[0].batteryStatus}</p>
 
             <p className="text-cyan-400 mt-4">Sensor Health</p>
-            <p className="text-gray-300">Good</p>
+            <p className="text-gray-300">{testData[0].sensorHealth}</p>
           </div>
         </div>
 
 
-        {/*      
-        <div className="grid grid-cols-1">
-          <Controls></Controls>
-          <Card type="Light Status" value={testData[0].lightStatus} />
-          <Card type="Brightness Level" value={`${testData[0].brightnessLevel}%`} />
-          <Card type="Battery Status" value={testData[0].batteryStatus} />
-          <Card type="Sensor Health" value={testData[0].sensorHealth} />
-        </div>  */}
 
 
 
 
 
-
-        <div className="flex-grow h-full">
+        <div className="flex-grow h-full w-fit">
 
           <EnergyCard fetchedData={data}></EnergyCard>
           <PowerCard fetchedData={data}></PowerCard>

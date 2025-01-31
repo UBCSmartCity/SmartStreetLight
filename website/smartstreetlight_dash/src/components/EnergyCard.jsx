@@ -77,6 +77,21 @@ export default function EnergyCard({fetchedData}) {
 
 
 
+  const customTheme = {
+      axis: {
+          ticks: {
+              text: {
+                  fill: "#D1D5DB", // Change to desired color
+              }
+          },
+          legend: {
+              text: {
+                  fill: "#D1D5DB", // Change to desired color
+              }
+          }
+      }
+  };
+  
 
 
 
@@ -85,14 +100,15 @@ export default function EnergyCard({fetchedData}) {
 
 
 
-    <div className="h-1/2 bg-slate-500 text-center p-10 rounded-md shadow-sm">
+    <div className="flex h-2/5 bg-slate-800 text-center p-1 rounded-md shadow-sm items-center m-8">
+      
+
+
+      <section className='gap-y-2'>
       <h1>Energy Usage</h1>
-
-
-      <section className='flex '>
       <label key="today" className='w-full'>
         <input type="radio" name="energyFilter" className="hidden peer" onClick={() => setFilter("today")} />
-        <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
+        <span className="w-8/12 text-center mb-2 mt-3 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
           Today
         </span>
       </label>
@@ -124,6 +140,7 @@ export default function EnergyCard({fetchedData}) {
             stacked: false,
             reverse: false
           }}
+          theme={customTheme}
           axisTop={null}
           axisRight={null}
           axisBottom={{

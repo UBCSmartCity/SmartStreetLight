@@ -10,7 +10,7 @@ export default function Controls() {
   };
 
   return (
-    <div className="text-center bg-gray-700 p-3 rounded-lg shadow-lg m-5">
+    <div className="text-center bg-gray-700 p-3 rounded-lg shadow-lg ">
       <h2 className="text-2xl text-cyan-400 mb-4">Controls</h2>
 
       {/* Slider

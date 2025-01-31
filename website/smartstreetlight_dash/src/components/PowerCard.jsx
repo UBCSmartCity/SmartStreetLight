@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { format } from 'date-fns';
 
 
-export default function EnergyCard({fetchedData}) {
+export default function EnergyCard({ fetchedData }) {
 
 
   // current date, set to 00:00:00 for comparisons 
@@ -15,7 +15,7 @@ export default function EnergyCard({fetchedData}) {
 
   const [filter, setFilter] = useState('today');
 
-  const d = fetchedData; 
+  const d = fetchedData;
 
 
   const data = d.flatMap((obj, idx) => {
@@ -27,19 +27,19 @@ export default function EnergyCard({fetchedData}) {
     // used for date comparisons, current obj.date set to 00:00:00
     const objDateTemp = new Date(obj.date);
     objDateTemp.setHours(0, 0, 0, 0);
-   
+
 
     switch (filter) {
       case "today":
 
-      if (objDateTemp.getTime() == today.getTime()) {
-        return {
-          x: obj.date,
-          y: obj.powerConsumption
-        };
-      } else {
-        return []
-      }
+        if (objDateTemp.getTime() == today.getTime()) {
+          return {
+            x: obj.date,
+            y: obj.powerConsumption
+          };
+        } else {
+          return []
+        }
 
       case "7days":
         if (objDateTemp >= last7Days && objDateTemp <= today) {
@@ -68,6 +68,20 @@ export default function EnergyCard({fetchedData}) {
 
 
 
+  const customTheme = {
+    axis: {
+        ticks: {
+            text: {
+                fill: "#D1D5DB", // Change to desired color
+            }
+        },
+        legend: {
+            text: {
+                fill: "#D1D5DB", // Change to desired color
+            }
+        }
+    }
+};
 
 
 
@@ -78,29 +92,30 @@ export default function EnergyCard({fetchedData}) {
 
 
 
-    <div className="h-1/2 bg-slate-500 text-center p-10 rounded-md shadow-sm">
-      <h1>Power Consumption</h1>
+    <div className="flex h-2/5 bg-slate-800 text-center p-1 rounded-md shadow-sm items-center m-8">
 
 
-<section className='flex '>
-      <label key="today" className='w-full'>
-        <input type="radio" name="energyFilter" className="hidden peer" onClick={() => setFilter("today")} />
-        <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
+
+      <section className=''>
+        <h1>Power Consumption</h1>
+        <label key="today" className='w-full'>
+          <input type="radio" name="energyFilter" className="hidden peer" onClick={() => setFilter("today")} />
+          <span className="w-8/12 text-center mb-2 mt-3 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
           Today
-        </span>
-      </label>
-      <label key="Yesterday" className='w-full'>
-        <input type="radio" name="energyFilter" className="hidden peer" onClick={() => setFilter("yesterday")} />
-        <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
-          Yesterday
-        </span>
-      </label>
-      <label key="sevendays" className='w-full'>
-        <input type="radio" name="energyFilter" className="hidden peer" onClick={() => setFilter("sevendays")} />
-        <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
-          Within 7 Days
-        </span>
-      </label>
+          </span>
+        </label>
+        <label key="Yesterday" className='w-full'>
+          <input type="radio" name="energyFilter" className="hidden peer" onClick={() => setFilter("yesterday")} />
+          <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
+            Yesterday
+          </span>
+        </label>
+        <label key="sevendays" className='w-full'>
+          <input type="radio" name="energyFilter" className="hidden peer" onClick={() => setFilter("sevendays")} />
+          <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
+            Within 7 Days
+          </span>
+        </label>
       </section>
 
 
@@ -116,6 +131,7 @@ export default function EnergyCard({fetchedData}) {
             stacked: false,
             reverse: false
           }}
+          theme={customTheme}
           axisTop={null}
           axisRight={null}
           axisBottom={{
