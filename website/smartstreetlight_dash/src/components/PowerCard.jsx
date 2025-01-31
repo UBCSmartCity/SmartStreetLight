@@ -1,19 +1,12 @@
 'use client'
 
 import { ResponsiveLine } from '@nivo/line'
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
-import { testData } from '@/testData';
+
 import { useState } from 'react';
 import { format } from 'date-fns';
 
 
 export default function EnergyCard({fetchedData}) {
-
-  // TODO: create test data for all stats in a js file, enable filtering for graphing, style everything
-
-  // play with line graph, understand everything 
-  // set up filter for today and this week 
-  // rough styling 
 
 
   // current date, set to 00:00:00 for comparisons 
@@ -42,7 +35,7 @@ export default function EnergyCard({fetchedData}) {
       if (objDateTemp.getTime() == today.getTime()) {
         return {
           x: obj.date,
-          y: obj.energyUsage
+          y: obj.powerConsumption
         };
       } else {
         return []
@@ -52,7 +45,7 @@ export default function EnergyCard({fetchedData}) {
         if (objDateTemp >= last7Days && objDateTemp <= today) {
           return {
             x: obj.date,
-            y: obj.energyUsage
+            y: obj.powerConsumption
           };
         } else {
           return [];
@@ -60,14 +53,14 @@ export default function EnergyCard({fetchedData}) {
       default:
         return {
           x: obj.date,
-          y: obj.energyUsage
+          y: obj.powerConsumption
         };
     }
 
   })
 
 
-  const energyData = [{
+  const powerData = [{
     id: "energy",
     color: "hsl(309, 70%, 50%)",
     data: data
@@ -86,10 +79,10 @@ export default function EnergyCard({fetchedData}) {
 
 
     <div className="h-1/2 bg-slate-500 text-center p-10 rounded-md shadow-sm">
-      <h1>Energy Usage</h1>
+      <h1>Power Consumption</h1>
 
 
-      <section className='flex '>
+<section className='flex '>
       <label key="today" className='w-full'>
         <input type="radio" name="energyFilter" className="hidden peer" onClick={() => setFilter("today")} />
         <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
@@ -111,10 +104,9 @@ export default function EnergyCard({fetchedData}) {
       </section>
 
 
-
       {data.length > 0 &&
         <ResponsiveLine
-          data={energyData}
+          data={powerData}
           margin={{ top: 50, right: 50, bottom: 50, left: 50 }}
           xScale={{ type: 'point' }}
           yScale={{
@@ -144,7 +136,7 @@ export default function EnergyCard({fetchedData}) {
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: 'Energy (kWh)',
+            legend: 'Power (W)',
             legendOffset: -40,
             legendPosition: 'middle',
             truncateTickAt: 0
