@@ -1,4 +1,4 @@
-export const testData = [
+export let testData = [
     { 
       date: new Date('2025-01-30T09:03:37'), 
       energyUsage: 200,
@@ -143,24 +143,11 @@ export const testData = [
       powerConsumption: 40,
       batteryStatus: 'Discharging',
       sensorHealth: 'Warning'
-    },
-    { 
-      date: new Date('2025-02-04T10:50:40'), 
-      energyUsage: 320,
-      lightStatus: 'ON',
-      brightnessLevel: 95,
-      powerConsumption: 120,
-      batteryStatus: 'Charging',
-      sensorHealth: 'Good'
-    },
-    { 
-      date: new Date('2025-02-04T14:15:25'), 
-      energyUsage: 270,
-      lightStatus: 'ON',
-      brightnessLevel: 70,
-      powerConsumption: 85,
-      batteryStatus: 'Charging',
-      sensorHealth: 'Good'
-    },
+    }
   ];
+
+
+
+
+
   
