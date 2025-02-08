@@ -27,8 +27,17 @@ export default function EnergyCard({fetchedData}) {
 
   const data = d.flatMap((obj, idx) => {
 
-    const last7Days = new Date(today);
-    last7Days.setDate(last7Days.getDate() - 7);
+    // dates for comparisons (by filter)
+    const lastMonth = new Date(today);
+    lastMonth.setDate(lastMonth.getDate() - 31);
+
+    const ytd = new Date(new Date().getFullYear(), 0, 1);
+
+    const oneYear = new Date(today);
+    oneYear.setDate(oneYear.getDate() - 365);
+
+
+
 
 
     // used for date comparisons, current obj.date set to 00:00:00
@@ -47,9 +56,26 @@ export default function EnergyCard({fetchedData}) {
       } else {
         return []
       }
-
-      case "7days":
-        if (objDateTemp >= last7Days && objDateTemp <= today) {
+      case "1M":
+        if (objDateTemp >= lastMonth && objDateTemp <= today) {
+          return {
+            x: obj.date,
+            y: obj.energyUsage
+          };
+        } else {
+          return [];
+        }
+      case "ytd":
+        if (objDateTemp >= ytd && objDateTemp <= today) {
+          return {
+            x: obj.date,
+            y: obj.energyUsage
+          };
+        } else {
+          return [];
+        }
+      case "oneYear":
+        if (objDateTemp >= oneYear && objDateTemp <= today) {
           return {
             x: obj.date,
             y: obj.energyUsage
@@ -62,6 +88,8 @@ export default function EnergyCard({fetchedData}) {
           x: obj.date,
           y: obj.energyUsage
         };
+
+        
     }
 
   })
@@ -112,16 +140,28 @@ export default function EnergyCard({fetchedData}) {
           Today
         </span>
       </label>
-      <label key="Yesterday" className='w-full'>
-        <input type="radio" name="energyFilter" className="hidden peer" onClick={() => setFilter("yesterday")} />
+      <label key="onemonth" className='w-full'>
+        <input type="radio" name="energyFilter" className="hidden peer" onClick={() => setFilter("1M")} />
         <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
-          Yesterday
+          1 Month
         </span>
       </label>
-      <label key="sevendays" className='w-full'>
-        <input type="radio" name="energyFilter" className="hidden peer" onClick={() => setFilter("sevendays")} />
+      <label key="yeartoday" className='w-full'>
+        <input type="radio" name="energyFilter" className="hidden peer" onClick={() => setFilter("ytd")} />
         <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
-          Within 7 Days
+          YTD
+        </span>
+      </label>
+      <label key="oneyear" className='w-full'>
+        <input type="radio" name="energyFilter" className="hidden peer" onClick={() => setFilter("oneYear")} />
+        <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
+          1 Year
+        </span>
+      </label>
+      <label key="max" className='w-full'>
+        <input type="radio" name="energyFilter" className="hidden peer" onClick={() => setFilter("max")} />
+        <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
+          Max
         </span>
       </label>
       </section>
@@ -133,6 +173,7 @@ export default function EnergyCard({fetchedData}) {
           data={energyData}
           margin={{ top: 50, right: 50, bottom: 50, left: 50 }}
           xScale={{ type: 'point' }}
+      
           yScale={{
             type: 'linear',
             min: '0',
@@ -147,16 +188,28 @@ export default function EnergyCard({fetchedData}) {
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: 'time',
+            legend: `time (${filter})`,
             legendOffset: 40,
             legendPosition: 'middle',
             format: function (date) {
-              const hours = format(date, 'HH:mm');
-              // const day = format(date, 'yyyy-MM-dd');
 
-              return hours;
+              if (filter == "today") {
+                return format(date, 'HH:mm'); 
+              }
+              if (filter == "max") {
+                return format(date, 'yyyy-MM')
+              }
+       
+
+              return format(date, 'MM-dd');
+            
+        
+
+          
             }
           }}
+
+          
           axisLeft={{
             tickSize: 5,
             tickPadding: 5,

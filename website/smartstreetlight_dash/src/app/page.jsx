@@ -20,33 +20,30 @@ export default function Home() {
   // TODO: merge energy and power into one component
 
 
+//   useEffect(() => {
+//     const interval = setInterval(() => {
+//         setData(prevData => {
+//             let lastEntry = prevData[prevData.length - 1];
+//             let newDate = new Date(lastEntry.date.getTime() + 60 * 60 * 1000); // Increment by 1 hour
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-        setData(prevData => {
-            let lastEntry = prevData[prevData.length - 1];
-            let newDate = new Date(lastEntry.date.getTime() + 60 * 60 * 1000); // Increment by 1 hour
+//             const newData = { 
+//                 date: newDate,
+//                 energyUsage: Math.floor(Math.random() * 400), 
+//                 lightStatus: Math.random() > 0.5 ? 'ON' : 'OFF',
+//                 brightnessLevel: Math.floor(Math.random() * 100),
+//                 powerConsumption: Math.floor(Math.random() * 120),
+//                 batteryStatus: ['Charging', 'Discharging', 'Fully Charged'][Math.floor(Math.random() * 3)],
+//                 sensorHealth: ['Good', 'Warning', 'Critical'][Math.floor(Math.random() * 3)]
+//             };
 
-            const newData = { 
-                date: newDate,
-                energyUsage: Math.floor(Math.random() * 400), 
-                lightStatus: Math.random() > 0.5 ? 'ON' : 'OFF',
-                brightnessLevel: Math.floor(Math.random() * 100),
-                powerConsumption: Math.floor(Math.random() * 120),
-                batteryStatus: ['Charging', 'Discharging', 'Fully Charged'][Math.floor(Math.random() * 3)],
-                sensorHealth: ['Good', 'Warning', 'Critical'][Math.floor(Math.random() * 3)]
-            };
+//             console.log('New mock data added:', newData);
+//             return [...prevData, newData]; 
+//         });
+//     }, 5000); // Runs every 5 seconds
 
-            console.log('New mock data added:', newData);
-            return [...prevData, newData]; 
-        });
-    }, 5000); // Runs every 5 seconds
+//     return () => clearInterval(interval); // Cleanup on unmount
+// }, []); // Runs only once on mount
 
-    return () => clearInterval(interval); // Cleanup on unmount
-}, []); // Runs only once on mount
-
-// // Add new data every 5 seconds
-// setInterval(addDataIncrementally, 1000);
 
 
 
@@ -55,28 +52,25 @@ export default function Home() {
 
     <div className="h-screen w-screen text-center">
 
-      <Header></Header>
+      <Header data={data}></Header>
 
       <main className="flex h-screen">
 
 
         <div className="flex flex-col items-center m-5">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
-            {/* Controls Component */}
             <Controls />
-
-            {/* List of Information */}
-            <p className="text-cyan-400 mt-4">Light Status</p>
-            <p className="text-gray-300">{testData[0].lightStatus}</p>
 
             <p className="text-cyan-400 mt-4">Brightness Level</p>
             <p className="text-gray-300">{`${testData[0].brightnessLevel}%`}</p>
 
             <p className="text-cyan-400 mt-4">Battery Status</p>
-            <p className="text-gray-300">{testData[0].batteryStatus}</p>
+            <p className="text-gray-300">{`${testData[0].batteryStatus}%`}</p>
 
             <p className="text-cyan-400 mt-4">Sensor Health</p>
             <p className="text-gray-300">{testData[0].sensorHealth}</p>
+            <p className="text-cyan-400 mt-4">Streetlight Location</p>
+            <p className="text-gray-300">{testData[0].location}</p>
           </div>
         </div>
 
