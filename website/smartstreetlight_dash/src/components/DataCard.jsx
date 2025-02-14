@@ -4,64 +4,69 @@ import { ResponsiveLine } from "@nivo/line";
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import { testData } from "@/testData";
 import { useState } from "react";
-import { format } from "date-fns";
-import { dayIncrements } from "@/formatting";
+import { format, startOfDay } from "date-fns";
 import { M_PLUS_1 } from "next/font/google";
 
-export default function EnergyCard({ fetchedData }) {
-  const [filter, setFilter] = useState("today");
+export default function EnergyCard({ fetchedData, energy }) {
+  const [filter, setFilter] = useState("tdy");
 
   // current date, set to 00:00:00 for comparisons
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
 
-  const d = fetchedData;
-  const lastMonth = new Date(today);
+  // one month ago
+  const lastMonth = new Date(startOfToday);
   lastMonth.setDate(lastMonth.getDate() - 31);
 
+  // jan to now
   const ytd = new Date(new Date().getFullYear(), 0, 1);
 
-  const oneYear = new Date(today);
+  // 365 days ago
+  const oneYear = new Date(startOfToday);
   oneYear.setDate(oneYear.getDate() - 365);
+
+  const d = fetchedData;
 
   const data = d.flatMap((obj, idx) => {
     // used for date comparisons, current obj.date set to 00:00:00
     const objDateTemp = new Date(obj.date);
     objDateTemp.setHours(0, 0, 0, 0);
 
+    const yData = energy ? obj.energyUsage : obj.powerConsumption;
+
     switch (filter) {
-      case "today":
-        if (objDateTemp.getTime() == today.getTime()) {
+      case "tdy":
+        if (objDateTemp.getTime() == startOfToday.getTime()) {
           return {
             x: obj.date,
-            y: obj.energyUsage,
+            y: yData,
           };
         } else {
           return [];
         }
       case "1M":
-        if (objDateTemp >= lastMonth && objDateTemp <= today) {
+        if (objDateTemp >= lastMonth && objDateTemp <= startOfToday) {
           return {
             x: obj.date,
-            y: obj.energyUsage,
+            y: yData,
           };
         } else {
           return [];
         }
       case "ytd":
-        if (objDateTemp >= ytd && objDateTemp <= today) {
+        if (objDateTemp >= ytd && objDateTemp <= startOfToday) {
           return {
             x: obj.date,
-            y: obj.energyUsage,
+            y: yData,
           };
         } else {
           return [];
         }
-      case "oneYear":
-        if (objDateTemp >= oneYear && objDateTemp <= today) {
+      case "1Y":
+        if (objDateTemp >= oneYear && objDateTemp <= startOfToday) {
           return {
             x: obj.date,
-            y: obj.energyUsage,
+            y: yData,
           };
         } else {
           return [];
@@ -69,12 +74,12 @@ export default function EnergyCard({ fetchedData }) {
       default:
         return {
           x: obj.date,
-          y: obj.energyUsage,
+          y: yData,
         };
     }
   });
 
-  const energyData = [
+  const graphData = [
     {
       id: "energy",
       color: "hsl(309, 70%, 50%)",
@@ -99,28 +104,26 @@ export default function EnergyCard({ fetchedData }) {
       container: {
         background: "#ffffff",
         color: "#333333",
-        fontSize: 12,
       },
-      basic: {},
-      chip: {},
-      table: {},
-      tableCell: {},
-      tableCellValue: {},
+    },
+    crosshair: {
+      line: {
+        stroke: "white",
+        strokeWidth: 1,
+        strokeOpacity: 0.35,
+      },
     },
   };
 
   function min() {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-
     switch (filter) {
-      case "today":
-        return d;
+      case "tdy":
+        return startOfToday;
       case "1M":
         return lastMonth;
       case "ytd":
         return ytd;
-      case "oneYear":
+      case "1Y":
         return oneYear;
       default:
         return "auto";
@@ -128,23 +131,23 @@ export default function EnergyCard({ fetchedData }) {
   }
 
   function max() {
-    const d = new Date();
-    d.setHours(23, 59, 59, 59);
+    const endOfToday = new Date();
+    endOfToday.setHours(23, 59, 59, 59);
 
-    const tdy = new Date();
+    const todayCurrentTime = new Date();
 
     switch (filter) {
-      case "today":
-        return d;
+      case "tdy":
+        return endOfToday;
       default:
-        return tdy;
+        return todayCurrentTime;
     }
   }
 
   function tickVals() {
     switch (filter) {
-      case "today":
-        return dayIncrements;
+      case "tdy":
+        return "every 4 hours";
       case "1M":
         return "every 3 days";
       case "max":
@@ -156,12 +159,15 @@ export default function EnergyCard({ fetchedData }) {
 
   function format() {
     switch (filter) {
-      case "today":
+      case "tdy":
         return "%H:%M";
+      case "1M":
+        return "%b-%d";
       case "max":
         return "%Y";
+
       default:
-        return "%b-%d";
+        return "%Y-%b";
     }
   }
 
@@ -169,47 +175,47 @@ export default function EnergyCard({ fetchedData }) {
     <div className="flex h-2/5 bg-slate-800 text-center p-1 rounded-md shadow-sm items-center m-8">
       <section className="gap-y-2">
         <h1>Energy Usage</h1>
-        <label key="today" className="w-full">
+        <label key="tdy" className="w-full">
           <input
             type="radio"
             name="energyFilter"
-            className="hidden peer"
-            onClick={() => setFilter("today")}
+            className="hidden peer  focus:bg-red-600"
+            onClick={() => setFilter("tdy")}
           />
-          <span className="w-8/12 text-center mb-2 mt-3 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
+          <span className="w-8/12 text-center mb-2 mt-3 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-cyan-400 hover:opacity-80 ">
             Today
           </span>
         </label>
-        <label key="onemonth" className="w-full">
+        <label key="1M" className="w-full">
           <input
             type="radio"
             name="energyFilter"
             className="hidden peer"
             onClick={() => setFilter("1M")}
           />
-          <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
+          <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-cyan-400 hover:opacity-80 ">
             1 Month
           </span>
         </label>
-        <label key="yeartoday" className="w-full">
+        <label key="ytd" className="w-full">
           <input
             type="radio"
             name="energyFilter"
             className="hidden peer"
             onClick={() => setFilter("ytd")}
           />
-          <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
+          <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-cyan-400 hover:opacity-80 ">
             YTD
           </span>
         </label>
-        <label key="oneyear" className="w-full">
+        <label key="1Y" className="w-full">
           <input
             type="radio"
             name="energyFilter"
             className="hidden peer"
-            onClick={() => setFilter("oneYear")}
+            onClick={() => setFilter("1Y")}
           />
-          <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
+          <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-cyan-400 hover:opacity-80 ">
             1 Year
           </span>
         </label>
@@ -220,7 +226,7 @@ export default function EnergyCard({ fetchedData }) {
             className="hidden peer"
             onClick={() => setFilter("max")}
           />
-          <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-hoverblue hover:opacity-80 ">
+          <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-cyan-400 hover:opacity-80 ">
             Max
           </span>
         </label>
@@ -228,13 +234,14 @@ export default function EnergyCard({ fetchedData }) {
 
       {data.length > 0 && (
         <ResponsiveLine
-          data={energyData}
+          data={graphData}
           margin={{ top: 50, right: 50, bottom: 50, left: 50 }}
           xScale={{
             type: "time",
             min: min(),
             max: max(),
             precision: "hour",
+            useUTC: false,
           }}
           axisBottom={{
             orient: "bottom",
@@ -262,15 +269,15 @@ export default function EnergyCard({ fetchedData }) {
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: "Energy (kWh)",
+            legend: energy ? "Energy (kWh)" : "Power (W)",
             legendOffset: -40,
             legendPosition: "middle",
             truncateTickAt: 0,
           }}
+          enableGridX={false}
+          crosshairType="x"
           curve={"linear"}
           colors={{ scheme: "nivo" }}
-          // pointSize={10}
-          // pointBorderWidth={3}
           pointBorderColor={{ from: "serieColor" }}
           pointColor={{ theme: "background" }}
           pointLabelYOffset={-12}
