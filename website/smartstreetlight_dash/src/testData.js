@@ -22,13 +22,15 @@ export let testData = [
   { date: new Date("2025-02-08T11:50:10"), energyUsage: 350, lightStatus: "ON", brightnessLevel: 80, powerConsumption: 70, batteryStatus: 70, sensorHealth: "Warning", location: "Langara 49th Station" },
 
   // Today (Feb 13, 2025)
-  { date: new Date("2025-02-13T01:10:10"), energyUsage: 175, lightStatus: "OFF", brightnessLevel: 65, powerConsumption: 45, batteryStatus: 85, sensorHealth: "Good", location: "Langara 49th Station" },
-  { date: new Date("2025-02-13T03:30:10"), energyUsage: 225, lightStatus: "ON", brightnessLevel: 75, powerConsumption: 60, batteryStatus: 80, sensorHealth: "Good", location: "Langara 49th Station" },
-  { date: new Date("2025-02-13T05:50:10"), energyUsage: 310, lightStatus: "ON", brightnessLevel: 85, powerConsumption: 90, batteryStatus: 70, sensorHealth: "Warning", location: "Langara 49th Station" },
-  { date: new Date("2025-02-13T08:10:10"), energyUsage: 200, lightStatus: "OFF", brightnessLevel: 65, powerConsumption: 70, batteryStatus: 85, sensorHealth: "Good", location: "Langara 49th Station" },
-  { date: new Date("2025-02-13T10:20:10"), energyUsage: 280, lightStatus: "ON", brightnessLevel: 90, powerConsumption: 75, batteryStatus: 65, sensorHealth: "Good", location: "Langara 49th Station" },
-  { date: new Date("2025-02-13T12:30:10"), energyUsage: 320, lightStatus: "ON", brightnessLevel: 85, powerConsumption: 85, batteryStatus: 70, sensorHealth: "Warning", location: "Langara 49th Station" },
-  { date: new Date("2025-02-13T15:00:10"), energyUsage: 190, lightStatus: "ON", brightnessLevel: 70, powerConsumption: 55, batteryStatus: 75, sensorHealth: "Good", location: "Langara 49th Station" },
-  { date: new Date("2025-02-13T17:30:10"), energyUsage: 250, lightStatus: "ON", brightnessLevel: 80, powerConsumption: 65, batteryStatus: 60, sensorHealth: "Good", location: "Langara 49th Station" },
-  { date: new Date("2025-02-13T19:10:10"), energyUsage: 275, lightStatus: "ON", brightnessLevel: 90, powerConsumption: 80, batteryStatus: 50, sensorHealth: "Good", location: "Langara 49th Station" },
+  { date: new Date("2025-02-15T01:10:10"), energyUsage: 175, lightStatus: "OFF", brightnessLevel: 65, powerConsumption: 45, batteryStatus: 85, sensorHealth: "Good", location: "Langara 49th Station" },
+  { date: new Date("2025-02-15T03:30:10"), energyUsage: 225, lightStatus: "ON", brightnessLevel: 75, powerConsumption: 60, batteryStatus: 80, sensorHealth: "Good", location: "Langara 49th Station" },
+  { date: new Date("2025-02-15T05:50:10"), energyUsage: 310, lightStatus: "ON", brightnessLevel: 85, powerConsumption: 90, batteryStatus: 70, sensorHealth: "Warning", location: "Langara 49th Station" },
+  { date: new Date("2025-02-15T08:10:10"), energyUsage: 200, lightStatus: "OFF", brightnessLevel: 65, powerConsumption: 70, batteryStatus: 85, sensorHealth: "Good", location: "Langara 49th Station" },
+  { date: new Date("2025-02-15T10:20:10"), energyUsage: 280, lightStatus: "ON", brightnessLevel: 90, powerConsumption: 75, batteryStatus: 65, sensorHealth: "Good", location: "Langara 49th Station" },
+  { date: new Date("2025-02-15T12:30:10"), energyUsage: 320, lightStatus: "ON", brightnessLevel: 85, powerConsumption: 85, batteryStatus: 70, sensorHealth: "Warning", location: "Langara 49th Station" },
+  { date: new Date("2025-02-15T15:00:10"), energyUsage: 190, lightStatus: "ON", brightnessLevel: 70, powerConsumption: 55, batteryStatus: 75, sensorHealth: "Good", location: "Langara 49th Station" },
+  { date: new Date("2025-02-15T17:30:10"), energyUsage: 250, lightStatus: "ON", brightnessLevel: 80, powerConsumption: 65, batteryStatus: 60, sensorHealth: "Good", location: "Langara 49th Station" },
+  { date: new Date("2025-02-15T19:10:10"), energyUsage: 275, lightStatus: "ON", brightnessLevel: 90, powerConsumption: 80, batteryStatus: 50, sensorHealth: "Good", location: "Langara 49th Station" },
 ]
+
+

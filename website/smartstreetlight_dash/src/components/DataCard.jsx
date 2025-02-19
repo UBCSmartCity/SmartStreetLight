@@ -7,7 +7,7 @@ import { useState } from "react";
 import { format, startOfDay } from "date-fns";
 import { M_PLUS_1 } from "next/font/google";
 
-export default function EnergyCard({ fetchedData, energy }) {
+export default function DataCard({ fetchedData, energy }) {
   const [filter, setFilter] = useState("tdy");
 
   // current date, set to 00:00:00 for comparisons
@@ -174,11 +174,11 @@ export default function EnergyCard({ fetchedData, energy }) {
   return (
     <div className="flex h-2/5 bg-slate-800 text-center p-1 rounded-md shadow-sm items-center m-8">
       <section className="gap-y-2">
-        <h1>Energy Usage</h1>
+        <h1>{energy ? "Energy" : "Power"} Usage</h1>
         <label key="tdy" className="w-full">
           <input
             type="radio"
-            name="energyFilter"
+            name={`${energy}filter`}
             className="hidden peer  focus:bg-red-600"
             onClick={() => setFilter("tdy")}
           />
@@ -189,7 +189,7 @@ export default function EnergyCard({ fetchedData, energy }) {
         <label key="1M" className="w-full">
           <input
             type="radio"
-            name="energyFilter"
+            name={`${energy}filter`}
             className="hidden peer"
             onClick={() => setFilter("1M")}
           />
@@ -200,7 +200,7 @@ export default function EnergyCard({ fetchedData, energy }) {
         <label key="ytd" className="w-full">
           <input
             type="radio"
-            name="energyFilter"
+            name={`${energy}filter`}
             className="hidden peer"
             onClick={() => setFilter("ytd")}
           />
@@ -211,7 +211,7 @@ export default function EnergyCard({ fetchedData, energy }) {
         <label key="1Y" className="w-full">
           <input
             type="radio"
-            name="energyFilter"
+            name={`${energy}filter`}
             className="hidden peer"
             onClick={() => setFilter("1Y")}
           />
@@ -222,7 +222,7 @@ export default function EnergyCard({ fetchedData, energy }) {
         <label key="max" className="w-full">
           <input
             type="radio"
-            name="energyFilter"
+            name={`${energy}filter`}
             className="hidden peer"
             onClick={() => setFilter("max")}
           />

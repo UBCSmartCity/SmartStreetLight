@@ -1,15 +1,13 @@
-"use client";
+// "use client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DataCard from "@/components/DataCard";
-import Card from "@/components/Card";
 import { testData } from "@/testData";
 import Controls from "@/components/Controls";
-import PowerCard from "@/components/PowerCard";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [data, setData] = useState(testData); // fetch from db
+  // const [data, setData] = useState(testData); // fetch from db
 
   // TODO: remove overflow causing scroll bars
   // TODO: merge energy and power into one component
@@ -40,7 +38,7 @@ export default function Home() {
 
   return (
     <div className="h-screen w-screen text-center">
-      <Header data={data}></Header>
+      <Header data={testData} />
 
       <main className="flex h-screen">
         <div className="flex flex-col items-center m-5">
@@ -61,12 +59,12 @@ export default function Home() {
         </div>
 
         <div className="flex-grow h-full w-fit">
-          <DataCard fetchedData={data} energy={true}></DataCard>
-          <DataCard fetchedData={data} energy={false}></DataCard>
+          <DataCard fetchedData={testData} energy={true} />
+          <DataCard fetchedData={testData} energy={false} />
         </div>
       </main>
 
-      <Footer></Footer>
+      <Footer />
     </div>
   );
 }
