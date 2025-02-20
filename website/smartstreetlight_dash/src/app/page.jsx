@@ -5,6 +5,7 @@ import DataCard from "@/components/DataCard";
 import { testData } from "@/testData";
 import Controls from "@/components/Controls";
 // import { useEffect, useState } from "react";
+import { main } from "@/lib/data";
 
 export default function Home() {
   // const [data, setData] = useState(testData); // fetch from db
@@ -35,6 +36,8 @@ export default function Home() {
 
   //     return () => clearInterval(interval); // Cleanup on unmount
   // }, []); // Runs only once on mount
+
+  // main();
 
   return (
     <div className="h-screen w-screen text-center">
