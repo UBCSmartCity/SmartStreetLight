@@ -17,3 +17,8 @@ Our team proposes a streetlight system that provides:
 ##### Sensors
 - VEML3328
 - AM312
+
+-What the point of the project is (we are making a flying car!) 
+-why it was hard (we encountered this problem that was unexpected. It had never been done before) 
+-what you did (individual work? Led a team? Did the heavy lifting?) 
+-what the outcome was. Did it work? What did you learn? What would you do differently? Why didn't you do that in the first place?
