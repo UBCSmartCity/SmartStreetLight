@@ -3,11 +3,9 @@
 import { useEffect, useState } from "react";
 import { getAddress } from "@/lib/data";
 
-// export const getServerSideProps = async () => {};
-
 export default function Header({ data }) {
-  const [location, setLocation] = useState();
-  let lastUpdated = data[data.length - 1].date.toLocaleDateString(); // fetch from db later on
+  const [location, setLocation] = useState("");
+  const lastUpdated = data[data.length - 1].date.toLocaleDateString(); // fetch from db later on
 
   useEffect(() => {
     async function showPosition(position) {
@@ -15,7 +13,6 @@ export default function Header({ data }) {
       const long = position.coords.longitude;
 
       const address = await getAddress(lat, long);
-
       setLocation(address);
     }
 

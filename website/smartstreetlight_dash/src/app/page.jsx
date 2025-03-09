@@ -1,69 +1,83 @@
-// "use client";
+"use client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DataCard from "@/components/DataCard";
 import { testData } from "@/testData";
 import Controls from "@/components/Controls";
-// import { useEffect, useState } from "react";
-import { main } from "@/lib/data";
+import { useState, useEffect } from "react";
+
+import useSWR from "swr";
+
+// constant fetch with useSWR
+export function fetchData() {
+  const fetcher = (...args) =>
+    fetch(...args)
+      .then((res) => res.json())
+      .then((res) => res.data);
+
+  const { data, error, isLoading } = useSWR("/data", fetcher, {
+    refreshInterval: 1000,
+  });
+
+  return { data, error, isLoading };
+}
 
 export default function Home() {
-  // const [data, setData] = useState(testData); // fetch from db
+  const [rawData, setRawData] = useState([
+    {
+      date: new Date("2024-02-29T03:20:10"),
+      energyUsage: 0,
+      lightStatus: "Off",
+      brightnessLevel: 0,
+      powerConsumption: 0,
+      batteryStatus: 0,
+      sensorHealth: "Warning",
+      location: "Langara 49th Station",
+    },
+  ]);
+  const [refresh, setRefresh] = useState(0);
 
-  // TODO: remove overflow causing scroll bars
-  // TODO: merge energy and power into one component
+  // incremental fetching with useEffect
+  // useEffect(() => {
+  //   async function gettingData() {
+  //     const result = await getData();
+  //     console.log("fetching data", result);
+  //     // setRawData((prevData) => result);
+  //   }
 
-  //   useEffect(() => {
-  //     const interval = setInterval(() => {
-  //         setData(prevData => {
-  //             let lastEntry = prevData[prevData.length - 1];
-  //             let newDate = new Date(lastEntry.date.getTime() + 60 * 60 * 1000); // Increment by 1 hour
+  //   gettingData();
 
-  //             const newData = {
-  //                 date: newDate,
-  //                 energyUsage: Math.floor(Math.random() * 400),
-  //                 lightStatus: Math.random() > 0.5 ? 'ON' : 'OFF',
-  //                 brightnessLevel: Math.floor(Math.random() * 100),
-  //                 powerConsumption: Math.floor(Math.random() * 120),
-  //                 batteryStatus: ['Charging', 'Discharging', 'Fully Charged'][Math.floor(Math.random() * 3)],
-  //                 sensorHealth: ['Good', 'Warning', 'Critical'][Math.floor(Math.random() * 3)]
-  //             };
+  //   setTimeout(() => {
+  //     setRefresh(Math.random());
+  //   }, 5000);
+  // }, [refresh]);
 
-  //             console.log('New mock data added:', newData);
-  //             return [...prevData, newData];
-  //         });
-  //     }, 5000); // Runs every 5 seconds
-
-  //     return () => clearInterval(interval); // Cleanup on unmount
-  // }, []); // Runs only once on mount
-
-  // main();
+  // const rawData = testData;
 
   return (
     <div className="h-screen w-screen text-center">
-      <Header data={testData} />
+      <Header data={rawData} />
 
       <main className="flex h-screen">
         <div className="flex flex-col items-center m-5">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
             <Controls />
-
             <p className="text-cyan-400 mt-4">Brightness Level</p>
-            <p className="text-gray-300">{`${testData[0].brightnessLevel}%`}</p>
+            <p className="text-gray-300">{`${rawData[0].brightnessLevel}%`}</p>
 
             <p className="text-cyan-400 mt-4">Battery Status</p>
-            <p className="text-gray-300">{`${testData[0].batteryStatus}%`}</p>
+            <p className="text-gray-300">{`${rawData[0].batteryStatus}%`}</p>
 
             <p className="text-cyan-400 mt-4">Sensor Health</p>
-            <p className="text-gray-300">{testData[0].sensorHealth}</p>
+            <p className="text-gray-300">{rawData[0].sensorHealth}</p>
             <p className="text-cyan-400 mt-4">Streetlight Location</p>
-            <p className="text-gray-300">{testData[0].location}</p>
+            <p className="text-gray-300">{rawData[0].location}</p>
           </div>
         </div>
 
         <div className="flex-grow h-full w-fit">
-          <DataCard fetchedData={testData} energy={true} />
-          <DataCard fetchedData={testData} energy={false} />
+          {/* <DataCard rawData={rawData} energy={true} /> */}
+          <DataCard energy={false} />
         </div>
       </main>
 

@@ -1,13 +1,13 @@
 "use client";
 
 import { ResponsiveLine } from "@nivo/line";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { testData } from "@/testData";
 import { useState } from "react";
-import { format, startOfDay } from "date-fns";
-import { M_PLUS_1 } from "next/font/google";
+import { fetchData } from "@/app/page";
+import { testData } from "@/testData";
 
-export default function DataCard({ fetchedData, energy }) {
+// Card for energy and power graphs
+export default function DataCard({ energy }) {
+  const { data: rawData, error, isLoading } = fetchData();
   const [filter, setFilter] = useState("tdy");
 
   // current date, set to 00:00:00 for comparisons
@@ -25,9 +25,12 @@ export default function DataCard({ fetchedData, energy }) {
   const oneYear = new Date(startOfToday);
   oneYear.setDate(oneYear.getDate() - 365);
 
-  const d = fetchedData;
+  if (error) return <div>Failed to load</div>;
+  if (!rawData) return <div>Loading...</div>;
 
-  const data = d.flatMap((obj, idx) => {
+  // const rawData = testData;
+
+  const data = rawData.flatMap((obj, idx) => {
     // used for date comparisons, current obj.date set to 00:00:00
     const objDateTemp = new Date(obj.date);
     objDateTemp.setHours(0, 0, 0, 0);
@@ -38,7 +41,7 @@ export default function DataCard({ fetchedData, energy }) {
       case "tdy":
         if (objDateTemp.getTime() == startOfToday.getTime()) {
           return {
-            x: obj.date,
+            x: new Date(obj.date), // converts UTC to locale time
             y: yData,
           };
         } else {
@@ -47,7 +50,7 @@ export default function DataCard({ fetchedData, energy }) {
       case "1M":
         if (objDateTemp >= lastMonth && objDateTemp <= startOfToday) {
           return {
-            x: obj.date,
+            x: new Date(obj.date),
             y: yData,
           };
         } else {
@@ -56,7 +59,7 @@ export default function DataCard({ fetchedData, energy }) {
       case "ytd":
         if (objDateTemp >= ytd && objDateTemp <= startOfToday) {
           return {
-            x: obj.date,
+            x: new Date(obj.date),
             y: yData,
           };
         } else {
@@ -65,7 +68,7 @@ export default function DataCard({ fetchedData, energy }) {
       case "1Y":
         if (objDateTemp >= oneYear && objDateTemp <= startOfToday) {
           return {
-            x: obj.date,
+            x: new Date(obj.date),
             y: yData,
           };
         } else {
@@ -73,7 +76,7 @@ export default function DataCard({ fetchedData, energy }) {
         }
       default:
         return {
-          x: obj.date,
+          x: new Date(obj.date),
           y: yData,
         };
     }
@@ -170,6 +173,8 @@ export default function DataCard({ fetchedData, energy }) {
         return "%Y-%b";
     }
   }
+
+  console.log(graphData); // for detecting rerenders
 
   return (
     <div className="flex h-2/5 bg-slate-800 text-center p-1 rounded-md shadow-sm items-center m-8">
