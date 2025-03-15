@@ -28,8 +28,6 @@ export default function DataCard({ energy }) {
   if (error) return <div>Failed to load</div>;
   if (!rawData) return <div>Loading...</div>;
 
-  // const rawData = testData;
-
   const data = rawData.flatMap((obj, idx) => {
     // used for date comparisons, current obj.date set to 00:00:00
     const objDateTemp = new Date(obj.date);
@@ -44,36 +42,34 @@ export default function DataCard({ energy }) {
             x: new Date(obj.date), // converts UTC to locale time
             y: yData,
           };
-        } else {
-          return [];
         }
+        return [];
       case "1M":
         if (objDateTemp >= lastMonth && objDateTemp <= startOfToday) {
           return {
             x: new Date(obj.date),
             y: yData,
           };
-        } else {
-          return [];
         }
+        return [];
       case "ytd":
         if (objDateTemp >= ytd && objDateTemp <= startOfToday) {
           return {
             x: new Date(obj.date),
             y: yData,
           };
-        } else {
-          return [];
         }
+        return [];
+
       case "1Y":
         if (objDateTemp >= oneYear && objDateTemp <= startOfToday) {
           return {
             x: new Date(obj.date),
             y: yData,
           };
-        } else {
-          return [];
         }
+        return [];
+
       default:
         return {
           x: new Date(obj.date),
@@ -94,12 +90,12 @@ export default function DataCard({ energy }) {
     axis: {
       ticks: {
         text: {
-          fill: "#D1D5DB", // Change to desired color
+          fill: "#D1D5DB",
         },
       },
       legend: {
         text: {
-          fill: "#D1D5DB", // Change to desired color
+          fill: "#D1D5DB",
         },
       },
     },
@@ -174,7 +170,11 @@ export default function DataCard({ energy }) {
     }
   }
 
-  console.log(graphData); // for detecting rerenders
+  console.log("rerender from", energy ? "energy" : "power", graphData); // for detecting rerenders
+
+  const filterDetails = {
+    Today: "tdy",
+  };
 
   return (
     <div className="flex h-2/5 bg-slate-800 text-center p-1 rounded-md shadow-sm items-center m-8">

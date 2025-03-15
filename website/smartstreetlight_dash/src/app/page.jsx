@@ -22,21 +22,12 @@ export function fetchData() {
   return { data, error, isLoading };
 }
 
+// TODO: swr fetches every second, but rerenders only happen when data changes - confirm understanding of this
 export default function Home() {
-  const [rawData, setRawData] = useState([
-    {
-      date: new Date("2024-02-29T03:20:10"),
-      energyUsage: 0,
-      lightStatus: "Off",
-      brightnessLevel: 0,
-      powerConsumption: 0,
-      batteryStatus: 0,
-      sensorHealth: "Warning",
-      location: "Langara 49th Station",
-    },
-  ]);
-  const [refresh, setRefresh] = useState(0);
+  const { data: rawData, error, isLoading } = fetchData();
 
+  const [refresh, setRefresh] = useState(0);
+  console.log(rawData);
   // incremental fetching with useEffect
   // useEffect(() => {
   //   async function gettingData() {
@@ -54,29 +45,33 @@ export default function Home() {
 
   // const rawData = testData;
 
+  if (error) return <div>Failed to load</div>;
+  if (!rawData) return <div>Loading...</div>;
+  const latestEntry = rawData[0];
+  console.log(latestEntry);
   return (
     <div className="h-screen w-screen text-center">
-      <Header data={rawData} />
+      <Header latestEntry={latestEntry} />
 
       <main className="flex h-screen">
         <div className="flex flex-col items-center m-5">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
             <Controls />
             <p className="text-cyan-400 mt-4">Brightness Level</p>
-            <p className="text-gray-300">{`${rawData[0].brightnessLevel}%`}</p>
+            <p className="text-gray-300">{`${latestEntry.brightnessLevel}%`}</p>
 
             <p className="text-cyan-400 mt-4">Battery Status</p>
-            <p className="text-gray-300">{`${rawData[0].batteryStatus}%`}</p>
+            <p className="text-gray-300">{`${latestEntry.batteryStatus}%`}</p>
 
             <p className="text-cyan-400 mt-4">Sensor Health</p>
-            <p className="text-gray-300">{rawData[0].sensorHealth}</p>
+            <p className="text-gray-300">{latestEntry.sensorHealth}</p>
             <p className="text-cyan-400 mt-4">Streetlight Location</p>
-            <p className="text-gray-300">{rawData[0].location}</p>
+            <p className="text-gray-300">{latestEntry.location}</p>
           </div>
         </div>
 
         <div className="flex-grow h-full w-fit">
-          {/* <DataCard rawData={rawData} energy={true} /> */}
+          <DataCard energy={true} />
           <DataCard energy={false} />
         </div>
       </main>

@@ -6,7 +6,10 @@ export const dynamic = "force-static";
 
 // route handler for fetching all streetlight data
 export async function GET() {
-  const data = await prisma.streetLightData.findMany();
-  // console.log("route handler", data);
+  const data = await prisma.streetLightData.findMany({
+    orderBy: {
+      date: "desc",
+    },
+  });
   return Response.json({ data }); // sends JSON
 }

@@ -3,10 +3,14 @@
 import { useEffect, useState } from "react";
 import { getAddress } from "@/lib/data";
 
-export default function Header({ data }) {
+export default function Header({ latestEntry }) {
   const [location, setLocation] = useState("");
-  const lastUpdated = data[data.length - 1].date.toLocaleDateString(); // fetch from db later on
 
+  // convert to date object, then to local date string
+  const dateObject = new Date(latestEntry.date);
+  const lastUpdated = dateObject.toLocaleDateString();
+
+  // requests location from google, sets location
   useEffect(() => {
     async function showPosition(position) {
       const lat = position.coords.latitude;
