@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@nivo/line": "^0.88.0",
-    "@prisma/client": "^6.4.1",
+    "@prisma/client": "^6.5.0",
     "@prisma/extension-accelerate": "^1.2.2",
     "@vercel/postgres": "^0.10.0",
     "date-fns": "^4.1.0",
