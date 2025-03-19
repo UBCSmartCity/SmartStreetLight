@@ -5,9 +5,9 @@ import { getAddress } from "@/lib/data";
 
 export default function Header({ latestEntry }) {
   const [location, setLocation] = useState("");
-
+  console.log(latestEntry);
   // convert to date object, then to local date string
-  const dateObject = new Date(latestEntry.date);
+  const dateObject = new Date(latestEntry.reading_time);
   const lastUpdated = dateObject.toLocaleDateString();
 
   // requests location from google, sets location

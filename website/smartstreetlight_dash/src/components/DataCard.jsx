@@ -10,6 +10,8 @@ export default function DataCard({ energy }) {
   const { data: rawData, error, isLoading } = fetchData();
   const [filter, setFilter] = useState("tdy");
 
+  console.log(rawData);
+
   // current date, set to 00:00:00 for comparisons
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
@@ -30,16 +32,16 @@ export default function DataCard({ energy }) {
 
   const data = rawData.flatMap((obj, idx) => {
     // used for date comparisons, current obj.date set to 00:00:00
-    const objDateTemp = new Date(obj.date);
+    const objDateTemp = new Date(obj.reading_time);
     objDateTemp.setHours(0, 0, 0, 0);
 
-    const yData = energy ? obj.energyUsage : obj.powerConsumption;
+    const yData = energy ? obj.energy_usage : obj.power_consumption;
 
     switch (filter) {
       case "tdy":
         if (objDateTemp.getTime() == startOfToday.getTime()) {
           return {
-            x: new Date(obj.date), // converts UTC to locale time
+            x: new Date(obj.reading_time), // converts UTC to locale time
             y: yData,
           };
         }
@@ -47,7 +49,7 @@ export default function DataCard({ energy }) {
       case "1M":
         if (objDateTemp >= lastMonth && objDateTemp <= startOfToday) {
           return {
-            x: new Date(obj.date),
+            x: new Date(obj.reading_time),
             y: yData,
           };
         }
@@ -55,7 +57,7 @@ export default function DataCard({ energy }) {
       case "ytd":
         if (objDateTemp >= ytd && objDateTemp <= startOfToday) {
           return {
-            x: new Date(obj.date),
+            x: new Date(obj.reading_time),
             y: yData,
           };
         }
@@ -64,7 +66,7 @@ export default function DataCard({ energy }) {
       case "1Y":
         if (objDateTemp >= oneYear && objDateTemp <= startOfToday) {
           return {
-            x: new Date(obj.date),
+            x: new Date(obj.reading_time),
             y: yData,
           };
         }
@@ -72,7 +74,7 @@ export default function DataCard({ energy }) {
 
       default:
         return {
-          x: new Date(obj.date),
+          x: new Date(obj.reading_time),
           y: yData,
         };
     }

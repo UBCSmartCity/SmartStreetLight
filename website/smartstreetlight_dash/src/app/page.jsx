@@ -10,14 +10,15 @@ import useSWR from "swr";
 
 // constant fetch with useSWR
 export function fetchData() {
-  const fetcher = (...args) =>
-    fetch(...args)
-      .then((res) => res.json())
-      .then((res) => res.data);
+  const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-  const { data, error, isLoading } = useSWR("/data", fetcher, {
-    refreshInterval: 1000,
-  });
+  const { data, error, isLoading } = useSWR(
+    "http://10.0.0.174:5000/api/sensor_readings",
+    fetcher,
+    {
+      refreshInterval: 1000,
+    }
+  );
 
   return { data, error, isLoading };
 }
@@ -28,6 +29,11 @@ export default function Home() {
 
   const [refresh, setRefresh] = useState(0);
   console.log(rawData);
+
+  // fetch("http://10.0.0.174:5000/api/sensor_readings")
+  //   .then((res) => res.json())
+  //   .then((r) => console.log(r));
+
   // incremental fetching with useEffect
   // useEffect(() => {
   //   async function gettingData() {
@@ -58,13 +64,13 @@ export default function Home() {
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
             <Controls />
             <p className="text-cyan-400 mt-4">Brightness Level</p>
-            <p className="text-gray-300">{`${latestEntry.brightnessLevel}%`}</p>
+            <p className="text-gray-300">{`${latestEntry.brightness_level}%`}</p>
 
             <p className="text-cyan-400 mt-4">Battery Status</p>
-            <p className="text-gray-300">{`${latestEntry.batteryStatus}%`}</p>
+            <p className="text-gray-300">{`${latestEntry.battery_status}%`}</p>
 
             <p className="text-cyan-400 mt-4">Sensor Health</p>
-            <p className="text-gray-300">{latestEntry.sensorHealth}</p>
+            <p className="text-gray-300">{latestEntry.sensor_health}</p>
             <p className="text-cyan-400 mt-4">Streetlight Location</p>
             <p className="text-gray-300">{latestEntry.location}</p>
           </div>
