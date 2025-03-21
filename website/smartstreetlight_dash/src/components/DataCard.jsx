@@ -117,6 +117,9 @@ export default function DataCard({ energy }) {
         strokeOpacity: 0.35,
       },
     },
+    text: {
+      fontSize: 12,
+    },
   };
 
   function min() {
@@ -176,10 +179,6 @@ export default function DataCard({ energy }) {
   }
 
   console.log("rerender from", energy ? "energy" : "power", graphData); // for detecting rerenders
-
-  const filterDetails = {
-    Today: "tdy",
-  };
 
   return (
     <div className="flex h-2/5 bg-slate-800 text-center p-1 rounded-md shadow-sm items-center m-8">
@@ -277,11 +276,10 @@ export default function DataCard({ energy }) {
           axisRight={null}
           axisLeft={{
             tickSize: 5,
-
             tickPadding: 5,
             tickRotation: 0,
             legend: energy ? "Energy (kWh)" : "Power (W)",
-            legendOffset: -40,
+            legendOffset: -45,
             legendPosition: "middle",
             truncateTickAt: 0,
           }}

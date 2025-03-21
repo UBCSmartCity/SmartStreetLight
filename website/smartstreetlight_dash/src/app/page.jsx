@@ -36,10 +36,10 @@ export default function Home() {
   const latestEntry = rawData[rawData.length - 1];
 
   return (
-    <div className="flex flex-col justify-center h-screen w-screen text-center">
+    <div className="flex flex-col justify-center h-screen w-screen text-center gap-y-2">
       <Header latestEntry={latestEntry} />
 
-      <section className="grid grid-cols-4 gap-4 h-1/6 justify-center">
+      <section className="grid grid-cols-4 gap-4 h-1/6 place-items-center">
         <Card type={"Brightness"} value={`${latestEntry.brightness_level}%`} />
         <Card type={"Battery"} value={`${latestEntry.battery_status}%`} />
         <Card type={"Sensor Health"} value={`${latestEntry.sensor_health}`} />
