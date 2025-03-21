@@ -7,7 +7,10 @@ import { testData } from "@/testData";
 
 // Card for energy and power graphs
 export default function DataCard({ energy }) {
-  const { data: rawData, error, isLoading } = fetchData();
+  // const { data: rawData, error, isLoading } = fetchData();
+  const rawData = testData;
+  const error = false;
+
   const [filter, setFilter] = useState("tdy");
 
   console.log(rawData);
@@ -274,6 +277,7 @@ export default function DataCard({ energy }) {
           axisRight={null}
           axisLeft={{
             tickSize: 5,
+
             tickPadding: 5,
             tickRotation: 0,
             legend: energy ? "Energy (kWh)" : "Power (W)",

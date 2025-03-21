@@ -5,7 +5,7 @@ import DataCard from "@/components/DataCard";
 import { testData } from "@/testData";
 import Controls from "@/components/Controls";
 import { useState, useEffect } from "react";
-
+import Card from "@/components/Card";
 import useSWR from "swr";
 
 // constant fetch with useSWR
@@ -16,7 +16,7 @@ export function fetchData() {
     "http://10.0.0.174:5000/api/sensor_readings",
     fetcher,
     {
-      refreshInterval: 1000,
+      refreshInterval: 100,
     }
   );
 
@@ -25,44 +25,31 @@ export function fetchData() {
 
 // TODO: swr fetches every second, but rerenders only happen when data changes - confirm understanding of this
 export default function Home() {
-  const { data: rawData, error, isLoading } = fetchData();
-
+  // const { data: rawData, error, isLoading } = fetchData();
+  const rawData = testData;
+  const error = false;
   const [refresh, setRefresh] = useState(0);
   console.log(rawData);
 
-  // fetch("http://10.0.0.174:5000/api/sensor_readings")
-  //   .then((res) => res.json())
-  //   .then((r) => console.log(r));
-
-  // incremental fetching with useEffect
-  // useEffect(() => {
-  //   async function gettingData() {
-  //     const result = await getData();
-  //     console.log("fetching data", result);
-  //     // setRawData((prevData) => result);
-  //   }
-
-  //   gettingData();
-
-  //   setTimeout(() => {
-  //     setRefresh(Math.random());
-  //   }, 5000);
-  // }, [refresh]);
-
-  // const rawData = testData;
-
   if (error) return <div>Failed to load</div>;
   if (!rawData) return <div>Loading...</div>;
-  const latestEntry = rawData[0];
-  console.log(latestEntry);
+  const latestEntry = rawData[rawData.length - 1];
+
   return (
-    <div className="h-screen w-screen text-center">
+    <div className="flex flex-col justify-center h-screen w-screen text-center">
       <Header latestEntry={latestEntry} />
 
+      <section className="grid grid-cols-4 gap-4 h-1/6 justify-center">
+        <Card type={"Brightness"} value={`${latestEntry.brightness_level}%`} />
+        <Card type={"Battery"} value={`${latestEntry.battery_status}%`} />
+        <Card type={"Sensor Health"} value={`${latestEntry.sensor_health}`} />
+        <Card type={"Light Status"} value={`${latestEntry.light_status}`} />
+      </section>
+
       <main className="flex h-screen">
-        <div className="flex flex-col items-center m-5">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
-            <Controls />
+        {/* <div className="flex flex-col items-center m-5">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md"> */}
+        {/* <Controls />
             <p className="text-cyan-400 mt-4">Brightness Level</p>
             <p className="text-gray-300">{`${latestEntry.brightness_level}%`}</p>
 
@@ -72,11 +59,11 @@ export default function Home() {
             <p className="text-cyan-400 mt-4">Sensor Health</p>
             <p className="text-gray-300">{latestEntry.sensor_health}</p>
             <p className="text-cyan-400 mt-4">Streetlight Location</p>
-            <p className="text-gray-300">{latestEntry.location}</p>
-          </div>
-        </div>
+            <p className="text-gray-300">{latestEntry.location}</p> */}
+        {/* </div>
+        </div> */}
 
-        <div className="flex-grow h-full w-fit">
+        <div className="  w-full">
           <DataCard energy={true} />
           <DataCard energy={false} />
         </div>

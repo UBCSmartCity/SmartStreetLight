@@ -30,7 +30,7 @@ export default function Header({ latestEntry }) {
   return (
     <nav className="bg-gray-800 text-white p-3 flex justify-evenly items-center shadow-lg">
       <h1 className="text-xl font-semibold text-cyan-400">
-        Smart Streetlight Dashboard
+        Smart Streetlight Dashboard @ {latestEntry.location}
       </h1>
       <div className="text-sm text-gray-300 flex gap-3">
         <span id="location">📍{location} </span>
