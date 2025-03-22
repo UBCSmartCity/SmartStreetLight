@@ -1,1 +1,3 @@
 The following website was used to create the WS2812 LED setup https://www.micropeta.com/video134.
+
+Video explaining working of LED https://www.youtube.com/watch?v=rHoFqKGOPRI
