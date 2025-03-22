@@ -25,9 +25,7 @@ export function fetchData() {
 
 // TODO: swr fetches every second, but rerenders only happen when data changes - confirm understanding of this
 export default function Home() {
-  // const { data: rawData, error, isLoading } = fetchData();
-  const rawData = testData;
-  const error = false;
+  const { data: rawData, error, isLoading } = fetchData();
   const [refresh, setRefresh] = useState(0);
   console.log(rawData);
 
