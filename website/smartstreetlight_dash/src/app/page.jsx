@@ -36,10 +36,10 @@ export default function Home() {
   const latestEntry = rawData[rawData.length - 1];
 
   return (
-    <div className="min-h-screen flex flex-col h-full w-full text-center gap-y-4">
+    <div className="min-h-screen flex flex-col h-full w-full text-center gap-y-4 p-3">
       <Header latestEntry={latestEntry} />
 
-      <section className="grid grid-cols-5 gap-4 place-items-center">
+      <section className="grid grid-cols-5 place-items-center">
         <Card type={"Last Updated"} value={`${latestEntry.reading_time}`} />
         <Card type={"Brightness"} value={`${latestEntry.brightness_level}%`} />
         <Card type={"Battery"} value={`${latestEntry.battery_status}%`} />
@@ -47,10 +47,8 @@ export default function Home() {
         <Card type={"Light Status"} value={`${latestEntry.light_status}`} />
       </section>
 
-      <div className="w-full h-full">
-        <DataCard energy={true} />
-        <DataCard energy={false} />
-      </div>
+      <DataCard energy={true} />
+      <DataCard energy={false} />
 
       <Footer />
     </div>

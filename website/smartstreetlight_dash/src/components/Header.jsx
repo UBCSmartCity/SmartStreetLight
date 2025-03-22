@@ -44,14 +44,20 @@ export default function Header({ latestEntry }) {
       </div>
 
       <div className="flex items-center gap-2">
-        <button
+        {/* Toggle Switch */}
+        <div
           onClick={toggleMode}
-          className={`px-4 py-1 rounded-md text-white text-sm ${
+          className={`w-14 h-7 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${
             isOn ? "bg-cyan-400" : "bg-gray-500"
           }`}
         >
-          {isOn ? "On" : "Off"}
-        </button>
+          <div
+            className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ${
+              isOn ? "translate-x-7" : "translate-x-0"
+            }`}
+          ></div>
+        </div>
+        <span className="text-sm">{isOn ? "On" : "Off"}</span>
       </div>
     </nav>
   );
