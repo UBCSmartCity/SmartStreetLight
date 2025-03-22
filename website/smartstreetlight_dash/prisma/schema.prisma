@@ -1,0 +1,22 @@
+// generates prismaclient for js 
+generator client {
+  provider = "prisma-client-js"
+}
+
+// specify datasource 
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model StreetLightData {
+  id               Int      @id @default(autoincrement())
+  date             DateTime
+  energyUsage      Int
+  lightStatus      String
+  brightnessLevel  Int
+  powerConsumption Int
+  batteryStatus    Int
+  sensorHealth     String
+  location         String
+}

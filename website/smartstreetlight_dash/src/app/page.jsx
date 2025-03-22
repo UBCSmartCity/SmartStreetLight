@@ -1,68 +1,56 @@
-// "use client";
+"use client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DataCard from "@/components/DataCard";
 import { testData } from "@/testData";
 import Controls from "@/components/Controls";
-// import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import Card from "@/components/Card";
+import useSWR from "swr";
 
+// constant fetch with useSWR
+export function fetchData() {
+  const fetcher = (...args) => fetch(...args).then((res) => res.json());
+
+  const { data, error, isLoading } = useSWR(
+    "http://10.0.0.174:5000/api/sensor_readings",
+    fetcher,
+    {
+      refreshInterval: 100,
+    }
+  );
+
+  return { data, error, isLoading };
+}
+
+// TODO: swr fetches every second, but rerenders only happen when data changes - confirm understanding of this
 export default function Home() {
-  // const [data, setData] = useState(testData); // fetch from db
+  // const { data: rawData, error, isLoading } = fetchData();
+  const rawData = testData;
+  const error = false;
+  const [refresh, setRefresh] = useState(0);
+  console.log(rawData);
 
-  // TODO: remove overflow causing scroll bars
-  // TODO: merge energy and power into one component
-
-  //   useEffect(() => {
-  //     const interval = setInterval(() => {
-  //         setData(prevData => {
-  //             let lastEntry = prevData[prevData.length - 1];
-  //             let newDate = new Date(lastEntry.date.getTime() + 60 * 60 * 1000); // Increment by 1 hour
-
-  //             const newData = {
-  //                 date: newDate,
-  //                 energyUsage: Math.floor(Math.random() * 400),
-  //                 lightStatus: Math.random() > 0.5 ? 'ON' : 'OFF',
-  //                 brightnessLevel: Math.floor(Math.random() * 100),
-  //                 powerConsumption: Math.floor(Math.random() * 120),
-  //                 batteryStatus: ['Charging', 'Discharging', 'Fully Charged'][Math.floor(Math.random() * 3)],
-  //                 sensorHealth: ['Good', 'Warning', 'Critical'][Math.floor(Math.random() * 3)]
-  //             };
-
-  //             console.log('New mock data added:', newData);
-  //             return [...prevData, newData];
-  //         });
-  //     }, 5000); // Runs every 5 seconds
-
-  //     return () => clearInterval(interval); // Cleanup on unmount
-  // }, []); // Runs only once on mount
+  if (error) return <div>Failed to load</div>;
+  if (!rawData) return <div>Loading...</div>;
+  const latestEntry = rawData[rawData.length - 1];
 
   return (
-    <div className="h-screen w-screen text-center">
-      <Header data={testData} />
+    <div className="min-h-screen flex flex-col h-full w-full text-center gap-y-4">
+      <Header latestEntry={latestEntry} />
 
-      <main className="flex h-screen">
-        <div className="flex flex-col items-center m-5">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
-            <Controls />
+      <section className="grid grid-cols-5 gap-4 place-items-center">
+        <Card type={"Last Updated"} value={`${latestEntry.reading_time}`} />
+        <Card type={"Brightness"} value={`${latestEntry.brightness_level}%`} />
+        <Card type={"Battery"} value={`${latestEntry.battery_status}%`} />
+        <Card type={"Sensor Health"} value={`${latestEntry.sensor_health}`} />
+        <Card type={"Light Status"} value={`${latestEntry.light_status}`} />
+      </section>
 
-            <p className="text-cyan-400 mt-4">Brightness Level</p>
-            <p className="text-gray-300">{`${testData[0].brightnessLevel}%`}</p>
-
-            <p className="text-cyan-400 mt-4">Battery Status</p>
-            <p className="text-gray-300">{`${testData[0].batteryStatus}%`}</p>
-
-            <p className="text-cyan-400 mt-4">Sensor Health</p>
-            <p className="text-gray-300">{testData[0].sensorHealth}</p>
-            <p className="text-cyan-400 mt-4">Streetlight Location</p>
-            <p className="text-gray-300">{testData[0].location}</p>
-          </div>
-        </div>
-
-        <div className="flex-grow h-full w-fit">
-          <DataCard fetchedData={testData} energy={true} />
-          <DataCard fetchedData={testData} energy={false} />
-        </div>
-      </main>
+      <div className="w-full h-full">
+        <DataCard energy={true} />
+        <DataCard energy={false} />
+      </div>
 
       <Footer />
     </div>
