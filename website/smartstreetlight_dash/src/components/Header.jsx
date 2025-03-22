@@ -34,12 +34,12 @@ export default function Header({ latestEntry }) {
   };
 
   return (
-    <nav className="bg-gray-800 text-white p-3 flex justify-evenly items-center shadow-lg">
+    <nav className=" text-black p-3 flex justify-evenly items-center shadow-lg">
       <h1 className="text-xl font-semibold text-cyan-400">
         Smart Streetlight Dashboard @ {latestEntry.location}
       </h1>
 
-      <div className="text-sm text-gray-300 flex gap-6 items-center">
+      <div className="text-sm text-black flex gap-6 items-center">
         <span id="location"> 📍Your Location: {location}</span>
       </div>
 
