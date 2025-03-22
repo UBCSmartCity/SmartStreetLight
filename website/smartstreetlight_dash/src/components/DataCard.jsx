@@ -7,9 +7,9 @@ import { testData } from "@/testData";
 
 // Card for energy and power graphs
 export default function DataCard({ energy }) {
-  // const { data: rawData, error, isLoading } = fetchData();
-  const rawData = testData;
-  const error = false;
+  const { data: rawData, error, isLoading } = fetchData();
+  // const rawData = testData;
+  // const error = false;
 
   const [filter, setFilter] = useState("tdy");
 
@@ -189,9 +189,9 @@ export default function DataCard({ energy }) {
   console.log("rerender from", energy ? "energy" : "power", graphData); // for detecting rerenders
 
   return (
-    <div className="flex h-2/5 bg-slate-800 text-center p-2 rounded-md shadow-sm items-stretch gap-4">
+    <div className="flex h-2/5  text-center p-2 rounded-md shadow-sm items-stretch gap-4">
       {/* Filter Box */}
-      <section className="flex flex-col items-center gap-y-4 w-1/5 bg-slate-700 p-4 rounded-md overflow-hidden">
+      <section className="flex flex-col items-center gap-y-4 w-1/5 bg-gray-700 p-4 rounded-md overflow-hidden">
         <h2 className="text-xl text-cyan-400">
           {energy ? "Energy" : "Power"} Usage
         </h2>
@@ -213,7 +213,7 @@ export default function DataCard({ energy }) {
       </section>
 
       {/* Graph Box */}
-      <div className="flex-1 bg-slate-700 p-2 rounded-md overflow-hidden">
+      <div className="flex-1 bg-gray-700 p-2 rounded-md overflow-hidden">
         {data.length > 0 && (
           <ResponsiveLine
             data={graphData}

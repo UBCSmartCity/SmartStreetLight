@@ -13,7 +13,7 @@ export function fetchData() {
   const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
   const { data, error, isLoading } = useSWR(
-    "http://10.0.0.174:5000/api/sensor_readings",
+    "http://192.168.246.46:5000/api/sensor_readings",
     fetcher,
     {
       refreshInterval: 100,
@@ -25,9 +25,9 @@ export function fetchData() {
 
 // TODO: swr fetches every second, but rerenders only happen when data changes - confirm understanding of this
 export default function Home() {
-  // const { data: rawData, error, isLoading } = fetchData();
-  const rawData = testData;
-  const error = false;
+  const { data: rawData, error, isLoading } = fetchData();
+  // const rawData = testData;
+  // const error = false;
   const [refresh, setRefresh] = useState(0);
   console.log(rawData);
 
