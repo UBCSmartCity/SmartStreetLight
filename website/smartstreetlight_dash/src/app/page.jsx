@@ -36,38 +36,21 @@ export default function Home() {
   const latestEntry = rawData[rawData.length - 1];
 
   return (
-    <div className="flex flex-col justify-center h-screen w-screen text-center gap-y-2">
+    <div className="min-h-screen flex flex-col h-full w-full text-center gap-y-4">
       <Header latestEntry={latestEntry} />
 
-      <section className="grid grid-cols-4 gap-4 h-1/6 place-items-center">
+      <section className="grid grid-cols-5 gap-4 place-items-center">
+        <Card type={"Last Updated"} value={`${latestEntry.reading_time}`} />
         <Card type={"Brightness"} value={`${latestEntry.brightness_level}%`} />
         <Card type={"Battery"} value={`${latestEntry.battery_status}%`} />
         <Card type={"Sensor Health"} value={`${latestEntry.sensor_health}`} />
         <Card type={"Light Status"} value={`${latestEntry.light_status}`} />
       </section>
 
-      <main className="flex h-screen">
-        {/* <div className="flex flex-col items-center m-5">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md"> */}
-        {/* <Controls />
-            <p className="text-cyan-400 mt-4">Brightness Level</p>
-            <p className="text-gray-300">{`${latestEntry.brightness_level}%`}</p>
-
-            <p className="text-cyan-400 mt-4">Battery Status</p>
-            <p className="text-gray-300">{`${latestEntry.battery_status}%`}</p>
-
-            <p className="text-cyan-400 mt-4">Sensor Health</p>
-            <p className="text-gray-300">{latestEntry.sensor_health}</p>
-            <p className="text-cyan-400 mt-4">Streetlight Location</p>
-            <p className="text-gray-300">{latestEntry.location}</p> */}
-        {/* </div>
-        </div> */}
-
-        <div className="  w-full">
-          <DataCard energy={true} />
-          <DataCard energy={false} />
-        </div>
-      </main>
+      <div className="w-full h-full">
+        <DataCard energy={true} />
+        <DataCard energy={false} />
+      </div>
 
       <Footer />
     </div>

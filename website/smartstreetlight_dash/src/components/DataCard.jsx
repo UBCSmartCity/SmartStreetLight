@@ -13,7 +13,7 @@ export default function DataCard({ energy }) {
 
   const [filter, setFilter] = useState("tdy");
 
-  console.log(rawData);
+  // console.log(rawData);
 
   // current date, set to 00:00:00 for comparisons
   const startOfToday = new Date();
@@ -178,73 +178,43 @@ export default function DataCard({ energy }) {
     }
   }
 
+  const filterOptions = [
+    { key: "tdy", label: "Today" },
+    { key: "1M", label: "1 Month" },
+    { key: "ytd", label: "YTD" },
+    { key: "1Y", label: "1 Year" },
+    { key: "max", label: "Max" },
+  ];
+
   console.log("rerender from", energy ? "energy" : "power", graphData); // for detecting rerenders
 
   return (
-    <div className="flex h-2/5 bg-slate-800 text-center p-1 rounded-md shadow-sm items-center m-8">
-      <section className="gap-y-2">
-        <h1>{energy ? "Energy" : "Power"} Usage</h1>
-        <label key="tdy" className="w-full">
-          <input
-            type="radio"
-            name={`${energy}filter`}
-            className="hidden peer  focus:bg-red-600"
-            onClick={() => setFilter("tdy")}
-          />
-          <span className="w-8/12 text-center mb-2 mt-3 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-cyan-400 hover:opacity-80 ">
-            Today
-          </span>
-        </label>
-        <label key="1M" className="w-full">
-          <input
-            type="radio"
-            name={`${energy}filter`}
-            className="hidden peer"
-            onClick={() => setFilter("1M")}
-          />
-          <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-cyan-400 hover:opacity-80 ">
-            1 Month
-          </span>
-        </label>
-        <label key="ytd" className="w-full">
-          <input
-            type="radio"
-            name={`${energy}filter`}
-            className="hidden peer"
-            onClick={() => setFilter("ytd")}
-          />
-          <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-cyan-400 hover:opacity-80 ">
-            YTD
-          </span>
-        </label>
-        <label key="1Y" className="w-full">
-          <input
-            type="radio"
-            name={`${energy}filter`}
-            className="hidden peer"
-            onClick={() => setFilter("1Y")}
-          />
-          <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-cyan-400 hover:opacity-80 ">
-            1 Year
-          </span>
-        </label>
-        <label key="max" className="w-full">
-          <input
-            type="radio"
-            name={`${energy}filter`}
-            className="hidden peer"
-            onClick={() => setFilter("max")}
-          />
-          <span className="w-8/12 text-center mb-2 inline-block outline outline-1 rounded-md cursor-pointer peer-checked:bg-cyan-400 hover:opacity-80 ">
-            Max
-          </span>
-        </label>
+    <div className="flex h-2/5 bg-slate-800 text-center p-2 rounded-md shadow-sm items-center m-8">
+      <section className="flex flex-col items-center gap-y-2">
+        <h1 className="text-sm font-semibold">
+          {energy ? "Energy" : "Power"} Usage
+        </h1>
+        <div className="flex flex-col gap-1 justify-center flex-wrap">
+          {filterOptions.map((option) => (
+            <label key={option.key} className="cursor-pointer">
+              <input
+                type="radio"
+                name={`${energy}filter`}
+                className="hidden peer"
+                onClick={() => setFilter(option.key)}
+              />
+              <span className="px-2 py-1 text-xs rounded-full outline outline-1 peer-checked:bg-cyan-400 peer-checked:text-black hover:opacity-80">
+                {option.label}
+              </span>
+            </label>
+          ))}
+        </div>
       </section>
 
       {data.length > 0 && (
         <ResponsiveLine
           data={graphData}
-          margin={{ top: 50, right: 50, bottom: 50, left: 50 }}
+          margin={{ top: 20, right: 50, bottom: 30, left: 50 }}
           xScale={{
             type: "time",
             min: min(),
@@ -252,6 +222,7 @@ export default function DataCard({ energy }) {
             precision: "hour",
             useUTC: false,
           }}
+          width={1200}
           axisBottom={{
             orient: "bottom",
             tickSize: 0,
