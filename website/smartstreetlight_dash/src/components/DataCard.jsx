@@ -4,12 +4,13 @@ import { ResponsiveLine } from "@nivo/line";
 import { useState } from "react";
 import { fetchData } from "@/app/page";
 import { testData } from "@/testData";
+import { TooltipWrapper } from "@nivo/tooltip";
 
 // Card for energy and power graphs
 export default function DataCard({ energy }) {
-  const { data: rawData, error, isLoading } = fetchData();
-  // const rawData = testData;
-  // const error = false;
+  // const { data: rawData, error, isLoading } = fetchData();
+  const rawData = testData;
+  const error = false;
 
   const [filter, setFilter] = useState("tdy");
 
@@ -108,6 +109,7 @@ export default function DataCard({ energy }) {
       container: {
         background: "#ffffff",
         color: "#333333",
+        overflow: "visible",
       },
     },
     crosshair: {
@@ -189,9 +191,9 @@ export default function DataCard({ energy }) {
   console.log("rerender from", energy ? "energy" : "power", graphData); // for detecting rerenders
 
   return (
-    <div className="flex h-2/5  text-center p-2 rounded-md shadow-sm items-stretch gap-4">
+    <div className="flex h-2/5 text-center p-2 rounded-md shadow-sm items-stretch gap-4">
       {/* Filter Box */}
-      <section className="flex flex-col items-center gap-y-4 w-1/5 bg-gray-700 p-4 rounded-md overflow-hidden">
+      <section className="flex flex-col items-center gap-y-4 w-1/5 min-w-[200px] bg-gray-700 p-4 rounded-md overflow-hidden flex-none">
         <h2 className="text-xl text-cyan-400">
           {energy ? "Energy" : "Power"} Usage
         </h2>
@@ -213,61 +215,61 @@ export default function DataCard({ energy }) {
       </section>
 
       {/* Graph Box */}
-      <div className="flex-1 bg-gray-700 p-2 rounded-md overflow-hidden">
-        {data.length > 0 && (
-          <ResponsiveLine
-            data={graphData}
-            margin={{ top: 20, right: 50, bottom: 30, left: 50 }}
-            xScale={{
-              type: "time",
-              min: min(),
-              max: max(),
-              precision: "hour",
-              useUTC: false,
-            }}
-            width={1200}
-            axisBottom={{
-              orient: "bottom",
-              tickSize: 0,
-              tickPadding: 10,
-              tickRotation: 0,
-              tickValues: tickVals(),
-              format: format(),
-              legendOffset: 100,
-              translateX: 25,
-              legendPosition: "start",
-              legend: "hi",
-            }}
-            yScale={{
-              type: "linear",
-              min: "0",
-              max: "auto",
-              stacked: false,
-              reverse: false,
-            }}
-            theme={customTheme}
-            axisTop={null}
-            axisRight={null}
-            axisLeft={{
-              tickSize: 5,
-              tickPadding: 5,
-              tickRotation: 0,
-              legend: energy ? "Energy (kWh)" : "Power (W)",
-              legendOffset: -45,
-              legendPosition: "middle",
-              truncateTickAt: 0,
-            }}
-            enableGridX={false}
-            crosshairType="x"
-            curve={"linear"}
-            colors={{ scheme: "nivo" }}
-            pointBorderColor={{ from: "serieColor" }}
-            pointColor={{ theme: "background" }}
-            pointLabelYOffset={-12}
-            enableTouchCrosshair={true}
-            useMesh={true}
-          />
-        )}
+      <div className="relative flex-grow bg-gray-700 p-2 rounded-md min-h-[300px]">
+        <div className="overflow-visible h-full w-full">
+          {data.length > 0 && (
+            <ResponsiveLine
+              data={graphData}
+              margin={{ top: 20, right: 50, bottom: 30, left: 50 }}
+              xScale={{
+                type: "time",
+                min: min(),
+                max: max(),
+                precision: "hour",
+                useUTC: false,
+              }}
+              axisBottom={{
+                orient: "bottom",
+                tickSize: 0,
+                tickPadding: 10,
+                tickRotation: 0,
+                tickValues: tickVals(),
+                format: format(),
+                legendOffset: 100,
+                translateX: 25,
+                legendPosition: "start",
+                legend: "hi",
+              }}
+              yScale={{
+                type: "linear",
+                min: "0",
+                max: "auto",
+                tickValues: 7,
+              }}
+              theme={customTheme}
+              axisTop={null}
+              axisRight={null}
+              axisLeft={{
+                tickSize: 5,
+                tickPadding: 5,
+                tickRotation: 0,
+                legend: energy ? "Energy (kWh)" : "Power (W)",
+                legendOffset: -45,
+                legendPosition: "middle",
+                truncateTickAt: 0,
+              }}
+              enableGridX={false}
+              crosshairType="x"
+              curve={"linear"}
+              colors={{ scheme: "nivo" }}
+              pointBorderColor={{ from: "serieColor" }}
+              pointColor={{ theme: "background" }}
+              pointLabelYOffset={-12}
+              enableTouchCrosshair={true}
+              useMesh={true}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
