@@ -1,8 +1,0 @@
-This folder contains the different example codes for getting started with STM32. (Will add the pins and phcircuit photo for setting up later on)
-
-
-Blinky: Contains code for blinking the green LED already present on the STM32 board. 
-
-LCD: Contains code for displaying on LCD
-
-ADC: Contains code for Analog to digital converter.
