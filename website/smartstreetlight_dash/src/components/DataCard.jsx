@@ -109,7 +109,8 @@ export default function DataCard({ energy }) {
       container: {
         background: "#ffffff",
         color: "#333333",
-        overflow: "visible",
+        fontSize: 10,
+        // overflow: "visible",
       },
     },
     crosshair: {
@@ -219,6 +220,25 @@ export default function DataCard({ energy }) {
         <div className="overflow-visible h-full w-full">
           {data.length > 0 && (
             <ResponsiveLine
+              tooltip={({ point }) => {
+                return (
+                  <div className="p-2 bg-gray-100 rounded-md shadow-md text-gray-700">
+                    <div className="font-bold mb-1">
+                      {new Date(point.data.xFormatted).toLocaleString(
+                        undefined,
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }
+                      )}
+                    </div>
+                    <div>{point.data.yFormatted}</div>
+                  </div>
+                );
+              }}
               data={graphData}
               margin={{ top: 20, right: 50, bottom: 30, left: 50 }}
               xScale={{
