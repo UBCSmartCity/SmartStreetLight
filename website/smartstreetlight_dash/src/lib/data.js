@@ -14,3 +14,15 @@ export async function getAddress(lat, long) {
     "Location not detected"
   );
 }
+
+// reverse geocoding using GeoNames API (10'000 credits, 1 credit per request)
+// export async function getAddress(lat, long) {
+//   const t = await fetch(
+//     `http://api.geonames.org/findNearestIntersectionOSMJSON?lat=${lat}&lng=${long}&username=${process.env.GEOUSER}`
+//   );
+
+//   const loc = await t.json();
+
+//   console.log("loc", loc);
+//   return loc.intersection.street1 + " and " + loc.intersection.street2;
+// }
