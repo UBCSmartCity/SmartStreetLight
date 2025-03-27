@@ -192,12 +192,10 @@ export default function DataCard({ energy }) {
   console.log("rerender from", energy ? "energy" : "power", graphData); // for detecting rerenders
 
   return (
-    <div className="flex h-2/5 text-center p-2 rounded-md shadow-sm items-stretch gap-4">
+    <div className="flex h-2/5 text-center rounded-md shadow-sm items-stretch gap-4">
       {/* Filter Box */}
-      <section className="flex flex-col items-center gap-y-4 w-1/5 min-w-[200px] bg-gray-700 p-4 rounded-md overflow-hidden flex-none">
-        <h2 className="text-xl text-cyan-400">
-          {energy ? "Energy" : "Power"} Usage
-        </h2>
+      <section className="flex flex-col items-center gap-y-4 w-1/5 min-w-[300px] bg-gray-700 p-4 rounded-md overflow-hidden flex-none">
+        <h2 className="text-xl">{energy ? "Energy" : "Power"} Usage</h2>
         <div className="flex flex-col gap-2 justify-center w-full">
           {filterOptions.map((option) => (
             <label key={option.key} className="cursor-pointer w-full">

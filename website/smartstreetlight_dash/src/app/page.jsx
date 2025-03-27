@@ -7,11 +7,13 @@ import Controls from "@/components/Controls";
 import { useState, useEffect } from "react";
 import Card from "@/components/Card";
 import useSWR from "swr";
+import { useSearchParams } from "next/navigation";
 
 // constant fetch with useSWR
 export function fetchData() {
   const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
+  // change route depending on search param
   const { data, error, isLoading } = useSWR(
     "http://192.168.246.46:5000/api/sensor_readings",
     fetcher,
@@ -31,8 +33,17 @@ export default function Home() {
   const [refresh, setRefresh] = useState(0);
   console.log(rawData);
 
+  // profile name from URL, will be
+  const searchParams = useSearchParams();
+  const search = searchParams.get("profile");
+
+  console.log(search);
+
+  // loading and data error UI
   if (error) return <div>Failed to load</div>;
   if (!rawData) return <div>Loading...</div>;
+
+  // latest entry
   const latestEntry = rawData[rawData.length - 1];
 
   return (

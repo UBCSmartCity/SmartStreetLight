@@ -1,78 +1,92 @@
 "use client";
+
 import { useState } from "react";
 
-export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+// TODO: implement test user/pass in database
+const profiles = [
+  {
+    id: 1,
+    name: "Langara",
+    password: "pass123",
+  },
+  {
+    id: 2,
+    name: "UBC Nest",
+    password: "secure456",
+  },
+  {
+    id: 3,
+    name: "SFU",
+    password: "charlie789",
+  },
+];
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+export default function ProfileSwitcher() {
+  const [loggedInProfiles, setLoggedInProfiles] = useState([]);
+  const [passwordInputs, setPasswordInputs] = useState({});
+  const [error, setError] = useState({});
 
-    // Example: Replace with your actual login API endpoint
-    const response = await fetch("http://your-api-endpoint/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log("Login successful:", data);
-      // Redirect or handle successful login
+  function handleLogin(profile) {
+    if (passwordInputs[profile.id] === profile.password) {
+      if (!loggedInProfiles.some((p) => p.id === profile.id)) {
+        setLoggedInProfiles([...loggedInProfiles, profile]);
+        setError({ ...error, [profile.id]: "" });
+      }
     } else {
-      setError("Invalid email or password");
+      setError({ ...error, [profile.id]: "Incorrect password" });
     }
-  };
+  }
+
+  function handleLogout(profileId) {
+    setLoggedInProfiles(loggedInProfiles.filter((p) => p.id !== profileId));
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-gray-700 font-medium mb-2"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="password"
-              className="block text-gray-700 font-medium mb-2"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-gray-700 py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200"
+    <div className="flex flex-col items-center gap-4 p-6">
+      <h1 className="text-2xl font-bold">Switch Profiles</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {profiles.map((profile) => (
+          <div
+            key={profile.id}
+            className="p-4 border rounded-lg shadow-md text-center bg-white"
           >
-            Login
-          </button>
-        </form>
+            <h2 className="text-lg font-semibold">{profile.name}</h2>
+            {loggedInProfiles.some((p) => p.id === profile.id) ? (
+              <button
+                onClick={() => handleLogout(profile.id)}
+                className="mt-3 px-4 py-2  text-white rounded-lg hover:bg-red-600"
+              >
+                Logout
+              </button>
+            ) : (
+              <div className="mt-3">
+                <input
+                  type="password"
+                  placeholder="Enter password"
+                  className="p-2 border rounded w-full"
+                  value={passwordInputs[profile.id] || ""}
+                  onChange={(e) =>
+                    setPasswordInputs({
+                      ...passwordInputs,
+                      [profile.id]: e.target.value,
+                    })
+                  }
+                />
+                {error[profile.id] && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {error[profile.id]}
+                  </p>
+                )}
+                <button
+                  onClick={() => handleLogin(profile)}
+                  className="mt-2 px-4 py-2 bg-emerald-400 text-white rounded-lg hover:bg-blue-600 w-full"
+                >
+                  Login
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
