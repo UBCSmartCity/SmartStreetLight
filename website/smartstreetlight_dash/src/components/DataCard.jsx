@@ -215,8 +215,8 @@ export default function DataCard({ energy }) {
 
       {/* Graph Box */}
       <div className="relative flex-grow bg-gray-700 p-2 rounded-md min-h-[300px]">
-        <div className="overflow-visible h-full w-full">
-          {data.length > 0 && (
+        <div className=" flex overflow-visible h-full w-full">
+          {data.length > 0 ? (
             <ResponsiveLine
               tooltip={({ point }) => {
                 return (
@@ -286,6 +286,10 @@ export default function DataCard({ energy }) {
               enableTouchCrosshair={true}
               useMesh={true}
             />
+          ) : (
+            <div className="m-auto">
+              <h1>No data for filter option</h1>
+            </div>
           )}
         </div>
       </div>

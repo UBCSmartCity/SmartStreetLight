@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getAddress } from "@/lib/data";
 import { Suspense } from "react";
-export default function Header({ latestEntry }) {
+export default function Header({ latestEntry, lightLocation }) {
   const [location, setLocation] = useState("");
   const [isOn, setIsOn] = useState(false);
 
@@ -36,7 +36,7 @@ export default function Header({ latestEntry }) {
   return (
     <nav className=" text-black p-3 flex justify-evenly items-center shadow-lg">
       <h1 className="text-xl font-semibold text-cyan-400">
-        Smart Streetlight Dashboard @ {latestEntry.location}
+        Smart Streetlight Dashboard @ {lightLocation}
       </h1>
 
       <div className="text-sm text-black flex gap-6 items-center">
