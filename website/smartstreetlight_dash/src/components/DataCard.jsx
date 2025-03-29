@@ -205,7 +205,7 @@ export default function DataCard({ energy }) {
                 className="hidden peer"
                 onClick={() => setFilter(option.key)}
               />
-              <span className="block w-full py-2 text-sm text-center rounded-full outline outline-1 peer-checked:bg-cyan-400 peer-checked:text-black hover:opacity-80">
+              <span className="block w-full py-2 text-sm text-center rounded-full outline outline-1 peer-checked:bg-blue peer-checked:text-black hover:opacity-80">
                 {option.label}
               </span>
             </label>
@@ -214,13 +214,13 @@ export default function DataCard({ energy }) {
       </section>
 
       {/* Graph Box */}
-      <div className="relative flex-grow bg-gray-700 p-2 rounded-md min-h-[300px]">
+      <div className="relative flex-grow bg-gray p-2 rounded-md min-h-[300px]">
         <div className=" flex overflow-visible h-full w-full">
           {data.length > 0 ? (
             <ResponsiveLine
               tooltip={({ point }) => {
                 return (
-                  <div className="p-2 bg-gray-100 rounded-md shadow-md text-gray-700">
+                  <div className="p-2 bg-gray rounded-md shadow-md text-white">
                     <div className="font-bold mb-1">
                       {new Date(point.data.xFormatted).toLocaleString(
                         undefined,

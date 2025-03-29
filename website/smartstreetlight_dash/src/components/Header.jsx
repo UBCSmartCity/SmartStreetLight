@@ -35,7 +35,7 @@ export default function Header({ latestEntry, lightLocation }) {
 
   return (
     <nav className=" text-black p-3 flex justify-evenly items-center shadow-lg">
-      <h1 className="text-xl font-semibold text-cyan-400">
+      <h1 className="text-xl font-semibold text-blue">
         Smart Streetlight Dashboard @ {lightLocation}
       </h1>
 
@@ -48,7 +48,7 @@ export default function Header({ latestEntry, lightLocation }) {
         <div
           onClick={toggleMode}
           className={`w-14 h-7 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${
-            isOn ? "bg-cyan-400" : "bg-gray-500"
+            isOn ? "bg-blue" : "bg-gray"
           }`}
         >
           <div

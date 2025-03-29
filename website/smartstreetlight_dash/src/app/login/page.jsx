@@ -1,8 +1,8 @@
 export default function Signup() {
   return (
     <div className="flex justify-center items-center h-screen bg-gray-900">
-      <div className="bg-gray-700 p-6 rounded-md shadow-lg w-80">
-        <h2 className="text-xl text-center text-white mb-4">Sign Up</h2>
+      <div className="bg-gray p-6 rounded-md shadow-lg w-1/3">
+        <h2 className="text-xl text-center mb-4 text-blue">Sign In</h2>
         <form className="flex flex-col gap-4">
           <input
             type="email"
@@ -16,7 +16,7 @@ export default function Signup() {
           />
           <button
             type="submit"
-            className="w-full py-2 bg-cyan-400 text-black rounded-md hover:opacity-80 transition"
+            className="w-full py-2 bg-blue text-gray rounded-md hover:opacity-80 transition"
           >
             Login
           </button>
