@@ -11,7 +11,8 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
         blue: "var(--blue)",
-        gray: "var(--gray)"
+        gray: "var(--gray)",
+        boxes: "var(--boxes)"
       },
     },
   },

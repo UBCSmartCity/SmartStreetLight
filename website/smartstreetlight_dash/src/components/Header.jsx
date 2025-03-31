@@ -34,7 +34,7 @@ export default function Header({ latestEntry, lightLocation }) {
   };
 
   return (
-    <nav className=" text-black p-3 flex justify-evenly items-center shadow-lg">
+    <nav className="p-3 flex justify-evenly items-center shadow-lg">
       <h1 className="text-xl font-semibold text-blue">
         Smart Streetlight Dashboard @ {lightLocation}
       </h1>

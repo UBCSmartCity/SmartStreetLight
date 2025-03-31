@@ -93,35 +93,22 @@ export default function DataCard({ energy }) {
   ];
 
   const customTheme = {
-    axis: {
-      ticks: {
-        text: {
-          fill: "#D1D5DB",
-        },
-      },
-      legend: {
-        text: {
-          fill: "#D1D5DB",
-        },
-      },
-    },
     tooltip: {
       container: {
-        background: "#ffffff",
-        color: "#333333",
+        background: "#efeeef",
+        // color: "#333333",
         fontSize: 10,
         // overflow: "visible",
       },
     },
     crosshair: {
       line: {
-        stroke: "white",
         strokeWidth: 1,
-        strokeOpacity: 0.35,
+        strokeOpacity: 0.4,
       },
     },
     text: {
-      fontSize: 12,
+      fontSize: 11,
     },
   };
 
@@ -192,9 +179,9 @@ export default function DataCard({ energy }) {
   console.log("rerender from", energy ? "energy" : "power", graphData); // for detecting rerenders
 
   return (
-    <div className="flex h-2/5 text-center rounded-md shadow-sm items-stretch gap-4">
+    <div className="flex h-2/5 text-center rounded-md shadow-sm items-stretch gap-4 bg-boxes">
       {/* Filter Box */}
-      <section className="flex flex-col items-center gap-y-4 w-1/5 min-w-[300px] bg-gray-700 p-4 rounded-md overflow-hidden flex-none">
+      <section className="flex flex-col items-center gap-y-4 w-1/5 min-w-[300px] p-4 rounded-md overflow-hidden flex-none">
         <h2 className="text-xl">{energy ? "Energy" : "Power"} Usage</h2>
         <div className="flex flex-col gap-2 justify-center w-full">
           {filterOptions.map((option) => (
@@ -205,7 +192,7 @@ export default function DataCard({ energy }) {
                 className="hidden peer"
                 onClick={() => setFilter(option.key)}
               />
-              <span className="block w-full py-2 text-sm text-center rounded-full outline outline-1 peer-checked:bg-blue peer-checked:text-black hover:opacity-80">
+              <span className="block w-full py-2 text-sm text-center rounded-full outline outline-1 peer-checked:bg-blue">
                 {option.label}
               </span>
             </label>
@@ -214,13 +201,13 @@ export default function DataCard({ energy }) {
       </section>
 
       {/* Graph Box */}
-      <div className="relative flex-grow bg-gray p-2 rounded-md min-h-[300px]">
+      <div className="relative flex-grow bg-boxes p-2 rounded-md min-h-[300px] max-w-full">
         <div className=" flex overflow-visible h-full w-full">
           {data.length > 0 ? (
             <ResponsiveLine
               tooltip={({ point }) => {
                 return (
-                  <div className="p-2 bg-gray rounded-md shadow-md text-white">
+                  <div className="p-2 rounded-md shadow-md bg-background">
                     <div className="font-bold mb-1">
                       {new Date(point.data.xFormatted).toLocaleString(
                         undefined,
@@ -262,13 +249,14 @@ export default function DataCard({ energy }) {
                 type: "linear",
                 min: "0",
                 max: "auto",
-                tickValues: 7,
+                ticks: 5,
               }}
               theme={customTheme}
               axisTop={null}
               axisRight={null}
               axisLeft={{
                 tickSize: 5,
+                tickValues: 4,
                 tickPadding: 5,
                 tickRotation: 0,
                 legend: energy ? "Energy (kWh)" : "Power (W)",
