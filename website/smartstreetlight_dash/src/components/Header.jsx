@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAddress } from "@/lib/data";
+import { getAddress } from "";
 import { Suspense } from "react";
 export default function Header({ latestEntry, lightLocation }) {
   const [location, setLocation] = useState("");
