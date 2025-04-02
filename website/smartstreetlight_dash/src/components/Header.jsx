@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAddress } from "";
+import { getAddress } from "@/lib/data";
 import { Suspense } from "react";
+import { signOut } from "next-auth/react";
+
 export default function Header({ latestEntry, lightLocation }) {
   const [location, setLocation] = useState("");
   const [isOn, setIsOn] = useState(false);
@@ -59,6 +61,8 @@ export default function Header({ latestEntry, lightLocation }) {
         </div>
         <span className="text-sm">{isOn ? "On" : "Off"}</span>
       </div>
+
+      <button onClick={() => signOut()}>Sign Out</button>
     </nav>
   );
 }
