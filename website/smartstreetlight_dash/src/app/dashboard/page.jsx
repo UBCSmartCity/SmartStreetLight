@@ -15,7 +15,7 @@ export function fetchData() {
 
   // change route depending on search param
   const { data, error, isLoading } = useSWR(
-    "http://192.168.246.46:5000/api/sensor_readings",
+    "http://10.0.0.174:5000/api/sensor_readings",
     fetcher,
     {
       refreshInterval: 100,

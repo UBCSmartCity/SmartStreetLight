@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAddress } from "";
+import { getAddress } from "@/lib/data";
 import { Suspense } from "react";
-export default function Header({ latestEntry, lightLocation }) {
+export default function Header({ latestEntry }) {
   const [location, setLocation] = useState("");
   const [isOn, setIsOn] = useState(false);
 
@@ -34,9 +34,9 @@ export default function Header({ latestEntry, lightLocation }) {
   };
 
   return (
-    <nav className="p-3 flex justify-evenly items-center shadow-lg">
-      <h1 className="text-xl font-semibold text-blue">
-        Smart Streetlight Dashboard @ {lightLocation}
+    <nav className=" text-black p-3 flex justify-evenly items-center shadow-lg">
+      <h1 className="text-xl font-semibold text-cyan-400">
+        Smart Streetlight Dashboard @ {latestEntry.location}
       </h1>
 
       <div className="text-sm text-black flex gap-6 items-center">
@@ -48,7 +48,7 @@ export default function Header({ latestEntry, lightLocation }) {
         <div
           onClick={toggleMode}
           className={`w-14 h-7 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${
-            isOn ? "bg-blue" : "bg-gray"
+            isOn ? "bg-cyan-400" : "bg-gray-500"
           }`}
         >
           <div
