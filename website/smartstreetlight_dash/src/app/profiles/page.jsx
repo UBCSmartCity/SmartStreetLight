@@ -8,7 +8,7 @@ export default function ProfileSelection() {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-800 text-white">
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-800 text-gray">
       <h1 className="text-3xl mb-2">Choose a Streetlight</h1>
       <p className="mb-6 text-gray-400">
         Control and monitor streetlight activity through real-time dashboards.
