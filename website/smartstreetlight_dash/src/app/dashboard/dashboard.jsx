@@ -13,7 +13,7 @@ import { useSearchParams } from "next/navigation";
 export function fetchData() {
   const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-  // change route depending on search param
+  // TODO: change api route based on URL search param
   const { data, error, isLoading } = useSWR(
     "http://192.168.246.46:5000/api/sensor_readings",
     fetcher,
@@ -25,7 +25,6 @@ export function fetchData() {
   return { data, error, isLoading };
 }
 
-// TODO: swr fetches every second, but rerenders only happen when data changes - confirm understanding of this
 export default function Dashboard() {
   // const { data: rawData, error, isLoading } = fetchData();
   const rawData = testData;
@@ -35,7 +34,7 @@ export default function Dashboard() {
 
   // profile name from URL, will be
   const searchParams = useSearchParams();
-  const location = searchParams.get("profile");
+  const location = searchParams.get("location");
 
   // loading and data error UI
   if (error) return <div>Failed to load</div>;

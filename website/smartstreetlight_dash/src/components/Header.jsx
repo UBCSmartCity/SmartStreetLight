@@ -62,7 +62,7 @@ export default function Header({ latestEntry, lightLocation }) {
         <span className="text-sm">{isOn ? "On" : "Off"}</span>
       </div>
 
-      <button onClick={() => signOut()}>Sign Out</button>
+      <button onClick={() => signOut({ redirectTo: "/" })}>Sign Out</button>
     </nav>
   );
 }
