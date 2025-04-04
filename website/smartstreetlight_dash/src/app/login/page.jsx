@@ -12,3 +12,8 @@ export default function SignIn() {
     </form>
   );
 }
+
+// TODO FOR FRIDAY
+// test continuous fetch and incremetal data inserts with pi, also check the 5 cards
+// admin add/remove emails
+// styling

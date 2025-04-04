@@ -1,4 +1,5 @@
 "use server";
+import { revalidatePath } from 'next/cache';
 
 // reverse geocoding
 export async function getAddress(lat, long) {
@@ -15,14 +16,37 @@ export async function getAddress(lat, long) {
   );
 }
 
-// reverse geocoding using GeoNames API (10'000 credits, 1 credit per request)
-// export async function getAddress(lat, long) {
-//   const t = await fetch(
-//     `http://api.geonames.org/findNearestIntersectionOSMJSON?lat=${lat}&lng=${long}&username=${process.env.GEOUSER}`
-//   );
 
-//   const loc = await t.json();
 
-//   console.log("loc", loc);
-//   return loc.intersection.street1 + " and " + loc.intersection.street2;
-// }
+export async function getEmails() {
+
+  return ['test@gmail.com', 'test2@gmail.com'];
+}
+
+
+
+export async function addAdminServerAction(formData) {
+  const email = formData.get('email');
+  if (!email) return;
+
+  await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/admin/manage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+
+  revalidatePath('/admin');
+}
+
+export async function removeAdminServerAction(formData) {
+  const email = formData.get('email');
+  if (!email) return;
+
+  await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/admin/manage`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+
+  revalidatePath('/admin');
+}

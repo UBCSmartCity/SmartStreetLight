@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function Page() {
+export default function Temp() {
   return (
     <div>
       <p>You are not authorized to view this page!</p>;
