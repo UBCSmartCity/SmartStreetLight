@@ -19,7 +19,7 @@ export function fetchData() {
   console.log(endpoint);
   // TODO: change api route based on URL search param
   const { data, error, isLoading } = useSWR(
-    `http://10.0.0.174:5001/api/${endpoint}_readings`,
+    `http://10.0.0.174:5001/api/bigway_readings`,
     fetcher,
     {
       refreshInterval: 100,
