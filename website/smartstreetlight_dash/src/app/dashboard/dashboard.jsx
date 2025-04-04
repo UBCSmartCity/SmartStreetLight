@@ -15,7 +15,7 @@ export function fetchData() {
 
   // TODO: change api route based on URL search param
   const { data, error, isLoading } = useSWR(
-    "http://192.168.246.46:5000/api/sensor_readings",
+    "http://10.0.0.174:5000/api/sensor_readings",
     fetcher,
     {
       refreshInterval: 100,
@@ -26,11 +26,10 @@ export function fetchData() {
 }
 
 export default function Dashboard() {
-  // const { data: rawData, error, isLoading } = fetchData();
-  const rawData = testData;
-  const error = false;
+  const { data: rawData, error, isLoading } = fetchData();
+  // const rawData = testData;
+  // const error = false;
   const [refresh, setRefresh] = useState(0);
-  console.log(rawData);
 
   // profile name from URL, will be
   const searchParams = useSearchParams();

@@ -2,19 +2,17 @@
 
 import { ResponsiveLine } from "@nivo/line";
 import { useState } from "react";
-import { fetchData } from "@/app/page";
+import { fetchData } from "@/app/dashboard/dashboard";
 import { testData } from "@/testData";
 import { TooltipWrapper } from "@nivo/tooltip";
 
 // Card for energy and power graphs
 export default function DataCard({ energy }) {
-  // const { data: rawData, error, isLoading } = fetchData();
-  const rawData = testData;
-  const error = false;
+  const { data: rawData, error, isLoading } = fetchData();
+  // const rawData = testData;
+  // const error = false;
 
   const [filter, setFilter] = useState("tdy");
-
-  // console.log(rawData);
 
   // current date, set to 00:00:00 for comparisons
   const startOfToday = new Date();
@@ -176,7 +174,7 @@ export default function DataCard({ energy }) {
     { key: "max", label: "Max" },
   ];
 
-  console.log("rerender from", energy ? "energy" : "power", graphData); // for detecting rerenders
+  // console.log("rerender from", energy ? "energy" : "power", graphData); // for detecting rerenders
 
   return (
     <div className="flex h-2/5 text-center rounded-md shadow-sm items-stretch gap-4 bg-boxes">

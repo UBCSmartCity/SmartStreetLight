@@ -9,7 +9,6 @@ export default function Header({ latestEntry, lightLocation }) {
   const [location, setLocation] = useState("");
   const [isOn, setIsOn] = useState(false);
 
-  console.log(latestEntry);
   // convert to date object, then to local date string
   const dateObject = new Date(latestEntry.reading_time);
   const lastUpdated = dateObject.toLocaleDateString();
