@@ -62,6 +62,7 @@
 // }
 
 import { auth } from "@/../auth";
+import BackButton from "@/components/BackButton";
 import {
   addAdminServerAction,
   getEmails,
@@ -81,6 +82,7 @@ export default async function AdminPage() {
   return (
     <div className="max-w-md mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Email List</h1>
+      <BackButton />
 
       <form action={addAdminServerAction} className="flex gap-2 mb-4">
         <input
