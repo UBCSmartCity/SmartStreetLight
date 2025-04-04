@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getAddress } from "@/lib/data";
 import { Suspense } from "react";
 import { signOut } from "next-auth/react";
+import Link from "next/link";
 
 export default function Header({ latestEntry, lightLocation }) {
   const [location, setLocation] = useState("");
@@ -36,6 +37,7 @@ export default function Header({ latestEntry, lightLocation }) {
 
   return (
     <nav className="p-3 flex justify-evenly items-center shadow-lg">
+      <Link href="/admin">Admin</Link>
       <h1 className="text-xl font-semibold text-blue">
         Smart Streetlight Dashboard @ {lightLocation}
       </h1>
