@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="justify-items-center ">
+    <footer className="justify-items-center">
       <h2>© SmartCity Monitoring, developed by SmartCity Design Team</h2>
 
       <div className="flex gap-3">

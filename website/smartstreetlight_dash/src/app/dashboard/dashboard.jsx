@@ -19,7 +19,6 @@ export function fetchData() {
   const port = location === "bigway" ? "5001" : "5000";
 
   console.log(endpoint);
-  // TODO: change api route based on URL search param
   const { data, error, isLoading } = useSWR(
     `http://10.0.0.174:${port}/api/${endpoint}_readings`,
     fetcher,
@@ -32,9 +31,11 @@ export function fetchData() {
 }
 
 export default function Dashboard() {
-  const { data: rawData, error, isLoading } = fetchData();
-  // const rawData = testData;
-  // const error = false;
+  // NOTE: comment this line and uncomment "rawData" and "error" if Raspberry Pi DB is not available
+  // const { data: rawData, error, isLoading } = fetchData();
+
+  const rawData = testData;
+  const error = false;
   const [refresh, setRefresh] = useState(0);
 
   // profile name from URL, will be
@@ -48,17 +49,17 @@ export default function Dashboard() {
   // latest entry
   const latestEntry = rawData[rawData.length - 1] || {
     reading_time: new Date("2024-03-20T03:20:10"),
-    energy_usage: 300,
-    light_status: "ON",
-    brightness_level: 80,
-    power_consumption: 100,
-    battery_status: 75,
-    sensor_health: "Warning",
-    location: "Langara 49th Station",
+    energy_usage: "n/a",
+    light_status: "n/a",
+    brightness_level: "n/a",
+    power_consumption: "n/a",
+    battery_status: "n/a",
+    sensor_health: "n/a",
+    location: "n/a",
   };
 
   return (
-    <div className="min-h-screen flex flex-col h-full w-full text-center gap-y-4 p-3">
+    <div className="min-h-screen flex flex-col h-full w-full text-center gap-y-4 p-3 ">
       <Header latestEntry={latestEntry} lightLocation={location} />
 
       <section className="grid grid-cols-5 place-items-center">

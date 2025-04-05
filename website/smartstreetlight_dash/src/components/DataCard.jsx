@@ -8,9 +8,9 @@ import { TooltipWrapper } from "@nivo/tooltip";
 
 // Card for energy and power graphs
 export default function DataCard({ energy }) {
-  const { data: rawData, error, isLoading } = fetchData();
-  // const rawData = testData;
-  // const error = false;
+  // const { data: rawData, error, isLoading } = fetchData();
+  const rawData = testData;
+  const error = false;
 
   const [filter, setFilter] = useState("tdy");
 
