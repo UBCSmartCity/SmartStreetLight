@@ -20,7 +20,7 @@ export function fetchData() {
 
   console.log(endpoint);
   const { data, error, isLoading } = useSWR(
-    `http://10.0.0.174:${port}/api/${endpoint}_readings`,
+    `http://10.17.168.46:${port}/api/${endpoint}_readings`,
     fetcher,
     {
       refreshInterval: 100,

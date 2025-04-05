@@ -45,7 +45,7 @@ export default function Header({ latestEntry, lightLocation }) {
 
         {dropdownOpen && (
           <div className="absolute mt-2 left-0 bg-boxes border border-border rounded-xl shadow-md w-64 z-10 p-4 flex flex-col gap-4 text-base">
-            <div className="text-sm text-muted">
+            <div className="text-sm text-muted outline-1">
               📍 <span className="font-semibold">Your Location</span>
               <div className="mt-1 text-black">{location}</div>
             </div>
@@ -56,6 +56,14 @@ export default function Header({ latestEntry, lightLocation }) {
               onClick={() => setDropdownOpen(false)}
             >
               Admin Panel
+            </Link>
+
+            <Link
+              href="/profiles"
+              className="text-black hover:text-blue transition-colors px-2 py-1 rounded hover:bg-blue-50 w-full text-left"
+              onClick={() => setDropdownOpen(false)}
+            >
+              Profiles
             </Link>
 
             <button
