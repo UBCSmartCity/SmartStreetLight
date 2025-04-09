@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import Card from "@/components/Card";
 import useSWR from "swr";
 import { useSearchParams } from "next/navigation";
+import Loading from "./loading";
 
 // constant fetch with useSWR
 export function fetchData() {
@@ -34,7 +35,7 @@ export default function Dashboard() {
   // NOTE: comment this line and uncomment "rawData" and "error" if Raspberry Pi DB is not available
   // const { data: rawData, error, isLoading } = fetchData();
 
-  const rawData = testData;
+  let rawData = testData;
   const error = false;
   const [refresh, setRefresh] = useState(0);
 
@@ -43,8 +44,8 @@ export default function Dashboard() {
   const location = searchParams.get("location");
 
   // loading and data error UI
-  if (error) return <div>Failed to load</div>;
-  if (!rawData) return <div>Loading...</div>;
+  if (error) rawData = []; // TODO: set data to
+  if (!rawData) return <Loading />;
 
   // latest entry
   const latestEntry = rawData[rawData.length - 1] || {
@@ -80,3 +81,7 @@ export default function Dashboard() {
     </div>
   );
 }
+
+// TODO: check auth pages, don't fix middleware
+// skeleton for error page
+// logs

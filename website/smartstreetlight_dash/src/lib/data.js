@@ -18,39 +18,6 @@ export async function getAddress(lat, long) {
 
 
 
-// export async function getEmails() {
-
-//   return ['test@gmail.com', 'test2@gmail.com'];
-// }
-
-
-
-// export async function addAdminServerAction(formData) {
-//   const email = formData.get('email');
-//   if (!email) return;
-
-//   await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/admin/manage`, {
-//     method: 'POST',
-//     headers: { 'Content-Type': 'application/json' },
-//     body: JSON.stringify({ email }),
-//   });
-
-//   revalidatePath('/admin');
-// }
-
-// export async function removeAdminServerAction(formData) {
-//   const email = formData.get('email');
-//   if (!email) return;
-
-//   await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/admin/manage`, {
-//     method: 'DELETE',
-//     headers: { 'Content-Type': 'application/json' },
-//     body: JSON.stringify({ email }),
-//   });
-
-//   revalidatePath('/admin');
-// }
-
 
 import fs from "fs/promises";
 import path from "path";

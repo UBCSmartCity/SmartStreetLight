@@ -22,7 +22,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async signIn({ user }) {
 
       const authorizedEmails = await loadAuthorizedEmails();
-      console.log('these are authorized emails', authorizedEmails)
+      console.log('these are authorized emails', authorizedEmails);
+
+
+
+      const res = await fetch('URL', {
+        body: {
+          user
+        }
+      })
+
       return authorizedEmails.includes(user.email)
         ? true
         : "http://localhost:3000/redirectpage";

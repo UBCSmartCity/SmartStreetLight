@@ -29,8 +29,8 @@ export default function DataCard({ energy }) {
   const oneYear = new Date(startOfToday);
   oneYear.setDate(oneYear.getDate() - 365);
 
-  if (error) return <div>Failed to load</div>;
-  if (!rawData) return <div>Loading...</div>;
+  if (error) return <div>Failed to load</div>; // TODO: change this to rawData = []
+  if (!rawData) return <div>Loading...</div>; // [] evaluates to true in js?
 
   const data = rawData.flatMap((obj, idx) => {
     // used for date comparisons, current obj.date set to 00:00:00
