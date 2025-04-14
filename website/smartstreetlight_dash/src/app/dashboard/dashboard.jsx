@@ -10,7 +10,7 @@ import useSWR from "swr";
 import { useSearchParams } from "next/navigation";
 import Loading from "./loading";
 
-// constant fetch with useSWR
+// TODO: define swr hook elsewhere, convert this into server component
 export function fetchData() {
   const searchParams = useSearchParams();
   const location = searchParams.get("location");
@@ -81,7 +81,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
-// TODO: check auth pages, don't fix middleware
-// skeleton for error page
-// logs

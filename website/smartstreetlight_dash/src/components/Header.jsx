@@ -5,6 +5,7 @@ import { getAddress } from "@/lib/data";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 
+// TODO: remove location, convert to server component
 export default function Header({ latestEntry, lightLocation }) {
   const [location, setLocation] = useState("");
   const [isOn, setIsOn] = useState(false);

@@ -16,6 +16,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     GoogleProvider({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      // profile(profile) {
+      //   console.log('profile', profile);
+      //   return { role: profile.role ?? "user" }
+      // }
     }),
   ],
   callbacks: {
@@ -42,11 +46,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return authorizedEmails.includes(user.email)
         ? true
         : "http://localhost:3000/redirectpage";
-    }, authorized: async ({ auth }) => {
-
-      console.log('bad')
-      return !!auth
-    },
+    }
   },
 });
 
