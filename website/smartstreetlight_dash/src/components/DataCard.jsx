@@ -2,14 +2,14 @@
 
 import { ResponsiveLine } from "@nivo/line";
 import { useState } from "react";
-import { fetchData } from "@/app/dashboard/dashboard";
+import { FetchData } from "@/lib/clientData";
 import { testData } from "@/testData";
 import { TooltipWrapper } from "@nivo/tooltip";
 
 // TODO: clean up code, especially dates and graph functions
 // Card for energy and power graphs
 export default function DataCard({ energy }) {
-  // const { data: rawData, error, isLoading } = fetchData();
+  // const { data: rawData, error, isLoading } = FetchData(); // TODO: test this
   const rawData = testData;
   const error = false;
 

@@ -1,7 +1,12 @@
 "use server";
 import { revalidatePath } from 'next/cache';
+import useSWR from 'swr';
+import fs from "fs/promises";
+import path from "path";
 
-// reverse geocoding
+
+
+// reverse geocode - latitude and longitude to an address
 export async function getAddress(lat, long) {
   const t = await fetch(
     `https://geocode.maps.co/reverse?lat=${lat}&lon=${long}&api_key=${process.env.MAPKEY}`
@@ -11,20 +16,17 @@ export async function getAddress(lat, long) {
 
   return (
     loc.address.building ||
-    loc.display_name.split(", ")[0] + " " + loc.display_name.split(", ")[1] ||
+    `${loc.display_name.split(", ")[0]} ${loc.display_name.split(", ")[1]}` ||
     "Location not detected"
   );
 }
 
 
-
-
-import fs from "fs/promises";
-import path from "path";
-
-
+// temporary JSON file to store authorized emails (convert to a proper database later)
 const filePath = path.resolve("./src/adminEmails.json");
 
+
+// retrieve emails from JSON file
 export async function getEmails() {
   const data = await fs.readFile(filePath, "utf-8");
   console.log('admin email list', data);
@@ -32,6 +34,8 @@ export async function getEmails() {
 
 }
 
+
+// add emails to JSON file
 export async function addAdminServerAction(formData) {
   "use server";
   const newEmail = formData.get("email");
@@ -44,9 +48,11 @@ export async function addAdminServerAction(formData) {
     await fs.writeFile(filePath, JSON.stringify(emails, null, 2));
   }
 
-  revalidatePath('/admin')
+  revalidatePath('/admin');
 }
 
+
+// remove emails from JSON file
 export async function removeAdminServerAction(formData) {
   "use server";
   const emailToRemove = formData.get("email");
@@ -57,6 +63,6 @@ export async function removeAdminServerAction(formData) {
   const filtered = emails.filter((email) => email !== emailToRemove);
   await fs.writeFile(filePath, JSON.stringify(filtered, null, 2));
 
-  revalidatePath('/admin')
+  revalidatePath('/admin');
 
 }
