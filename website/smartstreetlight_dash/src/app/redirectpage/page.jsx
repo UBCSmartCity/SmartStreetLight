@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function Page() {
+export default function RedirectPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-6">
       <p className="text-xl font-semibold text-muted mb-6">

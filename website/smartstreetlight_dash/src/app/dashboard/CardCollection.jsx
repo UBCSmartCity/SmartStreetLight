@@ -1,3 +1,5 @@
+"use client";
+
 import { testData } from "@/testData";
 import Card from "@/components/Card";
 

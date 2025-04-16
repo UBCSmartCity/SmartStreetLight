@@ -25,7 +25,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return authorizedEmails.includes(user.email)
         ? true
         : "http://localhost:3000/redirectpage";
+    }, authorized: async ({ auth }) => {
+      return !!auth
     },
+
 
   }
 });

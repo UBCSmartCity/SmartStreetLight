@@ -9,6 +9,8 @@ import useSWR from "swr";
 // import { useSearchParams } from "next/navigation";
 import Loading from "./loading";
 import CardCollection from "./CardCollection";
+import { auth } from "../../../auth";
+import RedirectPage from "../redirectpage/page";
 
 // TODO: define swr hook elsewhere, convert this into server component
 
