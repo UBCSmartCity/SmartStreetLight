@@ -9,14 +9,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model StreetLightData {
-  id               Int      @id @default(autoincrement())
-  date             DateTime
-  energyUsage      Int
-  lightStatus      String
-  brightnessLevel  Int
-  powerConsumption Int
-  batteryStatus    Int
-  sensorHealth     String
-  location         String
+model LangaraData {
+  id                Int      @id @default(autoincrement())
+  reading_time      DateTime
+  energy_usage      Int
+  light_status      String
+  brightness_level  Int
+  power_consumption Int
+  battery_status    Int
+  sensor_health     String
+  location          String
+}
+
+model BigWayData {
+  id                Int      @id @default(autoincrement())
+  reading_time      DateTime
+  energy_usage      Int
+  light_status      String
+  brightness_level  Int
+  power_consumption Int
+  battery_status    Int
+  sensor_health     String
+  location          String
+}
+
+model MoreData {
+  id                Int      @id @default(autoincrement())
+  reading_time      DateTime
+  energy_usage      Int
+  light_status      String
+  brightness_level  Int
+  power_consumption Int
+  battery_status    Int
+  sensor_health     String
+  location          String
+}
+
+model MoreData2 {
+  id                Int      @id @default(autoincrement())
+  reading_time      DateTime
+  energy_usage      Int
+  light_status      String
+  brightness_level  Int
+  power_consumption Int
+  battery_status    Int
+  sensor_health     String
+  location          String
 }

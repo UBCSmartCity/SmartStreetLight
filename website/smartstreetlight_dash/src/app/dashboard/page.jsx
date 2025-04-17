@@ -1,28 +1,9 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DataCard from "@/components/DataCard";
-import { testData } from "@/testData";
-import Controls from "@/components/Controls";
-// import { useState, useEffect } from "react";
-import Card from "@/components/Card";
-import useSWR from "swr";
-// import { useSearchParams } from "next/navigation";
-import Loading from "./loading";
 import CardCollection from "./CardCollection";
-import { auth } from "../../../auth";
-import RedirectPage from "../redirectpage/page";
-
-// TODO: define swr hook elsewhere, convert this into server component
 
 export default async function Page({ searchParams }) {
-  // NOTE: comment this line and uncomment "rawData" and "error" if Raspberry Pi DB is not available
-  // const { data: rawData, error, isLoading } = fetchData();
-
-  // let rawData = testData;
-  // const error = false;
-
-  // loading and data error UI
-
   const search = await searchParams;
   const loc = search?.location || "";
 

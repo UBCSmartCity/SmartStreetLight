@@ -2,16 +2,23 @@
 
 import { testData } from "@/testData";
 import Card from "@/components/Card";
+import { FetchData } from "@/lib/clientData";
 
 // contains all Card components
 export default function CardCollection() {
   // NOTE: comment this line and uncomment "rawData" and "error" if Raspberry Pi DB is not available
-  // const { data: rawData, error, isLoading } = fetchData();
+  const { data: rawData, error, isLoading } = FetchData();
 
-  let rawData = testData;
-  const error = false;
+  console.log("data", rawData);
+  console.log("error", error);
 
-  if (error) rawData = [];
+  // let rawData = testData;
+  // const error = false;
+
+  // console.log(rawData, error, isLoading);
+
+  if (error) return <div>Failed to load</div>; // TODO: change this to rawData = []
+  if (!rawData) return <div>Loading...</div>; // [] evaluates to true in js?
 
   const latestEntry = rawData[rawData.length - 1] || {
     reading_time: new Date("2024-03-20T03:20:10"),

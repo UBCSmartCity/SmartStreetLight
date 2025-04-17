@@ -1,20 +1,10 @@
-import { revalidatePath } from "next/cache";
+'use server'
+
 
 import prisma from "@/lib/prisma";
 
-export const dynamic = "force-static";
-
 // route handler for fetching all streetlight data
 export async function GET() {
-  // const data = await prisma.streetLightData.findMany({
-  //   orderBy: {
-  //     date: "desc",
-  //   },
-  // });
-
-  const data = await fetch("");
-
-  const json = await data.json();
-
-  return Response.json(json); // sends JSON
+  const data = await prisma.LangaraData.findMany();
+  return Response.json(data);
 }
