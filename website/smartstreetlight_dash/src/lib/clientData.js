@@ -3,16 +3,13 @@
 import useSWR from "swr";
 
 
-// why does res.json work?
+
 export function FetchData(location) {
     const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-    const endpoint = location === "bigway" ? "bigway" : "sensor";
-    const port = location === "bigway" ? "5001" : "5000";
 
-    console.log(endpoint);
     const { data, error, isLoading } = useSWR(
-        `/data`,
+        `/${location}`,
         fetcher,
         {
             refreshInterval: 100,

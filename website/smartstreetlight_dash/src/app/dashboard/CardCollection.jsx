@@ -7,13 +7,10 @@ import { FetchData } from "@/lib/clientData";
 // contains all Card components
 export default function CardCollection() {
   // NOTE: comment this line and uncomment "rawData" and "error" if Raspberry Pi DB is not available
-  const { data: rawData, error, isLoading } = FetchData();
+  // const { data: rawData, error, isLoading } = FetchData("langara");
 
-  console.log("data", rawData);
-  console.log("error", error);
-
-  // let rawData = testData;
-  // const error = false;
+  let rawData = testData;
+  const error = false;
 
   // console.log(rawData, error, isLoading);
 

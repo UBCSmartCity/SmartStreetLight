@@ -9,7 +9,7 @@ import { TooltipWrapper } from "@nivo/tooltip";
 // TODO: clean up code, especially dates and graph functions
 // Card for energy and power graphs
 export default function DataCard({ energy }) {
-  // const { data: rawData, error, isLoading } = FetchData(); // TODO: test this
+  // const { data: rawData, error, isLoading } = FetchData("langara"); // TODO: test this
   const rawData = testData;
   const error = false;
 

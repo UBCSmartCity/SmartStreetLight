@@ -86,7 +86,3 @@ export default async function AdminPage() {
     </div>
   );
 }
-
-
-7839402857fc4b9f9fb712133c8c9c0a012e5df4
-c3137edeb44e6ffb198dc0aa90c3a0921ea699f5
