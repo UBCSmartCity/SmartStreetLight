@@ -9,11 +9,12 @@ import NotAdmin from "./notAdmin";
 
 export default async function AdminPage() {
   const session = await auth();
-
+  console.log(session);
   if (!session?.user) return <h1>not authorized</h1>;
-  if (session.user.email !== "alvintsui95@gmail.com") return <NotAdmin />;
+  // if (session.user.email !== "alvintsui95@gmail.com") return <NotAdmin />;
 
-  const emails = await getEmails();
+  const emailObjs = await getEmails();
+  console.log(emailObjs);
   const email = session.user.email;
   const name = session.user.name;
   const img = session.user.image;
@@ -58,18 +59,18 @@ export default async function AdminPage() {
             </button>
           </form>
 
-          {emails.length === 0 ? (
+          {emailObjs.length === 0 ? (
             <p className="text-gray">No emails added.</p>
           ) : (
             <ul className="space-y-3">
-              {emails.map((email) => (
+              {emailObjs.map((obj) => (
                 <li
-                  key={email}
+                  key={obj.email}
                   className="flex justify-between items-center p-3 rounded shadow-sm"
                 >
-                  <span className="text-gray">{email}</span>
+                  <span className="text-gray">{obj.email}</span>
                   <form action={removeAdminServerAction}>
-                    <input type="hidden" name="email" value={email} />
+                    <input type="hidden" name="email" value={obj.email} />
                     <button
                       type="submit"
                       className="text-red-500 hover:underline"

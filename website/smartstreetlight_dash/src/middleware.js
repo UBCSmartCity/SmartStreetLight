@@ -6,7 +6,7 @@ export const config = {
 
 
 
-// custom logic middleware
+// // custom logic middleware
 // import { auth } from "@/../auth"
 // import prisma from "./lib/prisma";
 
@@ -16,6 +16,7 @@ export const config = {
 //     //     return Response.redirect(newUrl)
 //     //   }
 
+//     const data = await prisma.LangaraData.findMany();
 
 //     console.log('req', req);
 // })

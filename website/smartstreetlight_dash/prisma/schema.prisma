@@ -13,7 +13,7 @@ model LangaraData {
   id                Int      @id @default(autoincrement())
   reading_time      DateTime
   energy_usage      Int
-  light_status      String   @map("lightStatus")
+  light_status      String
   brightness_level  Int
   power_consumption Int
   battery_status    Int
@@ -58,18 +58,24 @@ model MoreData2 {
 }
 
 model User {
-  id            String          @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  email         String          @unique
+  email         String    @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
+
   // Optional for WebAuthn support
   Authenticator Authenticator[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model AllowedEmails {
+  id    Int    @id @default(autoincrement())
+  email String @unique
 }
 
 model Account {
