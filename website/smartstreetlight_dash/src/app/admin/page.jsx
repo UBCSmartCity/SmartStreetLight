@@ -1,11 +1,6 @@
 import { auth } from "@/../auth";
 import BackButton from "@/components/BackButton";
-import {
-  addAdminServerAction,
-  getEmails,
-  removeAdminServerAction,
-} from "@/lib/data";
-import NotAdmin from "./notAdmin";
+import { addAdminServerAction, removeAdminServerAction } from "@/lib/data";
 
 export default async function AdminPage() {
   const session = await auth();
@@ -13,8 +8,19 @@ export default async function AdminPage() {
   if (!session?.user) return <h1>not authorized</h1>;
   // if (session.user.email !== "alvintsui95@gmail.com") return <NotAdmin />;
 
-  const emailObjs = await getEmails();
-  console.log(emailObjs);
+  const reqEmails = await fetch("http://localhost:3000/get-emails");
+
+  console.log(reqEmails);
+
+  if (!reqEmails.ok) {
+    console.log("ERROR");
+    throw new Error("Cannot fetch emails");
+  }
+
+  const emailObjs = await reqEmails.json();
+
+  console.log(await emailObjs);
+
   const email = session.user.email;
   const name = session.user.name;
   const img = session.user.image;

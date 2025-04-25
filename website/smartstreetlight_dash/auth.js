@@ -30,9 +30,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user }) {
 
-      const authorizedEmails = await loadAuthorizedEmails();
-      console.log('these are authorized emails', authorizedEmails)
-      return authorizedEmails.includes(user.email)
+      const authorizedEmails = await prisma.AllowedEmails.findMany({
+        select: {
+          email: true
+        },
+        where: {
+          email: user.email
+        }
+      });
+
+      return authorizedEmails.length >= 1
         ? true
         : "http://localhost:3000/redirectpage";
     }, authorized: async ({ auth }) => {

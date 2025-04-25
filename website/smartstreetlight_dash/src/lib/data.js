@@ -26,22 +26,6 @@ export async function getAddress(lat, long) {
 const filePath = path.resolve("./src/adminEmails.json");
 
 
-// retrieve emails from JSON file
-export async function getEmails() {
-  // const data = await fs.readFile(filePath, "utf-8");
-  // console.log('admin email list', data);
-  // return JSON.parse(data);
-
-  const data = await prisma.AllowedEmails.findMany({
-    select: {
-      email: true
-    }
-  });
-  return data;
-
-
-
-}
 
 
 // add emails to JSON file
@@ -57,13 +41,20 @@ export async function addAdminServerAction(formData) {
   //   await fs.writeFile(filePath, JSON.stringify(emails, null, 2));
   // }
 
-  const newEmail = formData.get("email");
 
-  const testTwo = await prisma.AllowedEmails.create({
-    data: {
-      email: newEmail
-    },
-  })
+  const newEmail = formData.get("email");
+  try {
+    const testTwo = await prisma.AllowedEmails.create({
+      data: {
+        email: newEmail
+      },
+    })
+
+    console.log(testTwo);
+  } catch (err) {
+    throw new Error('Failed to Create');
+  }
+
 
   revalidatePath('/admin');
 }
@@ -82,12 +73,16 @@ export async function removeAdminServerAction(formData) {
 
 
   const emailToRemove = formData.get("email");
+  try {
+    const deleteUser = await prisma.AllowedEmails.delete({
+      where: {
+        email: emailToRemove
+      },
+    })
+  } catch (err) {
+    throw new Error('Failed to Delete');
+  }
 
-  const deleteUser = await prisma.AllowedEmails.delete({
-    where: {
-      email: emailToRemove
-    },
-  })
 
 
   revalidatePath('/admin');
