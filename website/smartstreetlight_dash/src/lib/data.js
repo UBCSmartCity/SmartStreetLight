@@ -27,6 +27,30 @@ const filePath = path.resolve("./src/adminEmails.json");
 
 
 
+export async function addDataIncrementally() {
+  console.log('adding data');
+
+
+  try {
+    const data = await prisma.LangaraData.create({
+      data: {
+        reading_time: new Date(),
+        energy_usage: Math.floor(Math.random() * 300),
+        light_status: "ON",
+        brightness_level: 90,
+        power_consumption: Math.floor(Math.random() * 300),
+        battery_status: 85,
+        sensor_health: "Good",
+        location: "Langara 49th Station",
+      },
+    });
+
+  } catch (err) {
+    throw new Error('Failed to Insert Data');
+  }
+}
+
+
 
 // add emails to JSON file
 export async function addAdminServerAction(formData) {

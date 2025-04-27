@@ -6,12 +6,13 @@ import { FetchData } from "@/lib/clientData";
 import { testData } from "@/testData";
 import { TooltipWrapper } from "@nivo/tooltip";
 
+// TODO: only updates by day, ex. 7:51 and 8:00 on same day has the same x position
 // TODO: clean up code, especially dates and graph functions
 // Card for energy and power graphs
 export default function DataCard({ energy }) {
-  // const { data: rawData, error, isLoading } = FetchData("langara"); // TODO: test this
-  const rawData = testData;
-  const error = false;
+  const { data: rawData, error, isLoading } = FetchData("langara"); // TODO: test this
+  // const rawData = testData;
+  // const error = false;
 
   const [filter, setFilter] = useState("tdy");
 
@@ -268,7 +269,7 @@ export default function DataCard({ energy }) {
               curve={"linear"}
               colors={{ scheme: "nivo" }}
               pointBorderColor={{ from: "serieColor" }}
-              pointColor={{ theme: "background" }}
+              // pointColor={{ theme: "background" }}
               pointLabelYOffset={-12}
               enableTouchCrosshair={true}
               useMesh={true}
