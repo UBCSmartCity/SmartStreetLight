@@ -1,12 +1,20 @@
 import { auth } from "@/../auth";
 import BackButton from "@/components/BackButton";
 import { addAdminServerAction, removeAdminServerAction } from "@/lib/data";
+import NotAdmin from "./notAdmin";
 
 export default async function AdminPage() {
   const session = await auth();
-  console.log(session);
-  if (!session?.user) return <h1>not authorized</h1>;
-  // if (session.user.email !== "alvintsui95@gmail.com") return <NotAdmin />;
+  const email = session.user.email;
+  const name = session.user.name;
+  const img = session.user.image;
+
+  const admins = await fetch(`http://localhost:3000/get-admins/${email}`);
+
+  const adminEmails = await admins.json();
+  if (adminEmails.length == 0) {
+    return <NotAdmin />;
+  }
 
   const reqEmails = await fetch("http://localhost:3000/get-emails");
 
@@ -20,10 +28,6 @@ export default async function AdminPage() {
   const emailObjs = await reqEmails.json();
 
   console.log(await emailObjs);
-
-  const email = session.user.email;
-  const name = session.user.name;
-  const img = session.user.image;
 
   return (
     <div className="min-h-screen flex bg-background">

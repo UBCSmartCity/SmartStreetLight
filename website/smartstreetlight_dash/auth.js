@@ -30,6 +30,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user }) {
 
+
+
       const authorizedEmails = await prisma.AllowedEmails.findMany({
         select: {
           email: true

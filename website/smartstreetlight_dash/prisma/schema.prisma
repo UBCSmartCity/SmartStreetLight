@@ -78,6 +78,11 @@ model AllowedEmails {
   email String @unique
 }
 
+model AdminEmails {
+  id    Int    @id @default(autoincrement())
+  email String @unique
+}
+
 model Account {
   userId            String
   type              String
