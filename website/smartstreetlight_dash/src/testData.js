@@ -1,3 +1,27 @@
+
+// export let testData = [
+//   {
+//     reading_time: new Date("2025-05-07T01:10:10"),
+//     energy_usage: 150,
+//     light_status: "OFF",
+//     brightness_level: 60,
+//     power_consumption: 40,
+//     battery_status: 85,
+//     sensor_health: "Good",
+//     location: "Langara 49th Station",
+//   },
+//   {
+//     reading_time: new Date("2025-05-07T01:10:30"),
+//     energy_usage: 130,
+//     light_status: "OFF",
+//     brightness_level: 60,
+//     power_consumption: 40,
+//     battery_status: 85,
+//     sensor_health: "Good",
+//     location: "Langara 49th Station",
+//   },
+// ]
+
 export let testData = [
   // 1 year ago (Mar 20, 2024)
   {
@@ -265,7 +289,7 @@ export let testData = [
     location: "Langara 49th Station",
   },
   {
-    reading_time: new Date("2025-03-02T19:10:10"),
+    reading_time: new Date("2025-05-07T19:10:10"),
     energy_usage: 800,
     light_status: "ON",
     brightness_level: 90,

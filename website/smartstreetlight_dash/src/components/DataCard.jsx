@@ -10,9 +10,9 @@ import { TooltipWrapper } from "@nivo/tooltip";
 // TODO: clean up code, especially dates and graph functions
 // Card for energy and power graphs
 export default function DataCard({ energy }) {
-  const { data: rawData, error, isLoading } = FetchData("langara"); // TODO: test this
-  // const rawData = testData;
-  // const error = false;
+  // const { data: rawData, error, isLoading } = FetchData("langara");
+  const rawData = testData;
+  const error = false;
 
   const [filter, setFilter] = useState("tdy");
 
@@ -32,18 +32,21 @@ export default function DataCard({ energy }) {
   oneYear.setDate(oneYear.getDate() - 365);
 
   if (error) return <div>Failed to load</div>; // TODO: change this to rawData = []
-  if (!rawData) return <div>Loading...</div>; // [] evaluates to true in js?
+  if (!rawData) return <div>Loading...</div>; // [] evaluates to true in js
 
   const data = rawData.flatMap((obj, idx) => {
     // used for date comparisons, current obj.date set to 00:00:00
     const objDateTemp = new Date(obj.reading_time);
     objDateTemp.setHours(0, 0, 0, 0);
 
+    console.log("this is for comparisons", objDateTemp);
+
     const yData = energy ? obj.energy_usage : obj.power_consumption;
 
     switch (filter) {
       case "tdy":
         if (objDateTemp.getTime() == startOfToday.getTime()) {
+          console.log("date used for x", new Date(obj.reading_time));
           return {
             x: new Date(obj.reading_time), // converts UTC to locale time
             y: yData,
@@ -230,7 +233,7 @@ export default function DataCard({ energy }) {
                 type: "time",
                 min: min(),
                 max: max(),
-                precision: "hour",
+                precision: "second",
                 useUTC: false,
               }}
               axisBottom={{
