@@ -6,7 +6,6 @@ import { FetchData } from "@/lib/clientData";
 import { testData } from "@/testData";
 import { TooltipWrapper } from "@nivo/tooltip";
 
-// TODO: only updates by day, ex. 7:51 and 8:00 on same day has the same x position
 // TODO: clean up code, especially dates and graph functions
 // Card for energy and power graphs
 export default function DataCard({ energy }) {
@@ -16,18 +15,12 @@ export default function DataCard({ energy }) {
 
   const [filter, setFilter] = useState("tdy");
 
-  // current date, set to 00:00:00 for comparisons
+  // dates for filtering by comparing data to these
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
-
-  // one month ago
   const lastMonth = new Date(startOfToday);
   lastMonth.setDate(lastMonth.getDate() - 31);
-
-  // jan to now
   const ytd = new Date(new Date().getFullYear(), 0, 1);
-
-  // 365 days ago
   const oneYear = new Date(startOfToday);
   oneYear.setDate(oneYear.getDate() - 365);
 
@@ -39,14 +32,11 @@ export default function DataCard({ energy }) {
     const objDateTemp = new Date(obj.reading_time);
     objDateTemp.setHours(0, 0, 0, 0);
 
-    console.log("this is for comparisons", objDateTemp);
-
     const yData = energy ? obj.energy_usage : obj.power_consumption;
 
     switch (filter) {
       case "tdy":
-        if (objDateTemp.getTime() == startOfToday.getTime()) {
-          console.log("date used for x", new Date(obj.reading_time));
+        if (objDateTemp.getTime() === startOfToday.getTime()) {
           return {
             x: new Date(obj.reading_time), // converts UTC to locale time
             y: yData,
@@ -89,31 +79,10 @@ export default function DataCard({ energy }) {
 
   const graphData = [
     {
-      id: "energy",
-      color: "hsl(309, 70%, 50%)",
+      id: energy ? "energy" : "power",
       data: data,
     },
   ];
-
-  const customTheme = {
-    tooltip: {
-      container: {
-        background: "#efeeef",
-        // color: "#333333",
-        fontSize: 10,
-        // overflow: "visible",
-      },
-    },
-    crosshair: {
-      line: {
-        strokeWidth: 1,
-        strokeOpacity: 0.4,
-      },
-    },
-    text: {
-      fontSize: 11,
-    },
-  };
 
   function min() {
     switch (filter) {
@@ -136,12 +105,11 @@ export default function DataCard({ energy }) {
 
     const todayCurrentTime = new Date();
 
-    switch (filter) {
-      case "tdy":
-        return endOfToday;
-      default:
-        return todayCurrentTime;
+    if (filter === "tdy") {
+      return endOfToday;
     }
+
+    return todayCurrentTime;
   }
 
   function tickVals() {
@@ -238,41 +206,25 @@ export default function DataCard({ energy }) {
               }}
               axisBottom={{
                 orient: "bottom",
-                tickSize: 0,
-                tickPadding: 10,
-                tickRotation: 0,
+                // tickPadding: 10,
                 tickValues: tickVals(),
                 format: format(),
-                legendOffset: 100,
                 translateX: 25,
-                legendPosition: "start",
-                legend: "hi",
               }}
               yScale={{
                 type: "linear",
                 min: "0",
                 max: "auto",
-                ticks: 5,
               }}
-              theme={customTheme}
-              axisTop={null}
-              axisRight={null}
               axisLeft={{
-                tickSize: 5,
                 tickValues: 4,
-                tickPadding: 5,
-                tickRotation: 0,
                 legend: energy ? "Energy (kWh)" : "Power (W)",
                 legendOffset: -45,
                 legendPosition: "middle",
-                truncateTickAt: 0,
               }}
               enableGridX={false}
               crosshairType="x"
               curve={"linear"}
-              colors={{ scheme: "nivo" }}
-              pointBorderColor={{ from: "serieColor" }}
-              // pointColor={{ theme: "background" }}
               pointLabelYOffset={-12}
               enableTouchCrosshair={true}
               useMesh={true}

@@ -298,4 +298,14 @@ export let testData = [
     sensor_health: "Good",
     location: "Langara 49th Station",
   },
+  {
+    reading_time: new Date("2025-05-07T19:15:10"),
+    energy_usage: 800,
+    light_status: "ON",
+    brightness_level: 90,
+    power_consumption: 800,
+    battery_status: 50,
+    sensor_health: "Good",
+    location: "Langara 49th Station",
+  },
 ];
