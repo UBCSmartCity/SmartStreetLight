@@ -12,10 +12,8 @@ export default function CardCollection() {
   let rawData = testData;
   const error = false;
 
-  // console.log(rawData, error, isLoading);
-
   if (error) return <div>Failed to load</div>; // TODO: change this to rawData = []
-  if (!rawData) return <div>Loading...</div>; // [] evaluates to true in js?
+  if (!rawData) return <div>Loading...</div>;
 
   const latestEntry = rawData[rawData.length - 1] || {
     reading_time: new Date("2024-03-20T03:20:10"),

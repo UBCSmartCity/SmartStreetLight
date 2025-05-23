@@ -21,9 +21,10 @@ export default async function Page({ searchParams }) {
 
       <Footer />
 
-      <form action={addDataIncrementally}>
+      {/* adds a data point on the graph  */}
+      {/* <form action={addDataIncrementally}>
         <button type="submit">add data</button>
-      </form>
+      </form> */}
     </div>
   );
 }

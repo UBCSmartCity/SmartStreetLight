@@ -3,12 +3,13 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// specify datasource 
+// specify datasource - tentative, many are experimental for learning purposes
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+// models for data - tent
 model LangaraData {
   id                Int      @id @default(autoincrement())
   reading_time      DateTime

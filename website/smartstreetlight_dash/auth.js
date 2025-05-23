@@ -6,11 +6,11 @@ import fs from "fs/promises";
 import path from "path";
 
 // Helper to load authorized emails
-async function loadAuthorizedEmails() {
-  const filePath = path.resolve("./src/adminEmails.json");
-  const data = await fs.readFile(filePath, "utf-8");
-  return JSON.parse(data);
-}
+// async function loadAuthorizedEmails() {
+//   const filePath = path.resolve("./src/adminEmails.json");
+//   const data = await fs.readFile(filePath, "utf-8");
+//   return JSON.parse(data);
+// }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   // adapter: PrismaAdapter(prisma),

@@ -10,15 +10,12 @@ export default async function AdminPage() {
   const img = session.user.image;
 
   const admins = await fetch(`http://localhost:3000/get-admins/${email}`);
-
-  const adminEmails = await admins.json();
-  if (adminEmails.length == 0) {
-    return <NotAdmin />;
-  }
-
   const reqEmails = await fetch("http://localhost:3000/get-emails");
 
-  console.log(reqEmails);
+  const adminEmails = await admins.json();
+  if (adminEmails.length === 0) {
+    return <NotAdmin />;
+  }
 
   if (!reqEmails.ok) {
     console.log("ERROR");
@@ -26,8 +23,6 @@ export default async function AdminPage() {
   }
 
   const emailObjs = await reqEmails.json();
-
-  console.log(await emailObjs);
 
   return (
     <div className="min-h-screen flex bg-background">

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { addDataIncrementally } from "@/lib/data";
 
-// TODO: find a better way to continuously add data?
+// route to add streetlight data periodically for testing purposes
 export default function Page() {
   const [count, setCount] = useState(0);
 
