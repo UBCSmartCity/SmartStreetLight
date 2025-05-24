@@ -4,6 +4,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "@/lib/prisma";
 import fs from "fs/promises";
 import path from "path";
+import { headers } from "next/headers";
 
 // Helper to load authorized emails
 // async function loadAuthorizedEmails() {
@@ -25,11 +26,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  session: { strategy: 'jwt' }, //jwt
+  // session: { strategy: 'jwt' }, //jwt
 
   callbacks: {
     async signIn({ user }) {
-
 
 
       const authorizedEmails = await prisma.AllowedEmails.findMany({
@@ -40,6 +40,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           email: user.email
         }
       });
+
 
       return authorizedEmails.length >= 1
         ? true

@@ -8,8 +8,6 @@ export default async function Page({ searchParams }) {
   const search = await searchParams;
   const loc = search?.location || "";
 
-  console.log("page refresh");
-
   return (
     <div className="min-h-screen flex flex-col h-full w-full text-center gap-y-4 p-3 ">
       <Header lightLocation={loc} />
