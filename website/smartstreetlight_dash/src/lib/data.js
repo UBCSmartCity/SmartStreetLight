@@ -22,7 +22,7 @@ export async function getAddress(lat, long) {
 
 
 export async function addDataIncrementally() {
-  console.log('adding data');
+  // console.log('adding data');
 
 
   try {
@@ -57,7 +57,7 @@ export async function addAdminServerAction(formData) {
       },
     })
 
-    console.log(testTwo);
+    // console.log(testTwo);
   } catch (err) {
     throw new Error('Failed to Create');
   }

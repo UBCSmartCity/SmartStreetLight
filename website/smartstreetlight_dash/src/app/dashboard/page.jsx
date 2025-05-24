@@ -2,7 +2,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DataCard from "@/components/DataCard";
 import CardCollection from "./CardCollection";
-import { addDataIncrementally } from "@/lib/data";
 
 export default async function Page({ searchParams }) {
   const search = await searchParams;

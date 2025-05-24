@@ -1,10 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "@/lib/prisma";
-import fs from "fs/promises";
-import path from "path";
-import { headers } from "next/headers";
+
 
 // Helper to load authorized emails
 // async function loadAuthorizedEmails() {
