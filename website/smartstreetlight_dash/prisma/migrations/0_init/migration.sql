@@ -1,27 +1,30 @@
--- BASELINE FILE, PRISMA SCHEMA TRANSLATION TO SQL -- 
 -- CreateTable
-CREATE TABLE "Post" (
+CREATE TABLE "LangaraData" (
     "id" SERIAL NOT NULL,
-    "title" TEXT NOT NULL,
-    "content" TEXT,
-    "published" BOOLEAN NOT NULL DEFAULT false,
-    "authorId" INTEGER,
+    "reading_time" TIMESTAMP(3) NOT NULL,
+    "energy_usage" INTEGER NOT NULL,
+    "light_status" TEXT NOT NULL,
+    "brightness_level" INTEGER NOT NULL,
+    "power_consumption" INTEGER NOT NULL,
+    "battery_status" INTEGER NOT NULL,
+    "sensor_health" TEXT NOT NULL,
+    "location" TEXT NOT NULL,
 
-    CONSTRAINT "Post_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "LangaraData_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "User" (
+CREATE TABLE "BigWayData" (
     "id" SERIAL NOT NULL,
-    "email" TEXT NOT NULL,
-    "name" TEXT,
+    "reading_time" TIMESTAMP(3) NOT NULL,
+    "energy_usage" INTEGER NOT NULL,
+    "light_status" TEXT NOT NULL,
+    "brightness_level" INTEGER NOT NULL,
+    "power_consumption" INTEGER NOT NULL,
+    "battery_status" INTEGER NOT NULL,
+    "sensor_health" TEXT NOT NULL,
+    "location" TEXT NOT NULL,
 
-    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "BigWayData_pkey" PRIMARY KEY ("id")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
-
--- AddForeignKey
-ALTER TABLE "Post" ADD CONSTRAINT "Post_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+// TODO: convert to server component, calls a server action once firmware is hooked up to backend
 export default function Controls() {
   const [isOn, setIsOn] = useState(false);
 

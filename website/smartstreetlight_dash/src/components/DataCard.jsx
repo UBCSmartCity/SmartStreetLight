@@ -2,37 +2,30 @@
 
 import { ResponsiveLine } from "@nivo/line";
 import { useState } from "react";
-import { fetchData } from "@/app/page";
+import { FetchData } from "@/lib/clientData";
 import { testData } from "@/testData";
 import { TooltipWrapper } from "@nivo/tooltip";
 
+// TODO: clean up code, especially dates and graph functions
 // Card for energy and power graphs
 export default function DataCard({ energy }) {
-  // const { data: rawData, error, isLoading } = fetchData();
+  // const { data: rawData, error, isLoading } = FetchData("langara");
   const rawData = testData;
   const error = false;
 
   const [filter, setFilter] = useState("tdy");
 
-  // console.log(rawData);
-
-  // current date, set to 00:00:00 for comparisons
+  // dates for filtering by comparing data to these
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
-
-  // one month ago
   const lastMonth = new Date(startOfToday);
   lastMonth.setDate(lastMonth.getDate() - 31);
-
-  // jan to now
   const ytd = new Date(new Date().getFullYear(), 0, 1);
-
-  // 365 days ago
   const oneYear = new Date(startOfToday);
   oneYear.setDate(oneYear.getDate() - 365);
 
-  if (error) return <div>Failed to load</div>;
-  if (!rawData) return <div>Loading...</div>;
+  if (error) return <div>Failed to load</div>; // TODO: change this to rawData = []
+  if (!rawData) return <div>Loading...</div>; // [] evaluates to true in js
 
   const data = rawData.flatMap((obj, idx) => {
     // used for date comparisons, current obj.date set to 00:00:00
@@ -43,7 +36,7 @@ export default function DataCard({ energy }) {
 
     switch (filter) {
       case "tdy":
-        if (objDateTemp.getTime() == startOfToday.getTime()) {
+        if (objDateTemp.getTime() === startOfToday.getTime()) {
           return {
             x: new Date(obj.reading_time), // converts UTC to locale time
             y: yData,
@@ -86,43 +79,10 @@ export default function DataCard({ energy }) {
 
   const graphData = [
     {
-      id: "energy",
-      color: "hsl(309, 70%, 50%)",
+      id: energy ? "energy" : "power",
       data: data,
     },
   ];
-
-  const customTheme = {
-    axis: {
-      ticks: {
-        text: {
-          fill: "#D1D5DB",
-        },
-      },
-      legend: {
-        text: {
-          fill: "#D1D5DB",
-        },
-      },
-    },
-    tooltip: {
-      container: {
-        background: "#ffffff",
-        color: "#333333",
-        overflow: "visible",
-      },
-    },
-    crosshair: {
-      line: {
-        stroke: "white",
-        strokeWidth: 1,
-        strokeOpacity: 0.35,
-      },
-    },
-    text: {
-      fontSize: 12,
-    },
-  };
 
   function min() {
     switch (filter) {
@@ -145,12 +105,11 @@ export default function DataCard({ energy }) {
 
     const todayCurrentTime = new Date();
 
-    switch (filter) {
-      case "tdy":
-        return endOfToday;
-      default:
-        return todayCurrentTime;
+    if (filter === "tdy") {
+      return endOfToday;
     }
+
+    return todayCurrentTime;
   }
 
   function tickVals() {
@@ -188,15 +147,13 @@ export default function DataCard({ energy }) {
     { key: "max", label: "Max" },
   ];
 
-  console.log("rerender from", energy ? "energy" : "power", graphData); // for detecting rerenders
+  // console.log("rerender from", energy ? "energy" : "power", graphData); // for detecting rerenders
 
   return (
-    <div className="flex h-2/5 text-center p-2 rounded-md shadow-sm items-stretch gap-4">
+    <div className="flex h-2/5 text-center rounded-md shadow-sm items-stretch gap-4 bg-boxes">
       {/* Filter Box */}
-      <section className="flex flex-col items-center gap-y-4 w-1/5 min-w-[200px] bg-gray-700 p-4 rounded-md overflow-hidden flex-none">
-        <h2 className="text-xl text-cyan-400">
-          {energy ? "Energy" : "Power"} Usage
-        </h2>
+      <section className="flex flex-col items-center gap-y-4 w-1/5 min-w-[300px] p-4 rounded-md overflow-hidden flex-none">
+        <h2 className="text-xl">{energy ? "Energy" : "Power"} Usage</h2>
         <div className="flex flex-col gap-2 justify-center w-full">
           {filterOptions.map((option) => (
             <label key={option.key} className="cursor-pointer w-full">
@@ -206,7 +163,7 @@ export default function DataCard({ energy }) {
                 className="hidden peer"
                 onClick={() => setFilter(option.key)}
               />
-              <span className="block w-full py-2 text-sm text-center rounded-full outline outline-1 peer-checked:bg-cyan-400 peer-checked:text-black hover:opacity-80">
+              <span className="block w-full py-2 text-sm text-center rounded-full outline outline-1 peer-checked:bg-blue">
                 {option.label}
               </span>
             </label>
@@ -215,59 +172,67 @@ export default function DataCard({ energy }) {
       </section>
 
       {/* Graph Box */}
-      <div className="relative flex-grow bg-gray-700 p-2 rounded-md min-h-[300px]">
-        <div className="overflow-visible h-full w-full">
-          {data.length > 0 && (
+      <div className="relative flex-grow bg-boxes p-2 rounded-md min-h-[300px] max-w-full">
+        <div className=" flex overflow-visible h-full w-full">
+          {data.length > 0 ? (
             <ResponsiveLine
+              tooltip={({ point }) => {
+                return (
+                  <div className="p-2 rounded-md shadow-md bg-background">
+                    <div className="font-bold mb-1">
+                      {new Date(point.data.xFormatted).toLocaleString(
+                        undefined,
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }
+                      )}
+                    </div>
+                    <div>{point.data.yFormatted}</div>
+                  </div>
+                );
+              }}
               data={graphData}
               margin={{ top: 20, right: 50, bottom: 30, left: 50 }}
               xScale={{
                 type: "time",
                 min: min(),
                 max: max(),
-                precision: "hour",
+                precision: "second",
                 useUTC: false,
               }}
               axisBottom={{
                 orient: "bottom",
-                tickSize: 0,
-                tickPadding: 10,
-                tickRotation: 0,
+                // tickPadding: 10,
                 tickValues: tickVals(),
                 format: format(),
-                legendOffset: 100,
                 translateX: 25,
-                legendPosition: "start",
-                legend: "hi",
               }}
               yScale={{
                 type: "linear",
                 min: "0",
                 max: "auto",
-                tickValues: 7,
               }}
-              theme={customTheme}
-              axisTop={null}
-              axisRight={null}
               axisLeft={{
-                tickSize: 5,
-                tickPadding: 5,
-                tickRotation: 0,
+                tickValues: 4,
                 legend: energy ? "Energy (kWh)" : "Power (W)",
                 legendOffset: -45,
                 legendPosition: "middle",
-                truncateTickAt: 0,
               }}
               enableGridX={false}
               crosshairType="x"
               curve={"linear"}
-              colors={{ scheme: "nivo" }}
-              pointBorderColor={{ from: "serieColor" }}
-              pointColor={{ theme: "background" }}
               pointLabelYOffset={-12}
               enableTouchCrosshair={true}
               useMesh={true}
             />
+          ) : (
+            <div className="m-auto">
+              <h1>No data for filter option</h1>
+            </div>
           )}
         </div>
       </div>

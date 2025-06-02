@@ -1,8 +1,0 @@
-The following website was used to create the WIFI LED Blink setup https://www.micropeta.com/video105.
-
-
-Additional Resources:
-
-1)How to use the ESP8266 AT commands: https://www.youtube.com/watch?v=eiw-Ns9l8K8&list=LL&index=2 .
-
-2) To host a server and send/recieve data: https://controllerstech.com/esp8266-webserver-using-stm32-hal/. This example is more comprehensive.

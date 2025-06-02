@@ -1,56 +1,33 @@
-"use client";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import DataCard from "@/components/DataCard";
-import { testData } from "@/testData";
-import Controls from "@/components/Controls";
-import { useState, useEffect } from "react";
-import Card from "@/components/Card";
-import useSWR from "swr";
+import { signIn } from "@/../../auth";
+import { headers } from "next/headers";
 
-// constant fetch with useSWR
-export function fetchData() {
-  const fetcher = (...args) => fetch(...args).then((res) => res.json());
-
-  const { data, error, isLoading } = useSWR(
-    "http://192.168.246.46:5000/api/sensor_readings",
-    fetcher,
-    {
-      refreshInterval: 100,
-    }
-  );
-
-  return { data, error, isLoading };
-}
-
-// TODO: swr fetches every second, but rerenders only happen when data changes - confirm understanding of this
-export default function Home() {
-  // const { data: rawData, error, isLoading } = fetchData();
-  const rawData = testData;
-  const error = false;
-  const [refresh, setRefresh] = useState(0);
-  console.log(rawData);
-
-  if (error) return <div>Failed to load</div>;
-  if (!rawData) return <div>Loading...</div>;
-  const latestEntry = rawData[rawData.length - 1];
-
+export default async function SignIn() {
   return (
-    <div className="min-h-screen flex flex-col h-full w-full text-center gap-y-4 p-3">
-      <Header latestEntry={latestEntry} />
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <div className="bg-boxes p-8 rounded-2xl shadow-sm border border-border w-full max-w-md flex flex-col items-center gap-6">
+        <h1 className="text-4xl font-bold text-center tracking-wide">
+          Smart Streetlight
+        </h1>
 
-      <section className="grid grid-cols-5 place-items-center">
-        <Card type={"Last Updated"} value={`${latestEntry.reading_time}`} />
-        <Card type={"Brightness"} value={`${latestEntry.brightness_level}%`} />
-        <Card type={"Battery"} value={`${latestEntry.battery_status}%`} />
-        <Card type={"Sensor Health"} value={`${latestEntry.sensor_health}`} />
-        <Card type={"Light Status"} value={`${latestEntry.light_status}`} />
-      </section>
+        <p className="text-gray text-sm text-center">
+          Sign in to access your dashboard and profile.
+        </p>
 
-      <DataCard energy={true} />
-      <DataCard energy={false} />
-
-      <Footer />
+        <form
+          action={async () => {
+            "use server";
+            await signIn("google", { redirectTo: "/profiles" });
+          }}
+          className="w-full"
+        >
+          <button
+            type="submit"
+            className="w-full py-2 px-4 rounded-full bg-blue text-white text-sm font-semibold hover:bg-blue/90 transition-all shadow-md"
+          >
+            Sign in with Google
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
