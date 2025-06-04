@@ -1,6 +1,6 @@
 "use client";
 
-import { ResponsiveLine } from "@nivo/line";
+import { ResponsiveLine, ResponsiveLineCanvas } from "@nivo/line";
 import { useState } from "react";
 import { FetchData } from "@/lib/clientData";
 import { testData } from "@/testData";
@@ -9,9 +9,9 @@ import { TooltipWrapper } from "@nivo/tooltip";
 // TODO: clean up code, especially dates and graph functions
 // Card for energy and power graphs
 export default function DataCard({ energy }) {
-  // const { data: rawData, error, isLoading } = FetchData("langara");
-  const rawData = testData;
-  const error = false;
+  const { data: rawData, error, isLoading } = FetchData("langara");
+  // const rawData = testData;
+  // const error = false;
 
   const [filter, setFilter] = useState("tdy");
 
@@ -27,6 +27,7 @@ export default function DataCard({ energy }) {
   if (error) return <div>Failed to load</div>; // TODO: change this to rawData = []
   if (!rawData) return <div>Loading...</div>; // [] evaluates to true in js
 
+  console.log(rawData);
   const data = rawData.flatMap((obj, idx) => {
     // used for date comparisons, current obj.date set to 00:00:00
     const objDateTemp = new Date(obj.reading_time);
@@ -175,7 +176,7 @@ export default function DataCard({ energy }) {
       <div className="relative flex-grow bg-boxes p-2 rounded-md min-h-[300px] max-w-full">
         <div className=" flex overflow-visible h-full w-full">
           {data.length > 0 ? (
-            <ResponsiveLine
+            <ResponsiveLineCanvas
               tooltip={({ point }) => {
                 return (
                   <div className="p-2 rounded-md shadow-md bg-background">
@@ -226,6 +227,7 @@ export default function DataCard({ energy }) {
               crosshairType="x"
               curve={"linear"}
               pointLabelYOffset={-12}
+              pointSize={1}
               enableTouchCrosshair={true}
               useMesh={true}
             />

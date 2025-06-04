@@ -3,7 +3,7 @@
 import useSWR from "swr";
 
 
-
+// for prisma fetching 
 export function FetchData(location) {
     const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
@@ -27,11 +27,18 @@ export function FetchData(location) {
 //     const port = location === "bigway" ? "5001" : "5000";
 
 //     console.log(endpoint);
+//     // const { data, error, isLoading } = useSWR(
+//     //     `http://10:43:8:176:${port}/api/${endpoint}_readings`,
+//     //     fetcher,
+//     //     {
+//     //         refreshInterval: 100,
+//     //     }
+//     // );
 //     const { data, error, isLoading } = useSWR(
-//         `http://10.17.168.46:${port}/api/${endpoint}_readings`,
+//         'http://10.43.8.176:5001/api/bigway_readings',
 //         fetcher,
 //         {
-//             refreshInterval: 100,
+//             refreshInterval: 1000,
 //         }
 //     );
 

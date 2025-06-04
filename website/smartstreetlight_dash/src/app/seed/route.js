@@ -12,7 +12,7 @@ export async function GET() {
     const testTwo = await prisma.LangaraData.create({
       data: {
         reading_time: new Date(),
-        energy_usage: 100,
+        energy_usage: 600,
         light_status: "ON",
         brightness_level: 90,
         power_consumption: 75,
