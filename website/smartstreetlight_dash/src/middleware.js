@@ -1,7 +1,9 @@
 export { auth as middleware } from "../auth"
-export const config = {
-    matcher: ['/dashboard', '/profiles', '/admin'],
-}
+
+// commented out for testing streetlight data first
+// export const config = {
+//     matcher: ['/dashboard', '/profiles', '/admin'],
+// }
 
 
 

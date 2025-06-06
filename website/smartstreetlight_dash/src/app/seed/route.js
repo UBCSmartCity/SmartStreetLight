@@ -9,19 +9,27 @@ export async function GET() {
 
   try {
 
-    const testTwo = await prisma.LangaraData.create({
-      data: {
-        reading_time: new Date(),
+    const sampleData = await prisma.LangaraReadings.createMany({
+      data: [{
+        reading_time: new Date('2025-06-04'),
         energy_usage: 600,
         light_status: "ON",
         brightness_level: 90,
         power_consumption: 75,
         battery_status: 85,
         sensor_health: "Good",
-        location: "Langara 49th Station",
       },
+      {
+        reading_time: new Date('2025-06-05'),
+        energy_usage: 200,
+        light_status: "ON",
+        brightness_level: 90,
+        power_consumption: 75,
+        battery_status: 85,
+        sensor_health: "Good",
+      }],
     });
-    return Response.json(testTwo);
+    return Response.json(sampleData);
   } catch (err) {
     return Response.json(err.message);
   }
