@@ -7,31 +7,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
-model bigway_readings {
-  id                Int?
-  sensor_id         String?   @db.VarChar(50)
+model StreetlightReadings {
+  id                String      @id @default(uuid())
   energy_usage      Float?
   brightness_level  Float?
-  reading_time      DateTime? @db.Timestamp(6)
-  light_status      String?   @db.VarChar(10)
+  reading_time      DateTime?   @default(now()) @db.Timestamp(6)
+  light_status      String?     @default("OFF") @db.VarChar(10)
   power_consumption Float?
   battery_status    Float?
-  sensor_health     String?   @db.VarChar(20)
-  location          String?   @db.VarChar(100)
+  sensor_health     String?     @db.VarChar(20)
+  streetlight       Streetlight @relation(fields: [light_id], references: [id])
+  light_id          Int
 
-  @@ignore
+  @@map("streetlight_readings")
 }
 
-model LangaraReadings {
-  id                Int       @id(map: "sensor_readings_pkey") @default(autoincrement())
-  energy_usage      Float?
-  brightness_level  Float?
-  reading_time      DateTime? @default(now()) @db.Timestamp(6)
-  light_status      String?   @default("OFF") @db.VarChar(10)
-  power_consumption Float?
-  battery_status    Float?
-  sensor_health     String?   @db.VarChar(20)
+model Streetlight {
+  id         Int                   @id
+  name       String
+  location   String?
+  start_date DateTime?
+  readings   StreetlightReadings[]
 
-  @@map("langara_readings")
+  @@map("streetlight")
+}
+
+model EngineerEmails {
+  id    String @id @default(uuid())
+  email String @unique
+
+  @@map("engineer_emails")
 }

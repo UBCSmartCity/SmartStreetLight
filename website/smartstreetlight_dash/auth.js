@@ -28,27 +28,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user }) {
 
-      return true;
+      // return true;
 
       // commented out auth for testing streetlight data 
-      // const authorizedEmails = await prisma.AllowedEmails.findMany({
-      //   select: {
-      //     email: true
-      //   },
-      //   where: {
-      //     email: user.email
-      //   }
-      // });
+      const authorizedEmails = await prisma.EngineerEmails.findMany({
+        where: {
+          email: user.email
+        }
+      });
+
+      console.log(authorizedEmails);
 
 
-      // return authorizedEmails.length >= 1
-      //   ? true
-      //   : "http://localhost:3000/redirectpage";
+      return authorizedEmails.length >= 1
+        ? true
+        : "http://localhost:3000/redirectpage";
     },
 
-    // authorized: async ({ auth }) => {
-    //   return !!auth
-    // },
+    authorized: async ({ auth }) => {
+      return !!auth
+    },
 
 
   }

@@ -3,14 +3,16 @@
 import { testData } from "@/testData";
 import Card from "@/components/Card";
 import { FetchData } from "@/lib/clientData";
+import { addStreetlightData } from "@/lib/data";
 
 // contains all Card components
 export default function CardCollection() {
   // NOTE: comment this line and uncomment "rawData" and "error" if Raspberry Pi DB is not available
-  // const { data: rawData, error, isLoading } = FetchData("langara");
+  const { data: rawData, error, isLoading } = FetchData("langara");
 
-  let rawData = testData;
-  const error = false;
+  // uncomment when pi is not connected
+  // let rawData = testData;
+  // const error = false;
 
   if (error) return <div>Failed to load</div>; // TODO: change this to rawData = []
   if (!rawData) return <div>Loading...</div>;
@@ -36,6 +38,10 @@ export default function CardCollection() {
       />
       <Card type={"Sensor Health"} value={`${latestEntry.sensor_health}`} />
       <Card type={"Light Status"} value={`${latestEntry.light_status}`} />
+
+      <button onClick={() => addStreetlightData(1)}>
+        Add streetlight data
+      </button>
     </section>
   );
 }

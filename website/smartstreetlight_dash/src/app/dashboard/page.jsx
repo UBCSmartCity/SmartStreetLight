@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DataCard from "@/components/DataCard";
 import CardCollection from "./CardCollection";
+import { addDataIncrementally } from "@/lib/data";
 
 export default async function Page({ searchParams }) {
   const search = await searchParams;
@@ -19,9 +20,9 @@ export default async function Page({ searchParams }) {
       <Footer />
 
       {/* adds a data point on the graph  */}
-      {/* <form action={addDataIncrementally}>
+      <form action={addDataIncrementally}>
         <button type="submit">add data</button>
-      </form> */}
+      </form>
     </div>
   );
 }

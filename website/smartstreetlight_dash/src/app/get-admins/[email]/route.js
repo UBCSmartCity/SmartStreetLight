@@ -2,12 +2,12 @@
 
 import prisma from "@/lib/prisma";
 
-// go to /seed to populate database with sample data,
+
 export async function GET(request, { params }) {
 
     const { email } = await params;
 
-    const data = await prisma.AdminEmails.findMany({
+    const data = await prisma.EngineerEmails.findMany({
         where: {
             email: email
         }

@@ -8,8 +8,15 @@ import prisma from "@/lib/prisma";
 
 // for pi db 
 export async function GET() {
-  const data = await prisma.LangaraReadings.findMany();
-  return Response.json(data);
+  const data = await prisma.Streetlight.findUnique({
+    where: {
+      id: 1
+    },
+    select: {
+      readings: true
+    }
+  });
+  return Response.json(data?.readings || []);
 }
 
 
