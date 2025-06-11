@@ -7,6 +7,7 @@ import { addDataIncrementally } from "@/lib/data";
 export default async function Page({ searchParams }) {
   const search = await searchParams;
   const loc = search?.location || "";
+  const id = search?.id || "";
 
   return (
     <div className="min-h-screen flex flex-col h-full w-full text-center gap-y-4 p-3 ">
@@ -14,8 +15,8 @@ export default async function Page({ searchParams }) {
 
       <CardCollection />
 
-      <DataCard energy={true} />
-      <DataCard energy={false} />
+      <DataCard energy={true} lightId={id} />
+      <DataCard energy={false} lightId={id} />
 
       <Footer />
 

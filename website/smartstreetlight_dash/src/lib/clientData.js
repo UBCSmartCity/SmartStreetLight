@@ -4,12 +4,12 @@ import useSWR from "swr";
 
 
 // for prisma fetching 
-export function FetchData(location) {
+export function FetchData(id) {
     const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 
     const { data, error, isLoading } = useSWR(
-        `/${location}`,
+        `/readings?id=${id}`,
         fetcher,
         {
             refreshInterval: 100,

@@ -7,22 +7,23 @@ export async function GET() {
 
 
 
-  try {
+  // try {
 
-    const email = await prisma.EngineerEmails.createMany({
-      data: [{
-        email: "alvintsui95@gmail.com"
-      }, {
-        email: "valoing5@gmail.com"
-      }]
-    })
+  //   const email = await prisma.EngineerEmail.createMany({
+  //     data: [{
+  //       email: "alvintsui95@gmail.com",
+  //       admin: true
+  //     }, {
+  //       email: "valoing5@gmail.com"
+  //     }]
+  //   })
 
-    return Response.json(email);
+  //   return Response.json(email);
 
-  } catch (err) {
-    return Response.json(err);
+  // } catch (err) {
+  //   return Response.json(err);
 
-  }
+  // }
 
 
 
@@ -52,32 +53,34 @@ export async function GET() {
 
 
 
-  // try {
+  try {
 
-  //   const sampleData = await prisma.LangaraReadings.createMany({
-  //     data: [{
-  //       reading_time: new Date('2025-06-04'),
-  //       energy_usage: 600,
-  //       light_status: "ON",
-  //       brightness_level: 90,
-  //       power_consumption: 75,
-  //       battery_status: 85,
-  //       sensor_health: "Good",
-  //     },
-  //     {
-  //       reading_time: new Date('2025-06-05'),
-  //       energy_usage: 200,
-  //       light_status: "ON",
-  //       brightness_level: 90,
-  //       power_consumption: 75,
-  //       battery_status: 85,
-  //       sensor_health: "Good",
-  //     }],
-  //   });
-  //   return Response.json(sampleData);
-  // } catch (err) {
-  //   return Response.json(err.message);
-  // }
+    const sampleData = await prisma.StreetlightReading.createMany({
+      data: [{
+        energy_usage: Math.floor(Math.random() * 300),
+        brightness_level: 90,
+        reading_time: new Date(),
+        light_status: "ON",
+        power_consumption: 0,
+        battery_status: 85,
+        sensor_health: "Good",
+        light_id: 2
+      },
+      {
+        energy_usage: Math.floor(Math.random() * 300),
+        brightness_level: 90,
+        reading_time: new Date(),
+        light_status: "ON",
+        power_consumption: Math.floor(Math.random() * 300),
+        battery_status: 85,
+        sensor_health: "Good",
+        light_id: 2
+      }],
+    });
+    return Response.json(sampleData);
+  } catch (err) {
+    return Response.json(err.message);
+  }
 
 
 }

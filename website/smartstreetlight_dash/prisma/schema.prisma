@@ -7,7 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model StreetlightReadings {
+model StreetlightReading {
   id                String      @id @default(uuid())
   energy_usage      Float?
   brightness_level  Float?
@@ -19,22 +19,23 @@ model StreetlightReadings {
   streetlight       Streetlight @relation(fields: [light_id], references: [id])
   light_id          Int
 
-  @@map("streetlight_readings")
+  @@map("streetlight_reading")
 }
 
 model Streetlight {
-  id         Int                   @id
+  id         Int                  @id
   name       String
   location   String?
   start_date DateTime?
-  readings   StreetlightReadings[]
+  readings   StreetlightReading[]
 
   @@map("streetlight")
 }
 
-model EngineerEmails {
-  id    String @id @default(uuid())
-  email String @unique
+model EngineerEmail {
+  id    String  @id @default(uuid())
+  email String  @unique
+  admin Boolean @default(false)
 
-  @@map("engineer_emails")
+  @@map("engineer_email")
 }

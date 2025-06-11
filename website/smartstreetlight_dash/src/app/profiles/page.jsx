@@ -3,8 +3,8 @@ import Link from "next/link";
 export default function ProfileSelection() {
   const profiles = [
     { location: "Langara", route: "dashboard?location=langara" },
-    { location: "UBC Nest", route: "dashboard?location=nest" },
-    { location: "UBC Bigway", route: "dashboard?location=bigway" },
+    { location: "UBC Nest", route: "dashboard?location=nest&id=1" },
+    { location: "UBC Bigway", route: "dashboard?location=bigway&id=2" },
   ];
 
   return (

@@ -6,7 +6,7 @@ import prisma from "@/lib/prisma";
 export async function GET() {
 
 
-    const data = await prisma.AllowedEmails.findMany({
+    const data = await prisma.EngineerEmails.findMany({
         select: {
             email: true
         }
