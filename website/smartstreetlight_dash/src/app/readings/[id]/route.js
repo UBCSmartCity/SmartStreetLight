@@ -7,15 +7,13 @@ import prisma from "@/lib/prisma";
 
 
 // for pi db 
-export async function GET(req) {
-
-  console.log(req.url);
-
-  const id = req.nextUrl.searchParams.get("id")
+export async function GET(request, { params }) {
 
 
 
-  console.log(id);
+  const { id } = await params;
+  console.log(await params);
+
   const data = await prisma.Streetlight.findUnique({
     where: {
       id: parseInt(id)

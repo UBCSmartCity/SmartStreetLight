@@ -9,20 +9,28 @@ export default async function AdminPage() {
   const name = session.user.name;
   const img = session.user.image;
 
-  const admins = await fetch(`http://localhost:3000/get-admins/${email}`);
-  const reqEmails = await fetch("http://localhost:3000/get-emails");
+  const adminEmails = await prisma.EngineerEmail.findMany({
+    where: {
+      email: email,
+      admin: true,
+    },
+  });
 
-  const adminEmails = await admins.json();
+  const emailObjs = await prisma.EngineerEmail.findMany({
+    select: {
+      email: true,
+    },
+  });
+
   if (adminEmails.length === 0) {
+    // TODO: guard with middleware
     return <NotAdmin />;
   }
 
-  if (!reqEmails.ok) {
-    console.log("ERROR");
-    throw new Error("Cannot fetch emails");
-  }
-
-  const emailObjs = await reqEmails.json();
+  // if (!reqEmails.ok) {
+  //   console.log("ERROR");
+  //   throw new Error("Cannot fetch emails");
+  // }
 
   return (
     <div className="min-h-screen flex bg-background">

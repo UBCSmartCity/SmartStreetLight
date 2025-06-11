@@ -9,7 +9,7 @@ export function FetchData(id) {
 
 
     const { data, error, isLoading } = useSWR(
-        `/readings?id=${id}`,
+        `/readings/${id}`,
         fetcher,
         {
             refreshInterval: 100,
