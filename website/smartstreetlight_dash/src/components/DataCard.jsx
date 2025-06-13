@@ -3,10 +3,15 @@
 import { ResponsiveLine } from "@nivo/line";
 import { useState } from "react";
 import { FetchData } from "@/lib/clientData";
+import { useSearchParams } from "next/navigation";
 
 // Card for energy and power graphs
-export default function DataCard({ energy, lightId }) {
-  const { data: rawData, error, isLoading } = FetchData(lightId);
+export default function DataCard({ energy }) {
+  const searchParams = useSearchParams();
+
+  const id = searchParams.get("id");
+
+  const { data: rawData, error, isLoading } = FetchData(id);
 
   // uncomment when pi is not connected
   // const rawData = testData;

@@ -28,9 +28,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user }) {
 
-      // return true;
 
-      // commented out auth for testing streetlight data 
       const authorizedEmails = await prisma.EngineerEmail.findMany({
         where: {
           email: user.email

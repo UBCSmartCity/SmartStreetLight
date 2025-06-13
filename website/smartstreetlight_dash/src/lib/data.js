@@ -83,18 +83,19 @@ export async function addDataIncrementally() {
 
 
 
-// add emails to JSON file
-export async function addAdminServerAction(formData) {
+// TODO: zod form validation after converting to TS 
+// add engineer emails to db 
+export async function addEngineerEmail(formData) {
 
   const newEmail = formData.get("email");
   try {
-    const testTwo = await prisma.AllowedEmails.create({
+    const testTwo = await prisma.EngineerEmail.create({
       data: {
-        email: newEmail
+        email: newEmail,
+        admin: false
       },
     })
 
-    // console.log(testTwo);
   } catch (err) {
     throw new Error('Failed to Create');
   }
@@ -104,14 +105,14 @@ export async function addAdminServerAction(formData) {
 }
 
 
-// remove emails from JSON file
-export async function removeAdminServerAction(formData) {
+// remove emails from db
+export async function removeEngineerEmail(id, formData) {
 
-  const emailToRemove = formData.get("email");
+  console.log(id);
   try {
-    const deleteUser = await prisma.AllowedEmails.delete({
+    const deleteUser = await prisma.EngineerEmail.delete({
       where: {
-        email: emailToRemove
+        id
       },
     })
   } catch (err) {

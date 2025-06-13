@@ -15,8 +15,8 @@ export default async function Page({ searchParams }) {
 
       <CardCollection />
 
-      <DataCard energy={true} lightId={id} />
-      <DataCard energy={false} lightId={id} />
+      <DataCard energy={true} />
+      <DataCard energy={false} />
 
       <Footer />
 

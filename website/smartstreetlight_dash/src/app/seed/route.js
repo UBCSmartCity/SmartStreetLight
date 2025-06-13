@@ -7,23 +7,25 @@ export async function GET() {
 
 
 
-  // try {
 
-  //   const email = await prisma.EngineerEmail.createMany({
-  //     data: [{
-  //       email: "alvintsui95@gmail.com",
-  //       admin: true
-  //     }, {
-  //       email: "valoing5@gmail.com"
-  //     }]
-  //   })
 
-  //   return Response.json(email);
+  //   try {
 
-  // } catch (err) {
-  //   return Response.json(err);
+  // const streetlight = await prisma.Streetlight.update({
+  //   where: {
+  //     id: 1,
+  //   },
+  //   data: {
+  //     id: '',
+  //   },
+  // })
 
-  // }
+  //     return Response.json(streetlight);
+
+  //   } catch (err) {
+  //     return Response.json(err);
+
+  //   }
 
 
 

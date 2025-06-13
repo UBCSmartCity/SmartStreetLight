@@ -4,11 +4,16 @@ import { testData } from "@/testData";
 import Card from "@/components/Card";
 import { FetchData } from "@/lib/clientData";
 import { addStreetlightData } from "@/lib/data";
+import { useSearchParams } from "next/navigation";
 
 // contains all Card components
 export default function CardCollection() {
+  const searchParams = useSearchParams();
+
+  const id = searchParams.get("id");
+
   // NOTE: comment this line and uncomment "rawData" and "error" if Raspberry Pi DB is not available
-  const { data: rawData, error, isLoading } = FetchData("langara");
+  const { data: rawData, error, isLoading } = FetchData(id);
 
   // uncomment when pi is not connected
   // let rawData = testData;
