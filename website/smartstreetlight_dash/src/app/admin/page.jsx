@@ -2,6 +2,7 @@ import { auth } from "@/../auth";
 import BackButton from "@/components/BackButton";
 import { addEngineerEmail, removeEngineerEmail } from "@/lib/data";
 import NotAdmin from "./notAdmin";
+import { redirect } from "next/navigation";
 
 // TODO: error handling
 export default async function AdminPage() {
@@ -10,17 +11,25 @@ export default async function AdminPage() {
   const name = session.user.name;
   const img = session.user.image;
 
-  const adminEmails = await prisma.EngineerEmail.findMany({
-    where: {
-      email: email,
-      admin: true,
-    },
-  });
+  let adminEmails;
+  let emailObjs;
 
-  const emailObjs = await prisma.EngineerEmail.findMany();
+  try {
+    adminEmails = await prisma.EngineerEmail.findMany({
+      where: {
+        email: email,
+        admin: true,
+      },
+    });
 
+    emailObjs = await prisma.EngineerEmail.findMany();
+  } catch (err) {
+    console.log("error", err.message);
+    redirect(
+      "http://localhost:3000/redirectpage/Database%20Error%21%20Please%20contact%20dashboard%20developers."
+    );
+  }
   if (adminEmails.length <= 0) {
-    // TODO: guard with middleware
     return <NotAdmin />;
   }
 

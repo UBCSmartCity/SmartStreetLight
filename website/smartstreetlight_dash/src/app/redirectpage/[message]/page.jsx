@@ -1,10 +1,11 @@
 import Link from "next/link";
 
-export default function RedirectPage() {
+export default async function RedirectPage({ params }) {
+  const { message } = await params;
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-6">
       <p className="text-xl font-semibold text-muted mb-6">
-        You are not authorized to view this page!
+        {decodeURIComponent(message)}
       </p>
       <Link
         href="/"

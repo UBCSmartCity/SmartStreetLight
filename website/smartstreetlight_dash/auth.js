@@ -11,7 +11,6 @@ import prisma from "@/lib/prisma";
 // }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  // adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.AUTH_GOOGLE_ID,
@@ -23,24 +22,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  // session: { strategy: 'jwt' }, //jwt
 
   callbacks: {
     async signIn({ user }) {
 
 
-      const authorizedEmails = await prisma.EngineerEmail.findMany({
-        where: {
-          email: user.email
-        }
-      });
+      try {
 
-      console.log(authorizedEmails);
+        const authorizedEmails = await prisma.EngineerEmail.findMany({
+          where: {
+            email: user.email
+          }
+        });
+
+        return authorizedEmails.length >= 1
+          ? true
+          : "http://localhost:3000/redirectpage/You%20are%20not%20authorized%20to%20view%20this%20page!";
+      } catch (err) {
+        return "http://localhost:3000/redirectpage/Something%20went%20wrong%21";
+      }
 
 
-      return authorizedEmails.length >= 1
-        ? true
-        : "http://localhost:3000/redirectpage";
+
     },
 
     authorized: async ({ auth }) => {
