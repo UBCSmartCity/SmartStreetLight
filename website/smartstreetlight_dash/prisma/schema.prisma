@@ -33,9 +33,10 @@ model Streetlight {
 }
 
 model EngineerEmail {
-  id    String  @id @default(uuid())
-  email String  @unique
-  admin Boolean @default(false)
+  id          String  @id @default(uuid())
+  email       String  @unique
+  admin       Boolean @default(false)
+  super_admin Boolean @default(false)
 
   @@map("engineer_email")
 }
