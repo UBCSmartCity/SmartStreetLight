@@ -51,6 +51,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+
+  @@map("user")
 }
 
 model Account {
@@ -72,6 +74,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([provider, providerAccountId])
+  @@map("account")
 }
 
 model Session {
@@ -82,6 +85,8 @@ model Session {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("session")
 }
 
 model VerificationToken {
@@ -90,4 +95,5 @@ model VerificationToken {
   expires    DateTime
 
   @@id([identifier, token])
+  @@map("verification_token")
 }
