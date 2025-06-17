@@ -1,7 +1,11 @@
 import { signIn } from "@/../../auth";
+import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 
 export default async function SignIn() {
+  const temp = await prisma.User.findMany({});
+
+  console.log("accounts", temp);
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="bg-boxes p-8 rounded-2xl shadow-sm border border-border w-full max-w-md flex flex-col items-center gap-6">
