@@ -4,13 +4,6 @@ import prisma from "@/lib/prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 
 
-// Helper to load authorized emails
-// async function loadAuthorizedEmails() {
-//   const filePath = path.resolve("./src/adminEmails.json");
-//   const data = await fs.readFile(filePath, "utf-8");
-//   return JSON.parse(data);
-// }
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -37,12 +30,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
         });
 
+
+        await prisma.loginHistory.create({
+          data: {
+            email: user.email,
+          },
+        });
+
+
+
         return authorizedEmails.length >= 1
           ? true
           : "http://localhost:3000/redirectpage/You%20are%20not%20authorized%20to%20view%20this%20page!";
       } catch (err) {
         return "http://localhost:3000/redirectpage/Something%20went%20wrong%21";
       }
+
 
 
 

@@ -97,3 +97,12 @@ model VerificationToken {
   @@id([identifier, token])
   @@map("verification_token")
 }
+
+model LoginHistory {
+  id        String   @id @default(uuid())
+  email     String
+  loginTime DateTime @default(now())
+  userAgent String?
+
+  @@map("login_history")
+}

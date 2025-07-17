@@ -3,6 +3,8 @@ import { revalidatePath } from 'next/cache';
 import prisma from "@/lib/prisma";
 
 
+
+
 // reverse geocode - latitude and longitude to an address
 export async function getAddress(lat, long) {
   const t = await fetch(
@@ -18,67 +20,81 @@ export async function getAddress(lat, long) {
   );
 }
 
-// inserting data provided by location parameter, used for testing after db refactor
-export async function addStreetlightData(lightId) {
+// Add a reading with rando power consumption and 0 energy usage
+export async function addStreetlightData(formData) {
+  const startDate = new Date();
+
+  // Optional: reset minutes, seconds, ms to zero for clean hour increments
+  startDate.setMinutes(0, 0, 0);
+
+  const lightIdRaw = formData.get("id");
+  const lightId = Number(lightIdRaw);
+
+  if (isNaN(lightId)) {
+    throw new Error("Invalid lightId");
+  }
 
   try {
-    const reading = await prisma.StreetlightReadings.createMany({
+    await prisma.streetlightReading.create({
       data: {
-        energy_usage: Math.floor(Math.random() * 300),
-        brightness_level: 90,
-        reading_time: new Date(),
+        reading_time: new Date(startDate),
+        energy_usage: 0,
         light_status: "ON",
+        brightness_level: 90,
         power_consumption: Math.floor(Math.random() * 300),
         battery_status: 85,
         sensor_health: "Good",
-        light_id: lightId
+        light_id: lightId,
       },
-    })
+    });
+
   } catch (err) {
-    console.log(err); // TODO: client error handling 
+    console.error("Insert failed:", err);
   }
 
 
 }
 
 
-
-// TODO: change this to match refactored db 
-export async function addDataIncrementally() {
-
-
+// Add 10 incremental readings for the given light ID
+export async function addDataIncrementally(formData) {
   const startDate = new Date();
-  startDate.setMinutes(startDate.getMinutes() - 11);
+  startDate.setDate(startDate.getDate() - 1); // go back 1 day (yesterday)
 
+  // Optional: reset minutes, seconds, ms to zero for clean hour increments
+  startDate.setMinutes(0, 0, 0);
+
+  const lightIdRaw = formData.get("id");
+  const lightId = Number(lightIdRaw);
+
+  if (isNaN(lightId)) {
+    throw new Error("Invalid lightId");
+  }
 
   for (let i = 0; i < 10; i++) {
-
-
     try {
-      const data = await prisma.LangaraReadings.create({
+      await prisma.streetlightReading.create({
         data: {
-          reading_time: startDate,
+          reading_time: new Date(startDate), // copy of current startDate
           energy_usage: Math.floor(Math.random() * 300),
           light_status: "ON",
           brightness_level: 90,
           power_consumption: Math.floor(Math.random() * 300),
           battery_status: 85,
           sensor_health: "Good",
+          light_id: lightId,
         },
       });
 
+      // Increment the reading time by 1 hour
+      startDate.setHours(startDate.getHours() + 1);
+
+      // Optional delay for realism
+      await new Promise((res) => setTimeout(res, 10000));
     } catch (err) {
-      throw new Error(err);
+      console.error("Insert failed:", err);
     }
-
-    setTimeout(() => { }, 3000);
-
-    startDate.setMinutes(startDate.getMinutes() + 1);
-
-
   }
-
-
 }
 
 

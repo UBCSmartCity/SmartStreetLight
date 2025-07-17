@@ -2,21 +2,9 @@
 
 import { ResponsiveLine } from "@nivo/line";
 import { useState } from "react";
-import { FetchData } from "@/lib/clientData";
-import { useSearchParams } from "next/navigation";
 
 // Card for energy and power graphs
-export default function DataCard({ energy }) {
-  const searchParams = useSearchParams();
-
-  const id = searchParams.get("id");
-
-  const { data: rawData, error, isLoading } = FetchData(id);
-
-  // uncomment when pi is not connected
-  // const rawData = testData;
-  // const error = false;
-
+export default function DataCard({ energy, rawData, error, isLoading }) {
   const [filter, setFilter] = useState("tdy");
 
   // dates for filtering by comparing data to these
@@ -28,10 +16,10 @@ export default function DataCard({ energy }) {
   const oneYear = new Date(startOfToday);
   oneYear.setDate(oneYear.getDate() - 365);
 
-  if (error) return <div>Failed to load</div>; // TODO: change this to rawData = []
-  if (!rawData) return <div>Loading...</div>; // [] evaluates to true in js
+  if (error) return <div>Failed to load</div>;
+  if (isLoading) return <div>Loading...</div>;
 
-  const data = rawData.flatMap((obj, idx) => {
+  const data = rawData.flatMap((obj) => {
     // used for date comparisons, current obj.date set to 00:00:00
     const objDateTemp = new Date(obj.reading_time);
     objDateTemp.setHours(0, 0, 0, 0);
@@ -42,7 +30,7 @@ export default function DataCard({ energy }) {
       case "tdy":
         if (objDateTemp.getTime() === startOfToday.getTime()) {
           return {
-            x: new Date(obj.reading_time), // converts UTC to locale time
+            x: new Date(obj.reading_time),
             y: yData,
           };
         }
@@ -63,7 +51,6 @@ export default function DataCard({ energy }) {
           };
         }
         return [];
-
       case "1Y":
         if (objDateTemp >= oneYear && objDateTemp <= startOfToday) {
           return {
@@ -72,7 +59,6 @@ export default function DataCard({ energy }) {
           };
         }
         return [];
-
       default:
         return {
           x: new Date(obj.reading_time),
@@ -87,8 +73,6 @@ export default function DataCard({ energy }) {
       data: data,
     },
   ];
-
-  console.log(graphData);
 
   function min() {
     switch (filter) {
@@ -139,7 +123,6 @@ export default function DataCard({ energy }) {
         return "%b-%d";
       case "max":
         return "%Y";
-
       default:
         return "%Y-%b";
     }
@@ -152,8 +135,6 @@ export default function DataCard({ energy }) {
     { key: "1Y", label: "1 Year" },
     { key: "max", label: "Max" },
   ];
-
-  // console.log("rerender from", energy ? "energy" : "power", graphData); // for detecting rerenders
 
   return (
     <div className="flex h-2/5 text-center rounded-md shadow-sm items-stretch gap-4 bg-boxes">
@@ -212,7 +193,6 @@ export default function DataCard({ energy }) {
               }}
               axisBottom={{
                 orient: "bottom",
-                // tickPadding: 10,
                 tickValues: tickVals(),
                 format: format(),
                 translateX: 25,

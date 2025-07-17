@@ -5,84 +5,43 @@ import prisma from "@/lib/prisma";
 // go to /seed to populate database with sample data,
 export async function GET() {
 
-
-
-
-
-  //   try {
-
-  // const streetlight = await prisma.Streetlight.update({
-  //   where: {
-  //     id: 1,
-  //   },
-  //   data: {
-  //     id: '',
-  //   },
-  // })
-
-  //     return Response.json(streetlight);
-
-  //   } catch (err) {
-  //     return Response.json(err);
-
-  //   }
-
-
-
-  // try {
-  //   const light = await prisma.Streetlight.createMany({
-  //     data: [
-  //       {
-  //         id: 1,
-  //         name: "UBC Nest",
-  //         location: "UBC Campus",
-  //         start_date: new Date()
-  //       },
-  //       {
-  //         id: 2,
-  //         name: "UBC Bigway",
-  //         location: "UBC Campus",
-  //         start_date: new Date('2024-04-05')
-  //       }
-  //     ]
-  //   })
-
-  //   return Response.json(light);
-  // } catch (err) {
-  //   return Response.json(err);
-
-  // }
-
-
-
-  try {
-
-    const sampleData = await prisma.StreetlightReading.createMany({
-      data: [{
-        energy_usage: Math.floor(Math.random() * 300),
-        brightness_level: 90,
-        reading_time: new Date(),
-        light_status: "ON",
-        power_consumption: 0,
-        battery_status: 85,
-        sensor_health: "Good",
-        light_id: 2
-      },
-      {
-        energy_usage: Math.floor(Math.random() * 300),
-        brightness_level: 90,
-        reading_time: new Date(),
-        light_status: "ON",
-        power_consumption: Math.floor(Math.random() * 300),
-        battery_status: 85,
-        sensor_health: "Good",
-        light_id: 2
-      }],
-    });
-    return Response.json(sampleData);
-  } catch (err) {
-    return Response.json(err.message);
+  // Generate a random date within the last N days
+  function randomDateWithinPastDays(days) {
+    const now = new Date();
+    const offset = Math.random() * days * 24 * 60 * 60 * 1000;
+    return new Date(now.getTime() - offset);
   }
+
+  // Generate a random float between min and max
+  function rand(min, max) {
+    return parseFloat((Math.random() * (max - min) + min).toFixed(2));
+  }
+
+  async function seedReadings(lightId) {
+    const readings = Array.from({ length: 10 }).map(() => ({
+      light_id: lightId,
+      energy_usage: rand(5, 15),
+      brightness_level: rand(40, 100),
+      power_consumption: rand(10, 20),
+      battery_status: rand(60, 100),
+      sensor_health: ['Good', 'Fair', 'Excellent', 'Needs Maintenance'][Math.floor(Math.random() * 4)],
+      light_status: Math.random() > 0.5 ? 'ON' : 'OFF',
+      reading_time: randomDateWithinPastDays(14),
+    }));
+
+    await prisma.streetlightReading.createMany({ data: readings });
+  }
+
+  async function main() {
+    await seedReadings(1); // UBC Nest
+    await seedReadings(2); // Bigway
+
+    console.log('✅ Seeded 10 readings each for Nest and Bigway');
+  }
+
+  main();
+
+  return Response.json("seeded");
 
 
 }
