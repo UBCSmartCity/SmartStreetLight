@@ -8,6 +8,7 @@ import CardCollection from "./CardCollection";
 import { FetchData } from "@/lib/clientData";
 import { useSearchParams } from "next/navigation";
 
+// http://localhost:3000/api/insert-random-readings/1
 export default function DashboardPage() {
   const searchParams = useSearchParams();
   const loc = searchParams.get("location") || "";

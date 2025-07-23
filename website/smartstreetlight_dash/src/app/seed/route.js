@@ -5,11 +5,13 @@ import prisma from "@/lib/prisma";
 // go to /seed to populate database with sample data,
 export async function GET() {
 
-  // Generate a random date within the last N days
-  function randomDateWithinPastDays(days) {
-    const now = new Date();
-    const offset = Math.random() * days * 24 * 60 * 60 * 1000;
-    return new Date(now.getTime() - offset);
+
+  // Generate a random date within July 2025
+  function randomDateInJuly2025() {
+    const start = new Date('2025-07-01T00:00:00');
+    const end = new Date('2025-07-21T23:59:59');
+    const offset = Math.random() * (end.getTime() - start.getTime());
+    return new Date(start.getTime() + offset);
   }
 
   // Generate a random float between min and max
@@ -18,7 +20,7 @@ export async function GET() {
   }
 
   async function seedReadings(lightId) {
-    const readings = Array.from({ length: 10 }).map(() => ({
+    const readings = Array.from({ length: 12 }).map(() => ({
       light_id: lightId,
       energy_usage: rand(5, 15),
       brightness_level: rand(40, 100),
@@ -26,10 +28,14 @@ export async function GET() {
       battery_status: rand(60, 100),
       sensor_health: ['Good', 'Fair', 'Excellent', 'Needs Maintenance'][Math.floor(Math.random() * 4)],
       light_status: Math.random() > 0.5 ? 'ON' : 'OFF',
-      reading_time: randomDateWithinPastDays(14),
+      reading_time: randomDateInJuly2025(),
     }));
 
-    await prisma.streetlightReading.createMany({ data: readings });
+    // Insert in batches to avoid hitting parameter limits
+    const batchSize = 1000;
+    for (let i = 0; i < readings.length; i += batchSize) {
+      await prisma.streetlightReading.createMany({ data: readings.slice(i, i + batchSize) });
+    }
   }
 
   async function main() {

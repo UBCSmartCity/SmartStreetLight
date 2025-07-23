@@ -1,5 +1,6 @@
 "use client";
 
+import { ResponsiveLineCanvas } from "@nivo/line";
 import { ResponsiveLine } from "@nivo/line";
 import { useState } from "react";
 
