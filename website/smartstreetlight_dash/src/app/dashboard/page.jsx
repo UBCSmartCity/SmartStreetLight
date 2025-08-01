@@ -8,7 +8,6 @@ import CardCollection from "./CardCollection";
 import { FetchData } from "@/lib/clientData";
 import { useSearchParams } from "next/navigation";
 
-// http://localhost:3000/api/insert-random-readings/1
 export default function DashboardPage() {
   const searchParams = useSearchParams();
   const loc = searchParams.get("location") || "";
@@ -25,7 +24,7 @@ export default function DashboardPage() {
     <div className="min-h-screen flex flex-col h-full w-full text-center gap-y-4 p-3 ">
       <Header lightLocation={loc} />
 
-      {/* Single Refresh Interval Dropdown */}
+      {/*  Refresh Interval Dropdown */}
       <div className="flex justify-center items-center gap-2 mb-2">
         <label htmlFor="refresh-interval" className="font-medium">
           Refresh Interval:

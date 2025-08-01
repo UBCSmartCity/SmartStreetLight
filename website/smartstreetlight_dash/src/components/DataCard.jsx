@@ -68,6 +68,7 @@ export default function DataCard({ energy, rawData, error, isLoading }) {
     }
   });
 
+  // selct data based on energy or power
   const graphData = [
     {
       id: energy ? "energy" : "power",
@@ -75,6 +76,7 @@ export default function DataCard({ energy, rawData, error, isLoading }) {
     },
   ];
 
+  // min bounds for x-axis
   function min() {
     switch (filter) {
       case "tdy":
@@ -90,6 +92,7 @@ export default function DataCard({ energy, rawData, error, isLoading }) {
     }
   }
 
+  // max bounds for x-axis
   function max() {
     const endOfToday = new Date();
     endOfToday.setHours(23, 59, 59, 59);
@@ -103,6 +106,7 @@ export default function DataCard({ energy, rawData, error, isLoading }) {
     return todayCurrentTime;
   }
 
+  // tick increments for x-axis
   function tickVals() {
     switch (filter) {
       case "tdy":

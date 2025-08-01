@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 export default function ProfileSelection() {
+  // TODO: fetch profiles from a database
   const profiles = [
     { location: "UBC Nest", route: "dashboard?location=nest&id=1" },
     { location: "UBC Bigway", route: "dashboard?location=bigway&id=2" },

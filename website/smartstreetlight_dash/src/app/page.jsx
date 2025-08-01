@@ -1,6 +1,7 @@
 import { signIn } from "@/../../auth";
 import { headers } from "next/headers";
 
+// main sign-in page
 export default async function SignIn() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">

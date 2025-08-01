@@ -3,8 +3,9 @@ import BackButton from "@/components/BackButton";
 import { addEngineerEmail, removeEngineerEmail } from "@/lib/data";
 import NotAdmin from "./notAdmin";
 import { redirect } from "next/navigation";
+import { list } from "postcss";
 
-// TODO: error handling
+// admin page
 export default async function AdminPage() {
   const session = await auth();
   const email = session.user.email;
@@ -15,6 +16,7 @@ export default async function AdminPage() {
   let emailObjs;
   let loginHistory;
 
+  // fetching admin emails and login history
   try {
     adminEmails = await prisma.EngineerEmail.findMany({
       where: { email, admin: true },
@@ -38,6 +40,7 @@ export default async function AdminPage() {
   }
 
   return (
+    // engineer list
     <div className="min-h-screen flex bg-background">
       <aside className="w-64 bg-gray-100 shadow-lg p-6 flex flex-col items-center">
         <img

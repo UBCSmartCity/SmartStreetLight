@@ -22,6 +22,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async signIn({ user }) {
 
 
+      // check if user is authorized
       try {
 
         const authorizedEmails = await prisma.EngineerEmail.findMany({
@@ -51,6 +52,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
     },
 
+    // middleware 
     authorized: async ({ auth }) => {
       return !!auth
     },

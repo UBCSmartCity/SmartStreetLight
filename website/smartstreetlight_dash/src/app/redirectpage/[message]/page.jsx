@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+// redirects when unauthorized
 export default async function RedirectPage({ params }) {
   const { message } = await params;
   return (

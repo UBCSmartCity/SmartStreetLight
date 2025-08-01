@@ -1,5 +1,6 @@
 import BackButton from "@/components/BackButton";
 
+// admin rejection page
 export default function NotAdmin() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">

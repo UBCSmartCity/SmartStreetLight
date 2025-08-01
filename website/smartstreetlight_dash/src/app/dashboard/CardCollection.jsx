@@ -12,12 +12,6 @@ export default function CardCollection({ rawData, error, isLoading }) {
 
   const id = searchParams.get("id");
 
-  // NOTE: comment this line and uncomment "rawData" and "error" if Raspberry Pi DB is not available
-
-  // uncomment when pi is not connected
-  // let rawData = testData;
-  // const error = false;
-
   if (error) return <div>Failed to load</div>; // TODO: change this to rawData = []
   if (isLoading) return <div>Loading...</div>;
 
