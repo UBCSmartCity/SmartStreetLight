@@ -16,6 +16,8 @@ export default async function AdminPage() {
   let emailObjs;
   let loginHistory;
 
+  // TODO: show streetlight start date here
+
   // fetching admin emails and login history
   try {
     adminEmails = await prisma.EngineerEmail.findMany({

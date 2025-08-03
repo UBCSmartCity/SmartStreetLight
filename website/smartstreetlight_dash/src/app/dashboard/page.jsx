@@ -5,8 +5,18 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import DataCard from "@/components/DataCard";
 import CardCollection from "./CardCollection";
-import { FetchData } from "@/lib/clientData";
 import { useSearchParams } from "next/navigation";
+import useSWR from "swr";
+
+export function FetchData(id, refreshInterval = 1000) {
+  const fetcher = (...args) => fetch(...args).then((res) => res.json());
+
+  const { data, error, isLoading } = useSWR(`api/readings/${id}`, fetcher, {
+    refreshInterval,
+  });
+
+  return { data, error, isLoading };
+}
 
 export default function DashboardPage() {
   const searchParams = useSearchParams();
@@ -16,9 +26,6 @@ export default function DashboardPage() {
   const [refreshInterval, setRefreshInterval] = useState(5000);
 
   const { data: rawData, error, isLoading } = FetchData(id, refreshInterval);
-
-  console.log("refreshInterval:", refreshInterval);
-  console.log("rawData:", rawData);
 
   return (
     <div className="min-h-screen flex flex-col h-full w-full text-center gap-y-4 p-3 ">

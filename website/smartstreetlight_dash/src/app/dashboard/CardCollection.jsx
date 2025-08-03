@@ -1,9 +1,6 @@
 "use client";
 
-import { testData } from "@/testData";
 import Card from "@/components/Card";
-import { FetchData } from "@/lib/clientData";
-import { addStreetlightData } from "@/lib/data";
 import { useSearchParams } from "next/navigation";
 
 // contains all Card components
