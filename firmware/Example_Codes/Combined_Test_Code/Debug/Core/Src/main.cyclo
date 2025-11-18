@@ -1,0 +1,15 @@
+../Core/Src/main.c:87:6:HAL_TIM_PWM_PulseFinishedCallback	1
+../Core/Src/main.c:93:6:resetAllLED	2
+../Core/Src/main.c:99:6:setAllLED	2
+../Core/Src/main.c:104:6:setLED	4
+../Core/Src/main.c:121:6:ws2812Send	1
+../Core/Src/main.c:129:6:parseRGBValues	10
+../Core/Src/main.c:162:6:updateHTMLWithRGB	1
+../Core/Src/main.c:203:5:main	30
+../Core/Src/main.c:481:6:SystemClock_Config	3
+../Core/Src/main.c:521:13:MX_I2C1_Init	2
+../Core/Src/main.c:555:13:MX_TIM3_Init	4
+../Core/Src/main.c:604:13:MX_USART1_UART_Init	2
+../Core/Src/main.c:635:13:MX_DMA_Init	1
+../Core/Src/main.c:653:13:MX_GPIO_Init	1
+../Core/Src/main.c:707:6:Error_Handler	1
