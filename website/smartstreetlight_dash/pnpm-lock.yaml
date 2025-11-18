@@ -11,6 +11,9 @@ importers:
       '@auth/prisma-adapter':
         specifier: ^2.8.0
         version: 2.8.0(@prisma/client@6.5.0(prisma@6.4.1(typescript@4.9.5))(typescript@4.9.5))
+      '@canvasjs/react-charts':
+        specifier: ^1.0.2
+        version: 1.0.2(@canvasjs/charts@3.12.17)(react@19.0.0)
       '@headlessui/react':
         specifier: ^2.2.1
         version: 2.2.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -123,6 +126,15 @@ packages:
     resolution: {integrity: sha512-g0Bmq3l5xUDyBBiDgm/y3Zqb582CnRHzFqbloV7scrLia5AbVC0xy+ntn+CQCAWW9ibpwiqJrQKKboIWN1oGqw==}
     peerDependencies:
       '@prisma/client': '>=2.26.0 || >=3 || >=4 || >=5 || >=6'
+
+  '@canvasjs/charts@3.12.17':
+    resolution: {integrity: sha512-X1NZIll6TIqKuA18Lihz4I3897O3PvrnFkLDsFL1AUip8RiaUdMCtGGG5BfKY7BplkmpNZ5J8RFGx66EVQz15w==}
+
+  '@canvasjs/react-charts@1.0.2':
+    resolution: {integrity: sha512-PZgJlDbGdMF4AN/KvrvGY9X50EByJMZ7MHfQB/U0aky9Onn9mt0CpsvwudBsBe+DofaV3SHR4SHn/Wfo/pubDw==}
+    peerDependencies:
+      '@canvasjs/charts': ^3.7.5
+      react: '>=16.0.0'
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -3106,6 +3118,13 @@ snapshots:
       - '@simplewebauthn/browser'
       - '@simplewebauthn/server'
       - nodemailer
+
+  '@canvasjs/charts@3.12.17': {}
+
+  '@canvasjs/react-charts@1.0.2(@canvasjs/charts@3.12.17)(react@19.0.0)':
+    dependencies:
+      '@canvasjs/charts': 3.12.17
+      react: 19.0.0
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:

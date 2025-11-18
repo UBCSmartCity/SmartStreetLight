@@ -1,6 +1,6 @@
 "use server";
 import { revalidatePath } from 'next/cache';
-import prisma from './prisma';
+import prisma from "@/lib/prisma";
 
 
 // reverse geocode - latitude and longitude to an address
@@ -18,46 +18,84 @@ export async function getAddress(lat, long) {
   );
 }
 
-
-
-
-export async function addDataIncrementally() {
-  // console.log('adding data');
-
+// inserting data provided by location parameter, used for testing after db refactor
+export async function addStreetlightData(lightId) {
 
   try {
-    const data = await prisma.LangaraData.create({
+    const reading = await prisma.StreetlightReadings.createMany({
       data: {
-        reading_time: new Date(),
         energy_usage: Math.floor(Math.random() * 300),
-        light_status: "ON",
         brightness_level: 90,
+        reading_time: new Date(),
+        light_status: "ON",
         power_consumption: Math.floor(Math.random() * 300),
         battery_status: 85,
         sensor_health: "Good",
-        location: "Langara 49th Station",
+        light_id: lightId
       },
-    });
-
+    })
   } catch (err) {
-    throw new Error('Failed to Insert Data');
+    console.log(err); // TODO: client error handling 
   }
+
+
 }
 
 
 
-// add emails to JSON file
-export async function addAdminServerAction(formData) {
+// TODO: change this to match refactored db 
+export async function addDataIncrementally() {
+
+
+  const startDate = new Date();
+  startDate.setMinutes(startDate.getMinutes() - 11);
+
+
+  for (let i = 0; i < 10; i++) {
+
+
+    try {
+      const data = await prisma.LangaraReadings.create({
+        data: {
+          reading_time: startDate,
+          energy_usage: Math.floor(Math.random() * 300),
+          light_status: "ON",
+          brightness_level: 90,
+          power_consumption: Math.floor(Math.random() * 300),
+          battery_status: 85,
+          sensor_health: "Good",
+        },
+      });
+
+    } catch (err) {
+      throw new Error(err);
+    }
+
+    setTimeout(() => { }, 3000);
+
+    startDate.setMinutes(startDate.getMinutes() + 1);
+
+
+  }
+
+
+}
+
+
+
+// TODO: zod form validation after converting to TS 
+// add engineer emails to db 
+export async function addEngineerEmail(formData) {
 
   const newEmail = formData.get("email");
   try {
-    const testTwo = await prisma.AllowedEmails.create({
+    const testTwo = await prisma.EngineerEmail.create({
       data: {
-        email: newEmail
+        email: newEmail,
+        admin: false
       },
     })
 
-    // console.log(testTwo);
   } catch (err) {
     throw new Error('Failed to Create');
   }
@@ -67,14 +105,14 @@ export async function addAdminServerAction(formData) {
 }
 
 
-// remove emails from JSON file
-export async function removeAdminServerAction(formData) {
+// remove emails from db
+export async function removeEngineerEmail(id, formData) {
 
-  const emailToRemove = formData.get("email");
+  console.log(id);
   try {
-    const deleteUser = await prisma.AllowedEmails.delete({
+    const deleteUser = await prisma.EngineerEmail.delete({
       where: {
-        email: emailToRemove
+        id
       },
     })
   } catch (err) {

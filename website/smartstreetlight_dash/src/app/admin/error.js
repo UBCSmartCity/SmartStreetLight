@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 
+// for uncaught exceptions - at runtime 
 export default function Error({
     error,
     reset,

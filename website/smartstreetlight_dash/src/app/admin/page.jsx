@@ -1,28 +1,37 @@
 import { auth } from "@/../auth";
 import BackButton from "@/components/BackButton";
-import { addAdminServerAction, removeAdminServerAction } from "@/lib/data";
+import { addEngineerEmail, removeEngineerEmail } from "@/lib/data";
 import NotAdmin from "./notAdmin";
+import { redirect } from "next/navigation";
 
+// TODO: error handling
 export default async function AdminPage() {
   const session = await auth();
   const email = session.user.email;
   const name = session.user.name;
   const img = session.user.image;
 
-  const admins = await fetch(`http://localhost:3000/get-admins/${email}`);
-  const reqEmails = await fetch("http://localhost:3000/get-emails");
+  let adminEmails;
+  let emailObjs;
 
-  const adminEmails = await admins.json();
-  if (adminEmails.length === 0) {
+  try {
+    adminEmails = await prisma.EngineerEmail.findMany({
+      where: {
+        email: email,
+        admin: true,
+      },
+    });
+
+    emailObjs = await prisma.EngineerEmail.findMany();
+  } catch (err) {
+    console.log("error", err.message);
+    redirect(
+      "http://localhost:3000/redirectpage/Database%20Error%21%20Please%20contact%20dashboard%20developers."
+    );
+  }
+  if (adminEmails.length <= 0) {
     return <NotAdmin />;
   }
-
-  if (!reqEmails.ok) {
-    console.log("ERROR");
-    throw new Error("Cannot fetch emails");
-  }
-
-  const emailObjs = await reqEmails.json();
 
   return (
     <div className="min-h-screen flex bg-background">
@@ -48,7 +57,7 @@ export default async function AdminPage() {
             Manage Authorized Emails
           </h2>
 
-          <form action={addAdminServerAction} className="flex gap-2 mb-6">
+          <form action={addEngineerEmail} className="flex gap-2 mb-6">
             <input
               type="email"
               name="email"
@@ -68,23 +77,27 @@ export default async function AdminPage() {
             <p className="text-gray">No emails added.</p>
           ) : (
             <ul className="space-y-3">
-              {emailObjs.map((obj) => (
-                <li
-                  key={obj.email}
-                  className="flex justify-between items-center p-3 rounded shadow-sm"
-                >
-                  <span className="text-gray">{obj.email}</span>
-                  <form action={removeAdminServerAction}>
-                    <input type="hidden" name="email" value={obj.email} />
-                    <button
-                      type="submit"
-                      className="text-red-500 hover:underline"
-                    >
-                      Remove
-                    </button>
-                  </form>
-                </li>
-              ))}
+              {emailObjs.map((obj) => {
+                let removeEmailWithId = removeEngineerEmail.bind(null, obj.id);
+
+                return (
+                  <li
+                    key={obj.email}
+                    className="flex justify-between items-center p-3 rounded shadow-sm"
+                  >
+                    <span className="text-gray">{obj.email}</span>
+                    <form action={removeEmailWithId}>
+                      <input type="hidden" name="email" value={obj.email} />
+                      <button
+                        type="submit"
+                        className="text-red-500 hover:underline"
+                      >
+                        Remove
+                      </button>
+                    </form>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>

@@ -3,15 +3,19 @@
 import { ResponsiveLine } from "@nivo/line";
 import { useState } from "react";
 import { FetchData } from "@/lib/clientData";
-import { testData } from "@/testData";
-import { TooltipWrapper } from "@nivo/tooltip";
+import { useSearchParams } from "next/navigation";
 
-// TODO: clean up code, especially dates and graph functions
 // Card for energy and power graphs
 export default function DataCard({ energy }) {
-  // const { data: rawData, error, isLoading } = FetchData("langara");
-  const rawData = testData;
-  const error = false;
+  const searchParams = useSearchParams();
+
+  const id = searchParams.get("id");
+
+  const { data: rawData, error, isLoading } = FetchData(id);
+
+  // uncomment when pi is not connected
+  // const rawData = testData;
+  // const error = false;
 
   const [filter, setFilter] = useState("tdy");
 
@@ -83,6 +87,8 @@ export default function DataCard({ energy }) {
       data: data,
     },
   ];
+
+  console.log(graphData);
 
   function min() {
     switch (filter) {
@@ -226,6 +232,7 @@ export default function DataCard({ energy }) {
               crosshairType="x"
               curve={"linear"}
               pointLabelYOffset={-12}
+              pointSize={5}
               enableTouchCrosshair={true}
               useMesh={true}
             />
