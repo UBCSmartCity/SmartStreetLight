@@ -72,23 +72,26 @@ static void MX_TIM3_Init(void);
 
 
 //************ BMS UART **********//
-uint8_t rxChar;
+typedef struct
+{
+    uint16_t voltage_battery;
+    uint16_t current_battery;
+    uint16_t power_battery;
+
+    uint16_t voltage_generation;
+    uint16_t current_generation;
+    uint16_t power_generation;
+
+    uint16_t percentage;
+    char     status;
+
+} BMS_Data_t;
+
+BMS_Data_t bmsData = {0};
+
 uint8_t rx2Buffer[64];
+uint8_t dataReady = 0; //data ready flag can be changed to bool
 int rxIndex = 0;
-
-// Renamed for clarity
-uint16_t voltage_battery = 0;
-uint16_t current_battery = 0;
-uint16_t power_battery = 0;
-
-uint16_t voltage_generation = 0;
-uint16_t current_generation = 0;
-uint16_t power_generation = 0;
-
-uint16_t receivedPercentage = 0;
-uint16_t receivedStatus = 'A';
-
-uint8_t dataReady = 0;
 
 
 //************ LED PWM**********//
@@ -133,6 +136,14 @@ void ws2812Send(void)
     HAL_TIM_PWM_Start_DMA(&htim3, TIM_CHANNEL_1, (uint32_t *)pwmData, 24*noOfLEDs);
 }
 
+//************ LED State Variable **********//
+uint8_t light_state = 0;
+uint8_t red = 180, green = 0, blue = 180;
+
+
+//************ time Variables **********//
+uint32_t previousDisplayMillis = 0;
+const uint32_t displayInterval = 2000; // 2 seconds
 
 /* USER CODE END 0 */
 
@@ -171,37 +182,12 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-    uint8_t BMSData[1];
-  	volatile uint8_t last_rx = 0;
-
     uint8_t rxBuffer[512] = {0};
 	uint8_t ATisOK;
     int channel;
-    int onoff;
-    int led = 0;
-    int n=50*24; //no. of leds
     char ATcommand[64];
-    char ATcommandB[1024];
-    char ATcommandN[100];
-    char ATcommandF[100];
-    char ATcommandT[64];
-	float battery_status = 0;
-	float energy_usage = 0;
-	float brightness_level = 0;
-	int sensor_health = 0;
-	float power_consumption = 0;
-	char display_string[64];
 	int display_count=0;
 
-
-    sprintf(ATcommandB,"energy_usage: %f, light_status: OFF,brightness_level: %f,",energy_usage ,brightness_level);
-    sprintf(ATcommandN,"power_consumption: %f, battery_status: %f, sensor_health: Excellent,",power_consumption, battery_status);
-    sprintf(ATcommandF,"33");
-    sprintf(ATcommandT," location: UBC ESC 208");
-    int countB = strlen(ATcommandB);
-    int countN = strlen(ATcommandN);
-    int countF = strlen(ATcommandF);
-    int countT = strlen(ATcommandT);
 
     sprintf(ATcommand,"AT+RST\r\n");
     memset(rxBuffer,0,sizeof(rxBuffer));
@@ -269,7 +255,6 @@ int main(void)
       HAL_Delay(500);
     }
   SSD1306_Init();
-  char snum[5];
 
   SSD1306_GotoXY (0,0);
   SSD1306_Puts ("Smart", &Font_11x18, 1);
@@ -294,14 +279,7 @@ int main(void)
 	  //sprintf(ATcommandB,"energy_usage: %u, light_status: OFF,brightness_level: %d,", (unsigned int)last.batt_perc, (int)brightness_level);
 	  //sprintf(ATcommandN,"power_consumption: %f, battery_status: %f, sensor_health: Excellent,", power_consumption, battery_status);
 
-	  sprintf(ATcommandB,"energy_usage: , light_status: OFF,brightness_level:");
-	  sprintf(ATcommandN,"power_consumption:  battery_status:, sensor_health: Excellent,");
-	  sprintf(ATcommandF," <=");
-      sprintf(ATcommandT," location: UBC ESC 208");
-      countB = strlen(ATcommandB);
-      countN = strlen(ATcommandN);
-      countF = strlen(ATcommandF);
-      countT = strlen(ATcommandT);
+
 
       memset(rxBuffer,0,sizeof(rxBuffer));
       HAL_UART_Receive (&huart1, rxBuffer, 512, 1000);
@@ -315,26 +293,72 @@ int main(void)
       else if(strstr((char *)rxBuffer,"+IPD,7")) channel = 7;
       else channel = 100;
 
-      if(channel<8)
-         {
-           sprintf(ATcommand,"AT+CIPSEND=%d,%d\r\n",channel,countB+countF+countT);
-           memset(rxBuffer,0,sizeof(rxBuffer));
-           HAL_UART_Transmit(&huart1,(uint8_t *)ATcommand,strlen(ATcommand),1000);
-           HAL_UART_Receive (&huart1, rxBuffer, 512, 100);
-           if(strstr((char *)rxBuffer,">"))
-           {
-             memset(rxBuffer,0,sizeof(rxBuffer));
-               HAL_UART_Transmit(&huart1,(uint8_t *)ATcommandB,countB,1000);
-               HAL_UART_Transmit(&huart1,(uint8_t *)ATcommandF,countF,1000);
-               HAL_UART_Transmit(&huart1,(uint8_t *)ATcommandT,countT,1000);
-              HAL_UART_Receive (&huart1, rxBuffer, 512, 100);
-           }
-           sprintf(ATcommand,"AT+CIPCLOSE=%d\r\n",channel);
-           memset(rxBuffer,0,sizeof(rxBuffer));
-           HAL_UART_Transmit(&huart1,(uint8_t *)ATcommand,strlen(ATcommand),1000);
-           HAL_UART_Receive (&huart1, rxBuffer, 512, 100);
-           channel=100;
-         }
+      if(channel<8){
+
+    	  char *cmdPtr = strstr((char *)rxBuffer, "CMD:");
+    	            if (cmdPtr != NULL)
+    	            {
+    	                int l_tmp, r_tmp, g_tmp, b_tmp;
+    	                // We use int for sscanf, then cast to uint8_t
+    	                if (sscanf(cmdPtr, "CMD:L=%d,R=%d,G=%d,B=%d",
+    	                           &l_tmp, &r_tmp, &g_tmp, &b_tmp) == 4)
+    	                {
+    	                    light_state = (uint8_t)l_tmp;
+    	                    red   = (uint8_t)r_tmp;
+    	                    green = (uint8_t)g_tmp;
+    	                    blue  = (uint8_t)b_tmp;
+    	                }
+    	            }
+    	  char httpResponse[512];
+
+    	          // Format all data into one string (JSON-like or simple text format)
+    	          // We use the actual data from your bmsData structure here.
+    	  	  	  int dataLen = snprintf(httpResponse, sizeof(httpResponse),
+    	              "Location: UBC ESC 208\r\n"
+    	              "--- BMS STATUS ---\r\n"
+    	              "Battery Voltage: %u mV\r\n"
+    	              "Battery Current: %u mA\r\n"
+    	              "Battery Power:   %u mW\r\n"
+    	              "Solar Voltage:   %u mV\r\n"
+    	              "Solar Power:     %u mW\r\n"
+    	              "SOC:             %u %%\r\n"
+    	              "BMS Status:      %c\r\n"
+    	              "--- LIGHT STATUS ---\r\n"
+    	              "LED State:       %s\r\n"
+    	              "RGB Values:      %u,%u,%u\r\n",
+    	              bmsData.voltage_battery,
+    	              bmsData.current_battery,
+    	              bmsData.power_battery,
+    	              bmsData.voltage_generation,
+    	              bmsData.power_generation,
+    	              bmsData.percentage,
+    	              bmsData.status,
+    	              (pwmData[0] > 1) ? "ON" : "OFF", // Simple check if LEDs are active
+    	              red, green, blue
+    	          );
+    	          // Prepare the CIPSEND command with the exact length of our new string
+    	          sprintf(ATcommand, "AT+CIPSEND=%d,%d\r\n", channel, dataLen);
+
+    	          // Send CIPSEND
+    	          memset(rxBuffer, 0, sizeof(rxBuffer));
+    	          HAL_UART_Transmit(&huart1, (uint8_t *)ATcommand, strlen(ATcommand), 1000);
+    	          HAL_UART_Receive(&huart1, rxBuffer, 512, 100);
+
+    	          // Wait for the module to be ready (">") then send the data
+    	          if (strstr((char *)rxBuffer, ">"))
+    	          {
+    	              HAL_UART_Transmit(&huart1, (uint8_t *)httpResponse, dataLen, 1000);
+    	              // Wait briefly for "SEND OK"
+    	              HAL_UART_Receive(&huart1, rxBuffer, 512, 100);
+    	          }
+
+    	          // Close the connection
+    	          sprintf(ATcommand, "AT+CIPCLOSE=%d\r\n", channel);
+    	          HAL_UART_Transmit(&huart1, (uint8_t *)ATcommand, strlen(ATcommand), 1000);
+    	          HAL_UART_Receive(&huart1, rxBuffer, 512, 100);
+
+    	          channel = 100; // Reset channel
+    	      }
 
 
 
@@ -347,10 +371,16 @@ int main(void)
                 if (v_pointer != NULL)
                 {
                     // Updated sscanf to use new variable names
-                    if (sscanf(v_pointer, "V=%hu I=%hu P=%hu A=%hu B=%hu C=%hu D=%hu E=%c",
-                               &voltage_battery, &current_battery, &power_battery,
-                               &voltage_generation, &current_generation, &power_generation,
-                               &receivedPercentage, &receivedStatus) >= 1)
+                	if (sscanf(v_pointer,
+                	                   "V=%hu I=%hu P=%hu A=%hu B=%hu C=%hu D=%hu E=%c",
+                	                   &bmsData.voltage_battery,
+                	                   &bmsData.current_battery,
+                	                   &bmsData.power_battery,
+                	                   &bmsData.voltage_generation,
+                	                   &bmsData.current_generation,
+                	                   &bmsData.power_generation,
+                	                   &bmsData.percentage,
+                	                   &bmsData.status) == 8)
                     {
                         rxIndex = (uint8_t)(v_pointer - (char*)rx2Buffer);
                         dataReady = 1;
@@ -358,148 +388,76 @@ int main(void)
                 }
             }
 
-            /*
+      for (int i=0; i<noOfLEDs; i++) { setLED(i, red, green, blue); } // Blue (Dim)
+      ws2812Send();
 
-            if (dataReady != 0)
-            {
-                char display[32];
-                SSD1306_Clear();
+      uint32_t currentMillis = HAL_GetTick();
 
-                // Display Raw Buffer for debugging
-                SSD1306_GotoXY(0, 0);
-                SSD1306_Puts("BMS Data:", &Font_7x10, 1);
-                SSD1306_GotoXY(0, 10);
-                SSD1306_Puts((char*)rx2Buffer, &Font_7x10, 1);
-
-                // Battery Telemetry
-                SSD1306_GotoXY(0, 25);
-                sprintf(display, "Batt: %uV %u%%", voltage_battery, receivedPercentage);
-                SSD1306_Puts(display, &Font_7x10, 1);
-
-                // Generation Telemetry
-                SSD1306_GotoXY(0, 40);
-                sprintf(display, "Gen: %uV %uA", voltage_generation, current_generation);
-                SSD1306_Puts(display, &Font_7x10, 1);
-
-                // Status and Power
-                SSD1306_GotoXY(0, 55);
-                sprintf(display, "P:%uW Stat:%c", power_battery, (char)receivedStatus);
-                SSD1306_Puts(display, &Font_7x10, 1);
-
-                SSD1306_UpdateScreen();
-                dataReady = 0;
-            }*/
-
-
-
-      display_count++;
-
-      // Clear before drawing new screen content
-      SSD1306_Clear();
-
-      if(display_count == 1)
+      if (currentMillis - previousDisplayMillis >= displayInterval)
       {
-          // Next bus time
-          SSD1306_GotoXY(0, 0);
-          SSD1306_Puts("Next Bus Time", &Font_11x18, 1);
-          SSD1306_GotoXY(0, 20);
-          SSD1306_Puts("R4 - 11:30", &Font_11x18, 1);
+          previousDisplayMillis = currentMillis;
+
+          display_count++;
+
+          SSD1306_Clear();
+
+          if(display_count == 1)
+          {
+              SSD1306_GotoXY(0, 0);
+              SSD1306_Puts("Next Bus Time", &Font_11x18, 1);
+              SSD1306_GotoXY(0, 20);
+              SSD1306_Puts("R4 - 11:30", &Font_11x18, 1);
+          }
+          else if(display_count == 2)
+          {
+              SSD1306_GotoXY(0, 0);
+              SSD1306_Puts("Weather", &Font_11x18, 1);
+              SSD1306_GotoXY(0, 20);
+              SSD1306_Puts("20% Rain", &Font_11x18, 1);
+              SSD1306_GotoXY(0, 40);
+              SSD1306_Puts("7 C", &Font_11x18, 1);
+
+          }
+          else if(display_count == 3)
+          {
+              SSD1306_GotoXY(0, 0);
+              SSD1306_Puts("Current Time", &Font_11x18, 1);
+              SSD1306_GotoXY(0, 20);
+              SSD1306_Puts("11:29", &Font_11x18, 1);
+          }
+          else if(display_count == 4)
+          {
+              SSD1306_GotoXY(0, 0);
+              SSD1306_Puts("Bus Time", &Font_11x18, 1);
+              SSD1306_GotoXY(0, 20);
+              SSD1306_Puts("49 - 11:47", &Font_11x18, 1);
+
+          }
+          else if(display_count == 5)
+          {
+              SSD1306_GotoXY(0, 0);
+              SSD1306_Puts("Emergency", &Font_11x18, 1);
+              SSD1306_GotoXY(0, 20);
+              SSD1306_Puts("Call Campus", &Font_11x18, 1);
+              SSD1306_GotoXY(0, 40);
+              SSD1306_Puts("Security", &Font_11x18, 1);
+
+          }
+          else if(display_count >= 6)
+          {
+              SSD1306_GotoXY(0, 0);
+              SSD1306_Puts("System Health", &Font_11x18, 1);
+
+              char buf[32];
+              sprintf(buf, "Charge: %u%%", bmsData.percentage);
+              SSD1306_GotoXY(0, 25);
+              SSD1306_Puts(buf, &Font_11x18, 1);
+
+              display_count = 0;
+          }
+
+          SSD1306_UpdateScreen();
       }
-      else if(display_count == 2 && last_rx == '1')
-      {
-          // Weather info
-          SSD1306_GotoXY(0, 0);
-          SSD1306_Puts("Weather", &Font_11x18, 1);
-          SSD1306_GotoXY(0, 20);
-          SSD1306_Puts("20% Rain", &Font_11x18, 1);
-          SSD1306_GotoXY(0, 40);
-          SSD1306_Puts("7 Degree C", &Font_11x18, 1);
-
-          for (int i=0; i<noOfLEDs; i++) { setLED(i, 0, 0, 255); } // Blue (Dim)
-          ws2812Send();
-      }
-      else if(display_count == 3)
-      {
-          // Current time
-          SSD1306_GotoXY(0, 0);
-          SSD1306_Puts("Current Time", &Font_11x18, 1);
-          SSD1306_GotoXY(0, 20);
-          SSD1306_Puts("11:29", &Font_11x18, 1);
-
-          for (int i=0; i<noOfLEDs; i++) { setLED(i, 0, 0, 255); }
-          ws2812Send();
-      }
-      else if(display_count == 4)
-      {
-          // Bus time
-          SSD1306_GotoXY(0, 0);
-          SSD1306_Puts("Bus Time", &Font_11x18, 1);
-          SSD1306_GotoXY(0, 20);
-          SSD1306_Puts("49 - 11:47", &Font_11x18, 1);
-
-          for (int i=0; i<noOfLEDs; i++) { setLED(i, 0, 255, 0); } // Green
-          ws2812Send();
-      }
-      else if(display_count == 5)
-      {
-          // Emergency message
-          SSD1306_GotoXY(0, 0);
-          SSD1306_Puts("Emergency", &Font_11x18, 1);
-          SSD1306_GotoXY(0, 20);
-          SSD1306_Puts("Call Campus", &Font_11x18, 1);
-          SSD1306_GotoXY(0, 40);
-          SSD1306_Puts("Security", &Font_11x18, 1);
-
-          for (int i=0; i<noOfLEDs; i++) { setLED(i, 255, 0, 0); } // Red
-          ws2812Send();
-      }
-      else if(display_count == 6)
-      {
-          // Battery Telemetry - Using new names
-          SSD1306_GotoXY(0, 0);
-          SSD1306_Puts("Battery Stat", &Font_11x18, 1);
-          char buf[32];
-          sprintf(buf, "V: %u mV", voltage_battery);
-          SSD1306_GotoXY(0, 20);
-          SSD1306_Puts(buf, &Font_7x10, 1);
-
-          sprintf(buf, "I: %u mA", current_battery);
-          SSD1306_GotoXY(0, 35);
-          SSD1306_Puts(buf, &Font_7x10, 1);
-      }
-      else if(display_count == 7)
-      {
-          // Generation Telemetry - Using new names
-          SSD1306_GotoXY(0, 0);
-          SSD1306_Puts("Generation", &Font_11x18, 1);
-          char buf[32];
-          sprintf(buf, "V: %u mV", voltage_generation);
-          SSD1306_GotoXY(0, 20);
-          SSD1306_Puts(buf, &Font_7x10, 1);
-
-          sprintf(buf, "I: %u mA", current_generation);
-          SSD1306_GotoXY(0, 35);
-          SSD1306_Puts(buf, &Font_7x10, 1);
-      }
-      else if(display_count >= 8)
-      {
-          // System Health
-          SSD1306_GotoXY(0, 0);
-          SSD1306_Puts("System Health", &Font_11x18, 1);
-          char buf[32];
-          sprintf(buf, "Charge: %u%%", receivedPercentage);
-          SSD1306_GotoXY(0, 25);
-          SSD1306_Puts(buf, &Font_11x18, 1);
-
-          sprintf(buf, "Status: %c", (char)receivedStatus);
-          SSD1306_GotoXY(0, 45);
-          SSD1306_Puts(buf, &Font_11x18, 1);
-
-          display_count = 0; // Reset loop
-      }
-
-      SSD1306_UpdateScreen();
-      HAL_Delay(2000);
 
   }
   /* USER CODE END 3 */

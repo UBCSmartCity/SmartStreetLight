@@ -1,0 +1,2 @@
+../Core/Src/wifi.c:15:6:WiFi_Init	24	static
+../Core/Src/wifi.c:92:6:WiFi_HandleServer	672	static
