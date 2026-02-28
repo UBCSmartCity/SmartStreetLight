@@ -1,4 +1,9 @@
+// Coulomb counting method as primary method during normal stages.
+// During rest stages, with low current for 5 minutes, use open circuit voltage-based correction/recalibration using a lookup table for a 12V lead acid battery, 
+// and find the corresponding soc percentage and slowly adjust values to be closer
+
 #include <stdint.h>
+
 // added vars and functions for soc
 static float soc = 0.50;  // the current state of charge
 static float rest_timer_s = 0.0; //how long the system has been at rest(near zero current)
@@ -81,4 +86,5 @@ static void soc_update(float V_batt_V, float I_A, float dt_s)
 // float I = bmsData.current_battery / 1000.0;
 
 // soc_update(V, I, dt_s);
+
 // bmsData.percentage = (uint16_t)(soc * 100.0);
