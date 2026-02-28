@@ -1,2 +1,9 @@
-../Core/Src/wifi.c:15:6:WiFi_Init	11
-../Core/Src/wifi.c:92:6:WiFi_HandleServer	16
+../Core/Src/wifi.c:10:9:WiFi_IsModuleAlive	1
+../Core/Src/wifi.c:19:6:WiFi_Init	5
+../Core/Src/wifi.c:53:6:WiFi_Init_Station	7
+../Core/Src/wifi.c:94:6:WiFi_SendDataToLaptop	1
+../Core/Src/wifi.c:135:6:WiFi_HandleServer	16
+../Core/Src/wifi.c:229:6:WiFi_SendDataToBlynk	1
+../Core/Src/wifi.c:266:6:WiFi_SendDataToThingSpeak	2
+../Core/Src/wifi.c:317:6:UART_Reset	2
+../Core/Src/wifi.c:337:6:WiFi_ReadThingSpeak	3

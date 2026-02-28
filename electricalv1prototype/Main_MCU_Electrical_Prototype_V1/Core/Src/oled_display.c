@@ -24,7 +24,7 @@ void Display_InitSystem(void) {
 }
 
 // UPDATE: Added const char* for route and time so the display can show the updated variables
-void Display_UpdateRoutine(BMS_Data_t *bmsData, const char *busRoute, const char *busTime) {
+void Display_UpdateRoutine(BMS_Data_t *bmsData, const char *busRoute, const char *busTime, const int red, const int green, const int blue) {
     uint32_t currentMillis = HAL_GetTick();
 
     if (currentMillis - previousDisplayMillis >= displayInterval) {
@@ -40,7 +40,7 @@ void Display_UpdateRoutine(BMS_Data_t *bmsData, const char *busRoute, const char
                 SSD1306_Puts("Next Bus", &Font_11x18, 1);
 
                 // Construct the dynamic string like "R4 - 11:30"
-                snprintf(buf, sizeof(buf), "%s - %s", busRoute, busTime);
+                snprintf(buf, sizeof(buf), "%s", busRoute);
 
                 SSD1306_GotoXY(0, 20);
                 SSD1306_Puts(buf, &Font_11x18, 1);
@@ -53,9 +53,18 @@ void Display_UpdateRoutine(BMS_Data_t *bmsData, const char *busRoute, const char
                 break;
             case 3:
                 SSD1306_GotoXY(0, 0);
-                SSD1306_Puts("System Health", &Font_11x18, 1);
+                SSD1306_Puts("System Health", &Font_7x10, 1);
 
                 snprintf(buf, sizeof(buf), "Charge: %u%%", bmsData->percentage);
+                SSD1306_GotoXY(0, 25);
+                SSD1306_Puts(buf, &Font_11x18, 1);
+                break;
+
+            case 4:
+                SSD1306_GotoXY(0, 0);
+                SSD1306_Puts("color rgb", &Font_11x18, 1);
+
+                snprintf(buf, sizeof(buf), "%d %d %d %%", red, blue, green);
                 SSD1306_GotoXY(0, 25);
                 SSD1306_Puts(buf, &Font_11x18, 1);
 

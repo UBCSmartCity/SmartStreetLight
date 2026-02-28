@@ -13,6 +13,6 @@
 #include "bms.h"
 
 void Display_InitSystem(void);
-void Display_UpdateRoutine(BMS_Data_t *bmsData,const char *busRoute, const char *busTime);
+void Display_UpdateRoutine(BMS_Data_t *bmsData,const char *busRoute, const char *busTime, const int red, const int green, const int blue);
 
 #endif

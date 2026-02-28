@@ -58,11 +58,19 @@ UART_HandleTypeDef huart2;
 
 BMS_Data_t bmsData = {0};
 uint8_t light_state = 0;
-uint8_t red = 180, green = 0, blue = 180;
+uint8_t red = 180, green = 0, blue = 0;
 uint8_t led_status_dummy = 0; // To track ON/OFF status
 
 char currentBusRoute[16] = "R4";
 char currentBusTime[16] = "11:30";
+
+uint32_t lastUploadTick = 0;
+const uint32_t uploadInterval = 15000; // 15 seconds
+
+uint32_t lastReadTick = 0;
+const uint32_t readInterval = 20000; // 20 seconds
+
+int mode=1;
 
 /* USER CODE END PV */
 
@@ -118,35 +126,60 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  // --- Subsystem Initialization ---
-  WiFi_Init(&huart1);
-  Display_InitSystem();
-  LED_Init();
-  /* USER CODE END 2 */
+  /* USER CODE BEGIN 2 */
+    // 1. Initial WiFi Connection
+    Display_InitSystem();
+    LED_Init();
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-	  // 1. Handle WiFi & Server commands
-	  WiFi_HandleServer(&huart1, &bmsData, &light_state, &red, &green, &blue, &led_status_dummy, currentBusRoute, currentBusTime );
+    // Connect to Hotspot
+    WiFi_Init_Station(&huart1, "Testing", "12346789"); // For Internet Connectivity
+    //WiFi_Init(&huart1); // with ESP as server
 
-	      // 2. Read BMS Data
-	  BMS_ProcessData(&huart2, &bmsData);
+    /* USER CODE END 2 */
 
-	      // 3. Update LEDs
-	  LED_SetAll(red, green, blue);
+    /* Infinite loop */
+    /* USER CODE BEGIN WHILE */
+    while (1)
+    {
+    	// --- 1. Real-Time Processing (Runs every loop iteration) ---
 
-	  LED_Send(&htim3, TIM_CHANNEL_1);
+    	    // Note: WiFi_HandleServer is with ESP as server
+    	    // WiFi_HandleServer(&huart1, &bmsData, &light_state, &red, &green, &blue, &led_status_dummy, currentBusRoute, currentBusTime);
 
-	      // 4. Update OLED Display
-	  Display_UpdateRoutine(&bmsData,currentBusRoute ,currentBusTime);
-    /* USER CODE END WHILE */
+    	    // Read BMS Data from UART2
+    	    BMS_ProcessData(&huart2, &bmsData);
 
-    /* USER CODE BEGIN 3 */
+    	    // Drive LEDs
+    	    LED_SetAll(red, green, blue);
+    	    LED_Send(&htim3, TIM_CHANNEL_1);
 
-  }
+    	    // Refresh OLED with current data
+    	    Display_UpdateRoutine(&bmsData, currentBusRoute, currentBusTime, red, green, blue);
+
+
+    	    // --- 2. Non-Blocking Cloud Upload (Runs every 15s) ---
+
+    	    uint32_t currentTick = HAL_GetTick();
+
+    	    if (currentTick - lastUploadTick >= uploadInterval)
+    	    {
+    	        // This function will execute without stopping the rest of the loop
+    	        WiFi_SendDataToThingSpeak(&huart1, &bmsData);
+
+    	        // Sync the timer to the current time
+    	        lastUploadTick = currentTick;
+    	    }
+
+    	    /* Inside while(1) */
+    	    if (HAL_GetTick() - lastReadTick >= readInterval) {
+    	        // This one call handles everything: AT commands + csv parsing
+    	    	WiFi_ReadThingSpeak(&huart1, &mode, &red, &green, &blue, currentBusRoute, currentBusTime);
+
+    	        lastReadTick = HAL_GetTick();
+    	    }
   /* USER CODE END 3 */
+    }
+
 }
 
 /**
