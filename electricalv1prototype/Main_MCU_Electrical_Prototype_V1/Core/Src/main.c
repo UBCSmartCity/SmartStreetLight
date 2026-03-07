@@ -58,7 +58,7 @@ UART_HandleTypeDef huart2;
 
 BMS_Data_t bmsData = {0};
 uint8_t light_state = 0;
-uint8_t red = 180, green = 0, blue = 0;
+//uint8_t red = 180, green = 0, blue = 0;
 uint8_t led_status_dummy = 0; // To track ON/OFF status
 
 char currentBusRoute[16] = "R4";
@@ -70,7 +70,15 @@ const uint32_t uploadInterval = 15000; // 15 seconds
 uint32_t lastReadTick = 0;
 const uint32_t readInterval = 20000; // 20 seconds
 
-int mode=1;
+//int mode=1;
+//int radar=0;
+
+
+volatile uint8_t radar = 0;
+volatile uint8_t mode = 0;
+volatile uint8_t red = 180;
+volatile uint8_t green = 0;
+volatile uint8_t blue = 0;
 
 /* USER CODE END PV */
 
@@ -135,51 +143,41 @@ int main(void)
     WiFi_Init_Station(&huart1, "Testing", "12346789"); // For Internet Connectivity
     //WiFi_Init(&huart1); // with ESP as server
 
-    /* USER CODE END 2 */
+  /* USER CODE END 2 */
 
-    /* Infinite loop */
-    /* USER CODE BEGIN WHILE */
-    while (1)
-    {
-    	// --- 1. Real-Time Processing (Runs every loop iteration) ---
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
 
-    	    // Note: WiFi_HandleServer is with ESP as server
-    	    // WiFi_HandleServer(&huart1, &bmsData, &light_state, &red, &green, &blue, &led_status_dummy, currentBusRoute, currentBusTime);
+    /* USER CODE END WHILE */
 
-    	    // Read BMS Data from UART2
-    	    BMS_ProcessData(&huart2, &bmsData);
+    /* USER CODE BEGIN 3 */
+	  // 1. Refresh OLED with current data (radar and LEDs are handled by the EXTI!)
+	        Display_UpdateRoutine(&bmsData, currentBusRoute, currentBusTime, red, green, blue);
+	        BMS_ProcessData(&huart2, &bmsData); // Keep updating BMS
 
-    	    // Drive LEDs
-    	    LED_SetAll(red, green, blue);
-    	    LED_Send(&htim3, TIM_CHANNEL_1);
+	        // 2. Wi-Fi Uploads
+	        uint32_t currentTick = HAL_GetTick();
+	        if (currentTick - lastUploadTick >= uploadInterval) {
+	            WiFi_SendDataToThingSpeak(&huart1, &bmsData);
+	            lastUploadTick = currentTick;
+	        }
 
-    	    // Refresh OLED with current data
-    	    Display_UpdateRoutine(&bmsData, currentBusRoute, currentBusTime, red, green, blue);
+	        // 3. Wi-Fi Downloads
+	        if (HAL_GetTick() - lastReadTick >= readInterval) {
+	            WiFi_ReadThingSpeak(&huart1, &mode, &red, &green, &blue, currentBusRoute, currentBusTime);
 
+	            // If the mode changes to 1 via Wi-Fi, update the LEDs immediately
+	            if (mode == 1) {
+	                LED_SetAll(red, green, blue);
+	                LED_Send(&htim3, TIM_CHANNEL_1);
+	            }
+	            lastReadTick = HAL_GetTick();
+	        }
 
-    	    // --- 2. Non-Blocking Cloud Upload (Runs every 15s) ---
-
-    	    uint32_t currentTick = HAL_GetTick();
-
-    	    if (currentTick - lastUploadTick >= uploadInterval)
-    	    {
-    	        // This function will execute without stopping the rest of the loop
-    	        WiFi_SendDataToThingSpeak(&huart1, &bmsData);
-
-    	        // Sync the timer to the current time
-    	        lastUploadTick = currentTick;
-    	    }
-
-    	    /* Inside while(1) */
-    	    if (HAL_GetTick() - lastReadTick >= readInterval) {
-    	        // This one call handles everything: AT commands + csv parsing
-    	    	WiFi_ReadThingSpeak(&huart1, &mode, &red, &green, &blue, currentBusRoute, currentBusTime);
-
-    	        lastReadTick = HAL_GetTick();
-    	    }
+  }
   /* USER CODE END 3 */
-    }
-
 }
 
 /**
@@ -393,6 +391,7 @@ static void MX_DMA_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 /* USER CODE BEGIN MX_GPIO_Init_1 */
 /* USER CODE END MX_GPIO_Init_1 */
 
@@ -401,12 +400,36 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
+  /*Configure GPIO pin : PB1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+    if(GPIO_Pin == GPIO_PIN_1) { // Check if the interrupt came from PB1
+        radar = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1);
 
+        if (mode == 2 && radar == 1){
+            LED_SetAll(255, 255, 255);
+            LED_Send(&htim3, TIM_CHANNEL_1);
+        }
+        else if (mode == 2 && radar == 0){
+            LED_SetAll(0, 0, 0);
+            LED_Send(&htim3, TIM_CHANNEL_1);
+        }
+    }
+}
 /* USER CODE END 4 */
 
 /**
