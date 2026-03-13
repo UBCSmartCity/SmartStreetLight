@@ -43,7 +43,7 @@ static float ocv_lookup_soc(float V)
         float V2 = ocv_V[i+1];
 
         if (V <= V1 && V >= V2)
-        {
+		{
             float s1 = ocv_soc[i];
             float s2 = ocv_soc[i+1];
 
@@ -54,10 +54,11 @@ static float ocv_lookup_soc(float V)
             return s2 + (s1 - s2) * t;
         }
     }
+	return soc;
 }
 
 // main soc update: couloumb counting and table correction
-static void soc_update(float V_batt_V, float I_A, float dt_s)
+void soc_update(float V_batt_V, float I_A, float dt_s)
 {
     // Coulomb counting using formula
     soc += (I_A * (dt_s / 3600.0)) / Q_Ah;
@@ -78,6 +79,9 @@ static void soc_update(float V_batt_V, float I_A, float dt_s)
     }
 }
 
+uint16_t soc_get_percent(void){
+	return (uint16_t)(soc * 100.0f);
+}
 // put this code in main
 // uint32_t now = HAL_GetTick(); //current time in millisecs since mcu booted
 // float dt_s = (now - last_soc_ms) / 1000.0; //time elapsed since previous soc update
@@ -88,4 +92,4 @@ static void soc_update(float V_batt_V, float I_A, float dt_s)
 
 // soc_update(V, I, dt_s);
 
-// bmsData.percentage = (uint16_t)(soc * 100.0);
+// bmsData.percentage = soc_get_percent();
