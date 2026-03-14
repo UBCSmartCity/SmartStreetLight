@@ -12,7 +12,7 @@ Our team proposes a streetlight system that provides:
 
 ### Prototype 
 ##### MCU
-- STM32F4
+- STM32F103C8T6
 
 ##### Sensors
 - VEML3328
