@@ -10,14 +10,22 @@ static float soc = 0.50;  // the current state of charge
 static float rest_timer_s = 0.0; //how long the system has been at rest(near zero current)
 static uint32_t last_soc_ms = 0; //the last time updated SoC
 
-static const float Q_Ah = 7.0;      // battery capacity in amphrs (adjust this?)
+static const float Q_Ah = 2.0;      // battery capacity in amphrs (adjust this?)
 static const float REST_TIME_S = 300.0; // how long current is zero before use voltage method
 static const float ALPHA = 0.01; // slow adjust factor
-static const float I_REST_A = 0.14; // if current below this, start counting rest time
+static const float I_REST_A = 0.05; // if current below this, start counting rest time
 
-// OCV table (sealed lead acid)
-static const float ocv_V[] = {12.89,12.78,12.65,12.51,12.41,12.23,12.11,11.96,11.81,11.70,11.63};
-static const float ocv_soc[] = {1.00,0.90,0.80,0.70,0.60,0.50,0.40,0.30,0.20,0.10,0.00};
+// OCV table (sealed lead acid) for a single-cell 18650 lithium-ion battery
+static const float ocv_V[] = {
+4.20f,4.10f,4.00f,3.95f,3.90f,
+3.85f,3.80f,3.75f,3.70f,3.50f,3.00f
+};
+
+static const float ocv_soc[] = {
+1.00f,0.90f,0.80f,0.70f,0.60f,
+0.50f,0.40f,0.30f,0.20f,0.10f,0.00f
+};
+
 static const uint32_t OCV_N = sizeof(ocv_V)/sizeof(ocv_V[0]); //no. of points in table
 
 // prevents soc from becoming negative or bigger than 100%
@@ -65,7 +73,7 @@ void soc_update(float V_batt_V, float I_A, float dt_s)
     soc = clamp01(soc);
 
     // Rest detection
-    if (fabs(I_A) < I_REST_A)
+    if (fabsf(I_A) < I_REST_A)
         rest_timer_s += dt_s;
     else
         rest_timer_s = 0.0;
