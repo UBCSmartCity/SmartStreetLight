@@ -138,3 +138,20 @@ static float MCP9808_ConvertTemp(uint16_t raw)
     // positive temperature
     return raw / 16.0f;
 }
+
+
+// in main:
+// #include "battery_sensors.h"
+// #include "bms.h"
+// #include <stdio.h>
+// #include <string.h>
+
+// TempSensor_t temp_data;
+// BMS_Data_t bms_data;
+
+// TempSensor_Init(&temp_data);
+
+// // inside the loop
+// BatterySensors_UpdateAll(&hi2c1, &huart1, &temp_data, &bms_data);
+
+
