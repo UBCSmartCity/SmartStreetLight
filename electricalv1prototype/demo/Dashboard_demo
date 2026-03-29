@@ -1,0 +1,381 @@
+import urllib.request
+import urllib.parse
+import json
+import re
+import csv
+import os
+from datetime import datetime, timedelta
+import tkinter as tk
+from tkinter import messagebox, ttk
+
+# --- Matplotlib Imports ---
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.dates as mdates
+
+# ==============================
+# CONFIGURATION
+# ==============================
+WRITE_API_KEY = "9UTZU3GSKEBYUC8Y"
+READ_CHANNEL_ID = "2878980"
+READ_API_KEY = "7N1NS3B289O3GXWP"
+CSV_FILE = "battery_data_log.csv"
+
+STOPS = {
+    "R4": "60162", "4": "61702", "9": "58895", "14": "61701",
+    "25": "60164", "33": "61935", "44": "60160", "49": "60163",
+    "68": "60158", "84": "60159", "99": "60428"
+}
+
+encoded_bus_payload = "%5B%5D" 
+
+# ==============================
+# CSV INITIALIZATION
+# ==============================
+def init_csv():
+    if not os.path.exists(CSV_FILE):
+        with open(CSV_FILE, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow([
+                "Timestamp", "Battery Voltage (V)", "Battery Current (A)", 
+                "Battery Power (W)", "Wind Voltage (V)", "Wind Power (W)", "SOC (%)"
+            ])
+
+init_csv()
+
+# ==============================
+# 1. SCRAPER FUNCTION
+# ==============================
+def find_top_3_buses():
+    bus_scrape_btn.config(text="Scraping...", bg="orange")
+    root.update()
+
+    all_buses = []
+    now = datetime.now()
+
+    for bus_name, stop_no in STOPS.items():
+        url = f"http://www.transitdb.ca/nextbus/{stop_no}/"
+        try:
+            req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req, timeout=5) as response:
+                html = response.read().decode('utf-8')
+                times = re.findall(r'<td>(\d{1,2}:\d{2})</td>', html)
+                
+                for time_str in times:
+                    time_obj = datetime.strptime(time_str, "%H:%M")
+                    bus_time = now.replace(hour=time_obj.hour, minute=time_obj.minute, second=0, microsecond=0)
+                    
+                    delta_minutes = (bus_time - now).total_seconds() / 60
+                    if delta_minutes < -60:
+                        bus_time += timedelta(days=1)
+                        delta_minutes = (bus_time - now).total_seconds() / 60
+                        
+                    countdown = int(delta_minutes)
+                    if countdown >= -2:
+                        time_hhmm = time_str.replace(":", "")
+                        all_buses.append({'name': bus_name, 'time_hhmm': time_hhmm, 'countdown': countdown})
+        except Exception:
+            pass 
+
+    all_buses.sort(key=lambda x: x['countdown'])
+    top_3 = all_buses[:3]
+
+    bus1_var.set("Route: ---  |  Time: ---")
+    bus2_var.set("Route: ---  |  Time: ---")
+    bus3_var.set("Route: ---  |  Time: ---")
+
+    if len(top_3) >= 1: bus1_var.set(f"Route: {top_3[0]['name']}  |  Time: {top_3[0]['time_hhmm']} ({top_3[0]['countdown']}m)")
+    if len(top_3) >= 2: bus2_var.set(f"Route: {top_3[1]['name']}  |  Time: {top_3[1]['time_hhmm']} ({top_3[1]['countdown']}m)")
+    if len(top_3) >= 3: bus3_var.set(f"Route: {top_3[2]['name']}  |  Time: {top_3[2]['time_hhmm']} ({top_3[2]['countdown']}m)")
+
+    json_data = [{"sno": i + 1, "name": bus['name'], "route": "Outbnd", "time": bus['time_hhmm']} for i, bus in enumerate(top_3)]
+    
+    global encoded_bus_payload
+    encoded_bus_payload = urllib.parse.quote(json.dumps(json_data, separators=(',', ':')))
+    bus_scrape_btn.config(text="Scrape Live Buses", bg="#f0f0f0")
+
+# ==============================
+# 2. WRITE FUNCTION (ThingSpeak)
+# ==============================
+def push_to_thingspeak():
+    mode = 1 if master_switch_var.get() else 2
+    red, green, blue = r_var.get(), g_var.get(), b_var.get()
+
+    rgb_val_var.set(f"{red}, {green}, {blue}")
+    led_state_var.set("ON" if mode else "OFF")
+
+    url = (f"https://api.thingspeak.com/update?api_key={WRITE_API_KEY}"
+           f"&field1={mode}&field2={red}&field3={green}&field4={blue}"
+           f"&field5={encoded_bus_payload}")
+
+    try:
+        with urllib.request.urlopen(url) as response:
+            result = response.read().decode('utf-8')
+            if result != "0":
+                messagebox.showinfo("Success", f"Update Successful! Entry ID: {result}")
+            else:
+                messagebox.showwarning("Warning", "Rate limit hit (wait 15 seconds).")
+    except Exception as e:
+        messagebox.showerror("Error", f"Connection Error:\n{e}")
+
+# ==============================
+# 3. READ & LOG FUNCTION
+# ==============================
+def read_battery_data():
+    url = f"https://api.thingspeak.com/channels/{READ_CHANNEL_ID}/feeds.json?api_key={READ_API_KEY}&results=1"
+    try:
+        with urllib.request.urlopen(url) as response:
+            data = json.loads(response.read().decode())
+            if "feeds" in data and len(data["feeds"]) > 0:
+                feed = data["feeds"][0]
+                
+                raw_v_batt, raw_soc, raw_i_batt = feed.get("field1"), feed.get("field2"), feed.get("field3")
+                raw_v_gen, raw_i_gen = feed.get("field4"), feed.get("field5")
+                status = feed.get("field7", "N/A")
+                
+                # --- ACTUAL FORMAT CONVERSION ---
+                v_batt_real = float(raw_v_batt) / 10.0 if raw_v_batt else 0.0
+                i_batt_real = float(raw_i_batt) / 10.0 if raw_i_batt else 0.0
+                v_gen_real = float(raw_v_gen) / 10.0 if raw_v_gen else 0.0
+                i_gen_real = float(raw_i_gen) / 10.0 if raw_i_gen else 0.0
+                soc_real = float(raw_soc) if raw_soc else 0.0
+
+                p_batt_real = v_batt_real * i_batt_real
+                p_gen_real = v_gen_real * i_gen_real
+
+                # --- SET UI VARIABLES ---
+                battery_voltage.set(f"{v_batt_real:.2f} V" if raw_v_batt else "N/A")
+                battery_current.set(f"{i_batt_real:.2f} A" if raw_i_batt else "N/A")
+                Wind_voltage.set(f"{v_gen_real:.2f} V" if raw_v_gen else "N/A")
+                soc.set(f"{soc_real:.1f} %" if raw_soc else "N/A")
+                bms_status.set(status)
+                battery_power.set(f"{p_batt_real:.2f} W" if raw_v_batt and raw_i_batt else "N/A")
+                Wind_power.set(f"{p_gen_real:.2f} W" if raw_v_gen and raw_i_gen else "N/A")
+                
+                # --- LOG TO CSV ---
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                with open(CSV_FILE, 'a', newline='') as f:
+                    writer = csv.writer(f)
+                    writer.writerow([
+                        timestamp, round(v_batt_real, 2), round(i_batt_real, 2), 
+                        round(p_batt_real, 2), round(v_gen_real, 2), round(p_gen_real, 2), round(soc_real, 1)
+                    ])
+                
+                # Update Graph with new data
+                update_graph()
+
+    except Exception as e:
+        print(f"Background refresh failed: {e}") 
+
+    # Loop every 30 seconds
+    root.after(30000, read_battery_data)
+# ==============================
+# 4. GRAPHING FUNCTION
+# ==============================
+def update_graph(*args):
+    param = param_var.get()
+    Window_str = Window_var.get()
+    now = datetime.now()
+    
+    # Map selection to timedelta
+    time_deltas = {
+        "10 Minutes": timedelta(minutes=10),
+        "1 Hour": timedelta(hours=1),
+        "6 Hours": timedelta(hours=6),
+        "1 Day": timedelta(days=1),
+        "1 Week": timedelta(weeks=1),
+        "1 Month": timedelta(days=30),
+        "1 Year": timedelta(days=365)
+    }
+    
+    # Define bucketing interval (in seconds) to prevent graph overcrowding
+    # 0 = Use raw 30-second data points
+    bucket_intervals = {
+        "10 Minutes": 0,             # Raw points
+        "1 Hour": 0,                 # Raw points
+        "6 Hours": 5 * 60,           # Average every 5 minutes
+        "1 Day": 30 * 60,            # Average every 30 minutes
+        "1 Week": 4 * 3600,          # Average every 4 hours
+        "1 Month": 24 * 3600,        # Average every 1 day
+        "1 Year": 7 * 24 * 3600      # Average every 1 week
+    }
+    
+    cutoff_time = now - time_deltas[Window_str]
+    interval = bucket_intervals[Window_str]
+    
+    times, values = [], []
+    bucketed_data = {}
+    
+    try:
+        with open(CSV_FILE, 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                try:
+                    row_time = datetime.strptime(row["Timestamp"], "%Y-%m-%d %H:%M:%S")
+                    if row_time >= cutoff_time:
+                        val = float(row[param])
+                        
+                        if interval == 0:
+                            times.append(row_time)
+                            values.append(val)
+                        else:
+                            # Group data points into time buckets
+                            ts = row_time.timestamp()
+                            bucket_ts = ts - (ts % interval)
+                            if bucket_ts not in bucketed_data:
+                                bucketed_data[bucket_ts] = []
+                            bucketed_data[bucket_ts].append(val)
+                except (ValueError, KeyError):
+                    continue
+    except FileNotFoundError:
+        pass
+
+    # Process bucketed data by calculating the average for each interval
+    if interval > 0:
+        for b_ts in sorted(bucketed_data.keys()):
+            times.append(datetime.fromtimestamp(b_ts))
+            avg_val = sum(bucketed_data[b_ts]) / len(bucketed_data[b_ts])
+            values.append(avg_val)
+
+    # Clear and redraw plot
+    ax.clear()
+    
+    if times:
+        ax.plot(times, values, marker='.', linestyle='-', color='#1f77b4', markersize=4)
+        
+    # --- NEW: Force the X-Axis to span the ENTIRE selected time Window ---
+    # This ensures blank space is shown on the left if no historical data exists
+    ax.set_xlim(cutoff_time, now)
+
+    ax.set_title(f"{param} (Last {Window_str})", fontsize=10)
+    ax.set_ylabel(param.split(' ')[-1].replace('(','').replace(')',''), fontsize=9)
+    ax.grid(True, linestyle='--', alpha=0.6)
+    
+    # Dynamic X-Axis Formatting
+    if Window_str in ["10 Minutes", "1 Hour"]:
+        date_fmt = mdates.DateFormatter('%H:%M:%S') 
+    elif Window_str in ["6 Hours", "1 Day"]:
+        date_fmt = mdates.DateFormatter('%H:%M')    
+    elif Window_str in ["1 Week", "1 Month"]:
+        date_fmt = mdates.DateFormatter('%b %d, %H:%M') 
+    else: 
+        date_fmt = mdates.DateFormatter('%b %Y')    
+        
+    ax.xaxis.set_major_formatter(date_fmt)
+    
+    # Prevent overlapping text labels
+    locator = mdates.AutoDateLocator(minticks=4, maxticks=8)
+    ax.xaxis.set_major_locator(locator)
+    
+    plt.setp(ax.get_xticklabels(), rotation=30, ha='right', fontsize=8)
+    fig.tight_layout()
+
+    canvas.draw()
+
+# ==============================
+# GUI SETUP
+# ==============================
+root = tk.Tk()
+root.title("Device Control Dashboard")
+root.geometry("1000x850") # Taller to fit the graph
+root.configure(bg="#f4f4f4")
+
+# Variables
+location_var = tk.StringVar(value="UBC")
+battery_voltage, battery_current, battery_power = tk.StringVar(value="N/A"), tk.StringVar(value="N/A"), tk.StringVar(value="N/A")
+Wind_voltage, Wind_power, soc, bms_status = tk.StringVar(value="N/A"), tk.StringVar(value="N/A"), tk.StringVar(value="N/A"), tk.StringVar(value="N/A")
+led_state_var, rgb_val_var = tk.StringVar(value="N/A"), tk.StringVar(value="N/A")
+
+master_switch_var = tk.BooleanVar(value=True)
+r_var, g_var, b_var = tk.IntVar(value=180), tk.IntVar(value=0), tk.IntVar(value=180)
+
+bus1_var, bus2_var, bus3_var = tk.StringVar(value="Route: ---  |  Time: ---"), tk.StringVar(value="Route: ---  |  Time: ---"), tk.StringVar(value="Route: ---  |  Time: ---")
+
+style = ttk.Style()
+style.configure("TLabelframe", background="#f4f4f4", padding=10)
+style.configure("TLabelframe.Label", font=("Arial", 10, "bold"), background="#f4f4f4")
+
+# --- SECTION 1: PARSED DEVICE DATA ---
+data_frame = ttk.LabelFrame(root, text="Parsed Device Data")
+data_frame.pack(fill="x", padx=20, pady=5)
+
+def create_box(parent, title, textvar, r, c):
+    f = tk.Frame(parent, borderwidth=1, relief="ridge", bg="white", width=180, height=60)
+    f.grid_propagate(False)
+    f.grid(row=r, column=c, padx=5, pady=5)
+    tk.Label(f, text=title, bg="white", font=("Arial", 9), fg="gray").pack(pady=(5,0))
+    tk.Label(f, textvariable=textvar, bg="white", font=("Arial", 11, "bold")).pack()
+
+boxes = [
+    ("Location", location_var, 0, 0), ("Battery Voltage", battery_voltage, 0, 1),
+    ("Battery Current", battery_current, 0, 2), ("Battery Power", battery_power, 0, 3),
+    ("Wind Voltage", Wind_voltage, 0, 4), ("Wind Power", Wind_power, 1, 0),
+    ("SOC", soc, 1, 1), ("BMS Status", bms_status, 1, 2),
+    ("LED State", led_state_var, 1, 3), ("RGB Values", rgb_val_var, 1, 4)
+]
+for title, var, r, c in boxes: create_box(data_frame, title, var, r, c)
+
+# --- MIDDLE SECTION (LIGHTS & BUS) ---
+mid_frame = tk.Frame(root, bg="#f4f4f4")
+mid_frame.pack(fill="x", padx=20, pady=5)
+
+light_frame = ttk.LabelFrame(mid_frame, text="Light Control")
+light_frame.pack(side="left", fill="both", expand=True, padx=(0, 10))
+tk.Checkbutton(light_frame, text="Master Switch", variable=master_switch_var, bg="#f4f4f4").grid(row=0, column=0, sticky="w")
+tk.Button(light_frame, text="Update Lights", command=push_to_thingspeak).grid(row=0, column=3, padx=20)
+sliders_frame = tk.Frame(light_frame, bg="#f4f4f4")
+sliders_frame.grid(row=1, column=0, columnspan=4, pady=10, sticky="w")
+for i, (col, var) in enumerate([("R:", r_var), ("G:", g_var), ("B:", b_var)]):
+    tk.Label(sliders_frame, text=col, bg="#f4f4f4").grid(row=0, column=i*2, padx=(10 if i>0 else 0, 2))
+    tk.Scale(sliders_frame, variable=var, from_=0, to=255, orient="horizontal", bg="#f4f4f4", length=100).grid(row=0, column=i*2+1)
+
+bus_frame = ttk.LabelFrame(mid_frame, text="Bus Timings")
+bus_frame.pack(side="right", fill="both", expand=True, padx=(10, 0))
+bus_list_frame = tk.Frame(bus_frame, bg="#f4f4f4")
+bus_list_frame.grid(row=0, column=0, sticky="w", padx=10)
+for var in (bus1_var, bus2_var, bus3_var): tk.Label(bus_list_frame, textvariable=var, bg="#f4f4f4", font=("Arial", 10)).pack(anchor="w")
+btn_frame = tk.Frame(bus_frame, bg="#f4f4f4")
+btn_frame.grid(row=0, column=1, padx=20, pady=5)
+bus_scrape_btn = tk.Button(btn_frame, text="Scrape Live Buses", command=find_top_3_buses)
+bus_scrape_btn.pack(pady=2)
+tk.Button(btn_frame, text="Update Bus Display", command=push_to_thingspeak).pack(pady=2)
+
+# --- SECTION 3: DATA VISUALIZATION ---
+vis_frame = ttk.LabelFrame(root, text="Data Visualization")
+vis_frame.pack(fill="both", expand=True, padx=20, pady=10)
+
+# Controls for the graph
+graph_controls = tk.Frame(vis_frame, bg="#f4f4f4")
+graph_controls.pack(fill="x", padx=10, pady=5)
+
+tk.Label(graph_controls, text="Parameter:", bg="#f4f4f4").pack(side="left")
+param_var = tk.StringVar(value="Battery Voltage (V)")
+param_dropdown = ttk.Combobox(graph_controls, textvariable=param_var, state="readonly", width=20)
+param_dropdown['values'] = ("Battery Voltage (V)", "Battery Current (A)", "Battery Power (W)", "Wind Voltage (V)", "Wind Power (W)", "SOC (%)")
+param_dropdown.pack(side="left", padx=5)
+
+tk.Label(graph_controls, text="Time Window:", bg="#f4f4f4").pack(side="left", padx=(15,0))
+Window_var = tk.StringVar(value="10 Minutes")
+Window_dropdown = ttk.Combobox(graph_controls, textvariable=Window_var, state="readonly", width=15)
+Window_dropdown['values'] = ("10 Minutes", "1 Hour", "6 Hours", "1 Day", "1 Week", "1 Month", "1 Year")
+Window_dropdown.pack(side="left", padx=5)
+
+# Bind the dropdowns to update the graph instantly when changed
+param_dropdown.bind("<<ComboboxSelected>>", update_graph)
+Window_dropdown.bind("<<ComboboxSelected>>", update_graph)
+
+# Setup Matplotlib Figure
+fig = plt.Figure(figsize=(8, 3.5), dpi=100)
+fig.patch.set_facecolor('#f4f4f4')
+ax = fig.add_subplot(111)
+ax.text(0.5, 0.5, 'Loading graph...', ha='center', va='center', transform=ax.transAxes, color='gray')
+ax.set_xticks([])
+ax.set_yticks([])
+
+canvas = FigureCanvasTkAgg(fig, master=vis_frame)
+canvas.get_tk_widget().pack(fill="both", expand=True, padx=5, pady=5)
+
+# Load initial data AND trigger the 30-second loop
+read_battery_data()
+
+root.mainloop()
