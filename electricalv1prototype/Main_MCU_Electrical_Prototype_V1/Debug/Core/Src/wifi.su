@@ -6,4 +6,4 @@
 ../Core/Src/wifi.c:229:6:WiFi_SendDataToBlynk	496	static
 ../Core/Src/wifi.c:266:6:WiFi_SendDataToThingSpeak	464	static
 ../Core/Src/wifi.c:317:6:UART_Reset	24	static
-../Core/Src/wifi.c:337:6:WiFi_ReadThingSpeak	1400	static
+../Core/Src/wifi.c:334:6:WiFi_ReadThingSpeak	2440	static

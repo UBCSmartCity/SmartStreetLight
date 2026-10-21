@@ -66,7 +66,7 @@ void WiFi_Init_Station(UART_HandleTypeDef *huart, char* ssid, char* pass) {
         HAL_Delay(500);
     }
 
-
+        // 3. Connect to the specified WiFi network
         ATisOK = 0;
         while(!ATisOK){
           sprintf(ATcommand,"AT+CWJAP_CUR=\"Testing\",\"12346789\"\r\n");
@@ -78,7 +78,8 @@ void WiFi_Init_Station(UART_HandleTypeDef *huart, char* ssid, char* pass) {
           }
           HAL_Delay(500);
         }
-
+        
+        //  4. Set MUX to 0 for single connection mode
         ATisOK = 0;
         while(!ATisOK){
           sprintf(ATcommand,"AT+CIPMUX=0\r\n");
@@ -91,6 +92,8 @@ void WiFi_Init_Station(UART_HandleTypeDef *huart, char* ssid, char* pass) {
           HAL_Delay(500);
         }
 }
+
+// --- SEND DATA TO LAPTOP VIA TCP TUNNEL ---
 void WiFi_SendDataToLaptop(UART_HandleTypeDef *huart, BMS_Data_t *bmsData) {
     // 1. Use the IP we just found from the ping command
     char remoteIP[] = "3.208.46.244";
@@ -131,6 +134,7 @@ void WiFi_SendDataToLaptop(UART_HandleTypeDef *huart, BMS_Data_t *bmsData) {
     // 7. Close the session
     HAL_UART_Transmit(huart, (uint8_t *)"AT+CIPCLOSE=0\r\n", 15, 500);
 }
+
 // UPDATE: Added busRoute and busTime parameters to intercept the strings
 void WiFi_HandleServer(UART_HandleTypeDef *huart, BMS_Data_t *bmsData, uint8_t *ledState, uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *ledStatus, char *busRoute, char *busTime) {
     int channel = 100;
@@ -225,7 +229,7 @@ void WiFi_HandleServer(UART_HandleTypeDef *huart, BMS_Data_t *bmsData, uint8_t *
 }
 
 
-
+// --- SEND DATA TO BLYNK ---
 void WiFi_SendDataToBlynk(UART_HandleTypeDef *huart, BMS_Data_t *bmsData) {
     // Your specific credentials
     char blynkToken[] = "a_00qqndsS3TN-w_eZw7pf4L30cazA3j";
@@ -262,7 +266,7 @@ void WiFi_SendDataToBlynk(UART_HandleTypeDef *huart, BMS_Data_t *bmsData) {
     HAL_Delay(500);
 }
 
-
+// --- SEND DATA TO THINGSPEAK ---
 void WiFi_SendDataToThingSpeak(UART_HandleTypeDef *huart, BMS_Data_t *bmsData) {
     // Note: Use the base URL for the GET request
     char api_key[] = "V5ANR0ZJ99TQ2AZS";
@@ -331,92 +335,113 @@ void UART_Reset(UART_HandleTypeDef *huart) {
   * Handles the format: Timestamp, EntryID, Field1, Field2, Field3, Field4, Field5, Field6
   */
 
-
-
-
 void WiFi_ReadThingSpeak(UART_HandleTypeDef *huart,
-                         int *mode,
-                         uint8_t *r,
-                         uint8_t *g,
-                         uint8_t *b,
-                         char *busRoute,
-                         char *busTime)
+                         volatile uint8_t *mode,
+                         volatile uint8_t *r,
+                         volatile uint8_t *g,
+                         volatile uint8_t *b,
+                         BusInfo *buses)
 {
-    char rxBuf[1024] = {0};
+    // 1. Memory Cleanup
+    // Increase buffer slightly and ensure it is zeroed out every single time
+    char rxBuf[2048];
+    memset(rxBuf, 0, sizeof(rxBuf));
+
     char getReq[256];
     char atCmd[32];
 
+    // Clear hardware UART registers to remove leftover noise from previous cycles
+    __HAL_UART_FLUSH_DRREGISTER(huart);
     UART_Reset(huart);
 
-    // -----------------------
-    // 1. Start TCP connection
-    // -----------------------
-    HAL_UART_Transmit(huart,
-        (uint8_t*)"AT+CIPSTART=\"TCP\",\"api.thingspeak.com\",80\r\n",
-        44, 1000);
-    HAL_Delay(800);
+    // 2. Establish TCP Connection
+    // Using a 1000ms delay to allow the ESP8266 to handshake with the server
+    HAL_UART_Transmit(huart, (uint8_t*)"AT+CIPSTART=\"TCP\",\"api.thingspeak.com\",80\r\n", 44, 1000);
+    HAL_Delay(1000);
 
-    // -----------------------
-    // 2. Prepare HTTP GET
-    // -----------------------
+    // 3. Prepare and Send HTTP GET
     snprintf(getReq, sizeof(getReq),
              "GET /channels/2897632/feeds.csv?api_key=0EZLFMJSEPWM8N6C&results=1 HTTP/1.1\r\n"
              "Host: api.thingspeak.com\r\n"
              "Connection: close\r\n\r\n");
 
-    snprintf(atCmd, sizeof(atCmd),
-             "AT+CIPSEND=%d\r\n",
-             (int)strlen(getReq));
-
+    snprintf(atCmd, sizeof(atCmd), "AT+CIPSEND=%d\r\n", (int)strlen(getReq));
     HAL_UART_Transmit(huart, (uint8_t*)atCmd, strlen(atCmd), 500);
     HAL_Delay(200);
-
     HAL_UART_Transmit(huart, (uint8_t*)getReq, strlen(getReq), 1000);
 
-    // -----------------------
-    // 3. Receive response
-    // -----------------------
-    HAL_UART_Receive(huart,
-                     (uint8_t*)rxBuf,
-                     sizeof(rxBuf) - 1,
-                     5000);
+    // 4. Receive Response
+    // 6000ms timeout is safe for slower Wi-Fi connections
+    HAL_UART_Receive(huart, (uint8_t*)rxBuf, sizeof(rxBuf) - 1, 6000);
 
-    // -----------------------
-    // 4. Parse using "UTC,"
-    // -----------------------
+    // 5. Locate Data Row
+    // ThingSpeak CSVs always contain "UTC," in the header and the data row
     char *dataPtr = strstr(rxBuf, "UTC,");
+    if (!dataPtr) goto CLOSE;
 
-    if (dataPtr)
-    {
-        dataPtr += 4;  // move past "UTC,"
+    dataPtr += 4; // Move past "UTC," to reach the entry_id
 
-        int entryID, m_tmp, r_tmp, g_tmp, b_tmp;
+    // 6. Parse Standard Numeric Fields (Fields 1-4)
+    int entryID, m_tmp, r_tmp, g_tmp, b_tmp;
+    int matched = sscanf(dataPtr, "%d,%d,%d,%d,%d", &entryID, &m_tmp, &r_tmp, &g_tmp, &b_tmp);
 
-        int matched = sscanf(dataPtr,
-                             "%d,%d,%d,%d,%d,%15[^,],%15s",
-                             &entryID,
-                             &m_tmp,
-                             &r_tmp,
-                             &g_tmp,
-                             &b_tmp,
-                             busRoute,
-                             busTime);
+    if (matched >= 5) {
+        *mode = (uint8_t)m_tmp;
+        *r    = (uint8_t)r_tmp;
+        *g    = (uint8_t)g_tmp;
+        *b    = (uint8_t)b_tmp;
+    }
 
-        if (matched == 7)
-        {
-            *mode = m_tmp;
-            *r = (uint8_t)r_tmp;
-            *g = (uint8_t)g_tmp;
-            *b = (uint8_t)b_tmp;
+    // 7. Locate Field 5 (JSON Array)
+    // We skip 5 commas to reach the start of the quoted JSON string
+    char *jsonPtr = dataPtr;
+    for (int i = 0; i < 5; i++) {
+        jsonPtr = strchr(jsonPtr, ',');
+        if (!jsonPtr) goto CLOSE;
+        jsonPtr++;
+    }
+
+    // 8. Extract the 3 Buses
+    for (int i = 0; i < 3; i++) {
+        // Initialize with default values in case parsing fails
+        snprintf(buses[i].name,  sizeof(buses[i].name),  "---");
+        snprintf(buses[i].route, sizeof(buses[i].route), "---");
+        snprintf(buses[i].time,  sizeof(buses[i].time),  "00:00");
+
+        // Find "name"
+        char *namePtr = strstr(jsonPtr, "name");
+        if (!namePtr) break;
+        namePtr = strchr(namePtr, ':');
+        if (namePtr) {
+            // Skip colon, spaces, and escaped quotes (e.g., :""R4"")
+            while(*namePtr == ':' || *namePtr == '\"' || *namePtr == ' ') namePtr++;
+            sscanf(namePtr, "%15[^\"]", buses[i].name);
+        }
+
+        // Find "route"
+        char *routePtr = strstr(namePtr ? namePtr : jsonPtr, "route");
+        if (routePtr) {
+            routePtr = strchr(routePtr, ':');
+            while(*routePtr == ':' || *routePtr == '\"' || *routePtr == ' ') routePtr++;
+            sscanf(routePtr, "%15[^\"]", buses[i].route);
+        }
+
+        // Find "time"
+        char *timePtr = strstr(routePtr ? routePtr : jsonPtr, "time");
+        if (timePtr) {
+            timePtr = strchr(timePtr, ':');
+            while(*timePtr == ':' || *timePtr == '\"' || *timePtr == ' ') timePtr++;
+            sscanf(timePtr, "%15[^\"]", buses[i].time);
+
+            // Advance jsonPtr so the next loop iteration finds the NEXT bus
+            jsonPtr = timePtr;
         }
     }
 
-    // -----------------------
-    // 5. Close TCP connection
-    // -----------------------
-    HAL_UART_Transmit(huart,
-        (uint8_t*)"AT+CIPCLOSE\r\n",
-        13, 500);
-
-    HAL_Delay(300);   // small delay for clean reconnect next cycle
+CLOSE:
+    // 9. Cleanly Close Connection
+    // The ESP8266 needs time to process the close command before the next start command
+    HAL_UART_Transmit(huart, (uint8_t*)"AT+CIPCLOSE\r\n", 13, 500);
+    HAL_Delay(500);
+    UART_Reset(huart);
 }

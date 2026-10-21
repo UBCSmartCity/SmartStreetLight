@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "comm.h"
+#include "ina260.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,7 +43,7 @@
 /* Private variables ---------------------------------------------------------*/
 ADC_HandleTypeDef hadc1;
 
-I2C_HandleTypeDef hi2c1;
+I2C_HandleTypeDef hi2c2;
 
 UART_HandleTypeDef huart1;
 
@@ -54,15 +55,16 @@ UART_HandleTypeDef huart1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
-static void MX_I2C1_Init(void);
 static void MX_USART1_UART_Init(void);
+static void MX_I2C2_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+uint8_t i;
+char msg[50];
 /* USER CODE END 0 */
 
 /**
@@ -95,9 +97,18 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC1_Init();
-  MX_I2C1_Init();
   MX_USART1_UART_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
+  BMS_Data_t bmsDataPayload;
+  INA260_Data_t sensorData;
+
+  uint32_t last_voltage_mV = 0;
+  int32_t last_current_mA = 0;
+  uint32_t last_power_mW = 0;
+
+  // Initialize the sensor using I2C2
+   INA260_Init(&hi2c2);
 
   /* USER CODE END 2 */
 
@@ -108,6 +119,83 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+		    uint8_t data[2]; // Two-byte buffer to receive 16-bit big-endian register values over I2C
+		    char msg[128];   // String buffer to format and hold text messages for UART debug output
+
+		    uint16_t raw_v = 0, raw_p = 0;
+		    int16_t raw_i = 0; // Current can be negative
+
+		    BMS_Data_t bmsDataPayload;
+
+		    // --- Read Battery Voltage Register (0x02) ---
+		    if (HAL_I2C_Mem_Read(&hi2c2, (0x40 << 1), 0x02, I2C_MEMADD_SIZE_8BIT, data, 2, 100) == HAL_OK)
+		    {
+		        raw_v = (data[0] << 8) | data[1];
+
+		        // --- Read Battery Current Register (0x01) ---
+		        HAL_I2C_Mem_Read(&hi2c2, (0x40 << 1), 0x01, I2C_MEMADD_SIZE_8BIT, data, 2, 100);
+		        raw_i = (int16_t)((data[0] << 8) | data[1]);
+
+		        // --- Read Battery Power Register (0x03) ---
+		        HAL_I2C_Mem_Read(&hi2c2, (0x40 << 1), 0x03, I2C_MEMADD_SIZE_8BIT, data, 2, 100);
+		        raw_p = (data[0] << 8) | data[1];
+
+		        // --- Convert raw data to meaningful values ---
+		        uint32_t voltage_mV = (raw_v * 5) / 4;      // 1.25 mV per bit
+		        int32_t current_mA = (raw_i * 5) / 4;       // 1.25 mA per bit
+		        uint32_t power_mW   = raw_p * 10;           // 10 mW per bit
+
+		        // --- Map to BMS payload ---
+		        bmsDataPayload.voltage_battery = voltage_mV / 100;
+		        if (current_mA < 0)
+		        {
+		            bmsDataPayload.current_battery = (-current_mA) / 100;
+		            bmsDataPayload.status = 'C'; // Charging
+		        }
+		        else
+		        {
+		            bmsDataPayload.current_battery = current_mA / 100;
+		            bmsDataPayload.status = 'D'; // Discharging
+		        }
+		        bmsDataPayload.power_battery = power_mW / 100;
+
+		        // --- Generation values set to zero ---
+		        bmsDataPayload.voltage_generation = 0;
+		        bmsDataPayload.current_generation = 0;
+		        bmsDataPayload.power_generation   = 0;
+
+		        // --- Placeholder SOC ---
+		        bmsDataPayload.percentage = 85;
+
+		        // --- Transmit BMS payload ---
+		        COMM_TransmitBMSData(&huart1, &bmsDataPayload);
+
+		        // --- Also print raw readings for debug ---
+		        //sprintf(msg, "V: %lu mV | I: %ld mA | P: %lu mW\r\n", voltage_mV, current_mA, power_mW);
+		        //HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+		    }
+		    else
+		    {
+		        // --- I2C read failed, keep previous values ---
+		        //sprintf(msg, "INA260 read FAILED\r\n");
+		        //HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+
+		        // --- Recover I2C bus ---
+		        HAL_I2C_DeInit(&hi2c2);
+		        HAL_Delay(5);
+		        HAL_I2C_Init(&hi2c2);
+		    }
+
+		    // --- Separator for clarity ---
+		    //sprintf(msg, "----------------------\r\n");
+		    //HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+
+		    // Wait before next cycle
+		    HAL_Delay(1000);
+
+
+
   }
   /* USER CODE END 3 */
 }
@@ -203,36 +291,36 @@ static void MX_ADC1_Init(void)
 }
 
 /**
-  * @brief I2C1 Initialization Function
+  * @brief I2C2 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_I2C1_Init(void)
+static void MX_I2C2_Init(void)
 {
 
-  /* USER CODE BEGIN I2C1_Init 0 */
+  /* USER CODE BEGIN I2C2_Init 0 */
 
-  /* USER CODE END I2C1_Init 0 */
+  /* USER CODE END I2C2_Init 0 */
 
-  /* USER CODE BEGIN I2C1_Init 1 */
+  /* USER CODE BEGIN I2C2_Init 1 */
 
-  /* USER CODE END I2C1_Init 1 */
-  hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 400000;
-  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 0;
-  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c1.Init.OwnAddress2 = 0;
-  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  /* USER CODE END I2C2_Init 1 */
+  hi2c2.Instance = I2C2;
+  hi2c2.Init.ClockSpeed = 100000;
+  hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c2.Init.OwnAddress1 = 0;
+  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c2.Init.OwnAddress2 = 0;
+  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN I2C1_Init 2 */
+  /* USER CODE BEGIN I2C2_Init 2 */
 
-  /* USER CODE END I2C1_Init 2 */
+  /* USER CODE END I2C2_Init 2 */
 
 }
 

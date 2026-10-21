@@ -12,6 +12,10 @@
 #include <stdio.h>
 #include <string.h>
 
+/**
+ * Parsed telemetry structure matching the incoming BMS serial packet.
+ * Holds processed electrical metrics and operating state for the main controller.
+ */
 typedef struct {
     uint16_t voltage_battery;
     uint16_t current_battery;
@@ -19,8 +23,8 @@ typedef struct {
     uint16_t voltage_generation;
     uint16_t current_generation;
     uint16_t power_generation;
-    uint16_t percentage;
-    char     status;
+    uint16_t percentage; // Calculated battery state of charge (0 - 100%)
+    char     status; // System state indicator
 } BMS_Data_t;
 
 // Process incoming UART data and update the struct

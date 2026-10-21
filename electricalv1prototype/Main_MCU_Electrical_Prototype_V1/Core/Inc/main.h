@@ -36,7 +36,13 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+/* USER CODE BEGIN ET */
+typedef struct {
+    char name[16];
+    char route[16];  // <-- Added this line
+    char time[16];
+} BusInfo;
+/* USER CODE END ET */
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

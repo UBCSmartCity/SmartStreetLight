@@ -6,4 +6,4 @@
 ../Core/Src/wifi.c:229:6:WiFi_SendDataToBlynk	1
 ../Core/Src/wifi.c:266:6:WiFi_SendDataToThingSpeak	2
 ../Core/Src/wifi.c:317:6:UART_Reset	2
-../Core/Src/wifi.c:337:6:WiFi_ReadThingSpeak	3
+../Core/Src/wifi.c:334:6:WiFi_ReadThingSpeak	21

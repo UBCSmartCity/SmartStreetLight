@@ -12,7 +12,6 @@
 #include "fonts.h"
 #include "bms.h"
 
-void Display_InitSystem(void);
-void Display_UpdateRoutine(BMS_Data_t *bmsData,const char *busRoute, const char *busTime, const int red, const int green, const int blue);
-
+void Display_InitSystem(void);// Initialize the OLED display and show a welcome message
+void Display_UpdateRoutine(BMS_Data_t *bmsData, BusInfo *buses, const int red, const int green, const int blue); // Update the OLED display with BMS data, bus info, and LED colors
 #endif

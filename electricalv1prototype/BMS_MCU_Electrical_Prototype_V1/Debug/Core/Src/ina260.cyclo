@@ -1,0 +1,2 @@
+../Core/Src/ina260.c:14:19:INA260_Init	1
+../Core/Src/ina260.c:32:19:INA260_Read_All	6

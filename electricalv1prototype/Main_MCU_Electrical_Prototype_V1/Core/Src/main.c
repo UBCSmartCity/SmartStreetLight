@@ -61,8 +61,7 @@ uint8_t light_state = 0;
 //uint8_t red = 180, green = 0, blue = 0;
 uint8_t led_status_dummy = 0; // To track ON/OFF status
 
-char currentBusRoute[16] = "R4";
-char currentBusTime[16] = "11:30";
+
 
 uint32_t lastUploadTick = 0;
 const uint32_t uploadInterval = 15000; // 15 seconds
@@ -103,6 +102,7 @@ static void MX_USART2_UART_Init(void);
   * @brief  The application entry point.
   * @retval int
   */
+
 int main(void)
 {
 
@@ -143,6 +143,14 @@ int main(void)
     WiFi_Init_Station(&huart1, "Testing", "12346789"); // For Internet Connectivity
     //WiFi_Init(&huart1); // with ESP as server
 
+
+    BusInfo incomingBuses[3];
+      for(int i = 0; i < 3; i++) {
+          snprintf(incomingBuses[i].name, sizeof(incomingBuses[i].name), "---");
+          snprintf(incomingBuses[i].time, sizeof(incomingBuses[i].time), "--:--");
+          snprintf(incomingBuses[i].route, sizeof(incomingBuses[i].route), "--:--");
+      }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -154,7 +162,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  // 1. Refresh OLED with current data (radar and LEDs are handled by the EXTI!)
-	        Display_UpdateRoutine(&bmsData, currentBusRoute, currentBusTime, red, green, blue);
+	  	  	Display_UpdateRoutine(&bmsData, incomingBuses, red, green, blue);
 	        BMS_ProcessData(&huart2, &bmsData); // Keep updating BMS
 
 	        // 2. Wi-Fi Uploads
@@ -166,7 +174,7 @@ int main(void)
 
 	        // 3. Wi-Fi Downloads
 	        if (HAL_GetTick() - lastReadTick >= readInterval) {
-	            WiFi_ReadThingSpeak(&huart1, &mode, &red, &green, &blue, currentBusRoute, currentBusTime);
+	        	WiFi_ReadThingSpeak(&huart1, &mode, &red, &green, &blue, incomingBuses);
 
 	            // If the mode changes to 1 via Wi-Fi, update the LEDs immediately
 	            if (mode == 1) {
