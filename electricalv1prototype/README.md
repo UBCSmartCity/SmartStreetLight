@@ -4,7 +4,53 @@ Comprehensive system documentation for the **Electrical Prototype V1**, an intel
 
 ---
 
-## 1. System Architecture Overview
+## 1. Overall System Capabilities
+
+The Electrical Prototype V1 is an integrated smart infrastructure testbed designed for automated transit shelters and off-grid renewable energy installations:
+
+* **Real-Time Battery Management & Monitoring (BMS)**: Measures battery voltage, charging/discharging current, and instantaneous power via an INA260 sensor with sub-second response times, automatically reporting battery state of charge (SOC) and operational status.
+* **Smart Motion-Activated Lighting**: Features an occupancy/radar sensor on hardware interrupt (EXTI) that triggers high-efficiency, WS2812 addressable LED illumination when people approach, saving power when the space is unoccupied.
+* **Remote IoT Telemetry & Manual Override**: Bi-directional communication via ThingSpeak lets operators remotely control 24-bit RGB ambient lighting themes, switch operational modes, and stream operational metrics to the cloud.
+* **Dynamic Transit Schedule Aggregation**: Web-scrapes real-time estimated bus arrival times for UBC and Vancouver transit corridors, serializes the top arrivals, and broadcasts them down to the physical shelter OLED display over Wi-Fi.
+* **Desktop Control, Analytics & Long-Term Logging**: Host-side Python interface offers real-time visualization, customizable historical plotting (from 10-minute zooms to 1-year overviews), automatic data bucketing/downsampling, and continuous CSV data logging.
+
+---
+
+## 2. Repository Structure
+
+Based on the repository layout, the project is organized into four main operational directories:
+
+```
+Electrical_Prototype_V1/
+├── BMS_MCU_Electrical_Prototype_V1/   # STM32CubeIDE project for the BMS MCU
+├── Main_MCU_Electrical_Prototype_V1/  # STM32CubeIDE project for the Main MCU
+├── Dashboard/                         # Python dashboard source scripts & assets
+├── demo/                              # Pre-built release binaries (.hex) and demo runtime scripts
+└── README.md                          # System documentation
+```
+
+### Folder Breakdown
+
+1. **`BMS_MCU_Electrical_Prototype_V1/`**:
+   * Complete STM32CubeIDE firmware project for the **BMS MCU** (`STM32F103C8T6`).
+   * Contains hardware drivers for the Texas Instruments INA260 sensor (I2C2), telemetry packet generation (`comm.c`/`comm.h`), ADC setup, and UART transmission logic.
+
+2. **`Main_MCU_Electrical_Prototype_V1/`**:
+   * Complete STM32CubeIDE firmware project for the **Main MCU** (`STM32F103C8T6`).
+   * Contains the timing and communication stack: ESP Wi-Fi AT-driver (`wifi.h`), OLED rendering routines (`oled_display.h`), WS2812 DMA/PWM control via TIM3 (`led_light.h`), and radar sensor EXTI handlers.
+
+3. **`Dashboard/`**:
+   * Python desktop application source code (`Dashboard_Demo.py`).
+   * Hosts the live transit web-scraper, Tkinter GUI widgets, ThingSpeak HTTP read/write handlers, and Matplotlib graphing tools.
+
+4. **`demo/`**:
+   * Ready-to-deploy evaluation package.
+   * Houses the compiled `.hex` binary firmware files for both the BMS MCU and Main MCU for direct flashing via ST-Link without needing to rebuild in STM32CubeIDE.
+   * Includes the standalone Python dashboard script (`.py`) for rapid plug-and-play field demonstration.
+
+---
+
+## 3. System Architecture Overview
 
 ```
 +-------------------------------------------------------------+
@@ -53,11 +99,12 @@ Comprehensive system documentation for the **Electrical Prototype V1**, an intel
 
 ---
 
-## 2. Hardware & MCU Details
+## 4. Hardware & MCU Details
 
-Both microcontrollers are built on the **ARM Cortex-M3 STM32F103C8T6** ("Blue Pill"):
+Both microcontrollers run on the **ARM Cortex-M3 STM32F103C8T6** ("Blue Pill"):
 
-### A. BMS MCU (`main_bms.c`)
+### A. BMS MCU (`BMS_MCU_Electrical_Prototype_V1`)
+
 * **Clock Configuration**: Internal High-Speed Oscillator (HSI, 8 MHz default), PLL disabled.
 * **Peripherals**:
   * **I2C2 (PB10/PB11 @ 100 kHz standard mode)**: Interfaces with the **Texas Instruments INA260** precision current and power monitor (I2C address `0x40`).
@@ -69,7 +116,8 @@ Both microcontrollers are built on the **ARM Cortex-M3 STM32F103C8T6** ("Blue Pi
   * Power scale: $10\text{ mW/bit}$
   * Fault Recovery: Automatic bus de-initialization and re-initialization if I2C bus hang is detected.
 
-### B. Main MCU (`main.c`)
+### B. Main MCU (`Main_MCU_Electrical_Prototype_V1`)
+
 * **Clock Configuration**: 8 MHz HSE crystal boosted to 72 MHz system clock via PLL ($\times 9$).
 * **Peripherals**:
   * **USART1 (115200 baud)**: AT-command Wi-Fi transceiver interface (ESP8266/ESP32 station mode).
@@ -83,11 +131,12 @@ Both microcontrollers are built on the **ARM Cortex-M3 STM32F103C8T6** ("Blue Pi
 
 ---
 
-## 3. Python Dashboard (`Dashboard_Demo.py`)
+## 5. Python Dashboard (`Dashboard/Dashboard_Demo.py`)
 
 A Windows-hosted Tkinter application providing real-time bidirectional control, web scraping, and telemetry logging.
 
 ### Key Features
+
 1. **Transit Scraper**:
    * Scrapes live estimated arrival times from `transitdb.ca` for Vancouver/UBC transit stops:
      * R4, 4, 9, 14, 25, 33, 44, 49, 68, 84, 99.
@@ -104,7 +153,7 @@ A Windows-hosted Tkinter application providing real-time bidirectional control, 
 
 ---
 
-## 4. ThingSpeak Channel & Field Mapping
+## 6. ThingSpeak Channel & Field Mapping
 
 | Field | Channel Parameter | Data Direction | Description |
 | :--- | :--- | :--- | :--- |
@@ -125,12 +174,12 @@ A Windows-hosted Tkinter application providing real-time bidirectional control, 
 
 ---
 
-## 5. Software Requirements & Setup
+## 7. Software Requirements & Setup
 
 ### Embedded Firmware
 * **IDE / Toolchain**: STM32CubeIDE (or Keil MDK / Make + arm-none-eabi-gcc).
 * **HAL Library**: STM32F1xx HAL drivers.
-* **Firmware Flashing**: ST-Link V2 over SWD (Pins: `SWDIO`, `SWCLK`, `GND`, `3V3`).
+* **Firmware Flashing**: ST-Link V2 over SWD (Pins: `SWDIO`, `SWCLK`, `GND`, `3V3`). Pre-compiled `.hex` files are located in the `demo/` folder for direct flashing.
 
 ### Python Host Environment
 * Python 3.8+ (Windows 10/11 tested)
@@ -142,26 +191,28 @@ A Windows-hosted Tkinter application providing real-time bidirectional control, 
 
 ### Running the Dashboard
 ```bash
-python Dashboard_Demo.py
+python Dashboard/Dashboard_Demo.py
+# or run directly from the demo/ folder
+python demo/Dashboard_Demo.py
 ```
 
 ---
 
-## 6. Wiring & Pinout Reference
+## 8. Wiring & Pinout Reference
 
 | MCU Pin | Signal / Function | Connected Peripheral |
 | :--- | :--- | :--- |
 | **BMS MCU** | | |
 | `PB10` | I2C2_SCL | INA260 SCL (Pull-up required) |
 | `PB11` | I2C2_SDA | INA260 SDA (Pull-up required) |
-| `PA9`  | USART1_TX | Main MCU PA3 (USART2_RX) |
+| `PA9` | USART1_TX | Main MCU PA3 (USART2_RX) |
 | `PA10` | USART1_RX | Debug / Telemetry Header |
 | **Main MCU** | | |
-| `PA2`  | USART2_TX | Debug / Handshake |
-| `PA3`  | USART2_RX | BMS MCU PA9 (USART1_TX) |
-| `PA9`  | USART1_TX | ESP Wi-Fi RX |
+| `PA2` | USART2_TX | Debug / Handshake |
+| `PA3` | USART2_RX | BMS MCU PA9 (USART1_TX) |
+| `PA9` | USART1_TX | ESP Wi-Fi RX |
 | `PA10` | USART1_RX | ESP Wi-Fi TX |
-| `PB1`  | EXTI_1 | Radar / Motion Sensor Digital Output |
-| `PA6`  | TIM3_CH1 | WS2812 Data Pin (via Level Shifter / Resistor) |
-| `PB6`  | I2C1_SCL | OLED Display SCL |
-| `PB7`  | I2C1_SDA | OLED Display SDA |
+| `PB1` | EXTI_1 | Radar / Motion Sensor Digital Output |
+| `PA6` | TIM3_CH1 | WS2812 Data Pin (via Level Shifter / Resistor) |
+| `PB6` | I2C1_SCL | OLED Display SCL |
+| `PB7` | I2C1_SDA | OLED Display SDA |
