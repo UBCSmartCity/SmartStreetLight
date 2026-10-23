@@ -14,10 +14,6 @@ Our team proposes a streetlight system that provides:
 ##### MCU
 - STM32F103C8T6
 
-##### Sensors
-- VEML3328
-- AM312
-
 -What the point of the project is (we are making a flying car!) 
 -why it was hard (we encountered this problem that was unexpected. It had never been done before) 
 -what you did (individual work? Led a team? Did the heavy lifting?) 
