@@ -24,9 +24,9 @@ void WiFi_HandleServer(UART_HandleTypeDef *huart, BMS_Data_t *bmsData, uint8_t *
 
 // Station (Client) Functions
 void WiFi_Init_Station(UART_HandleTypeDef *huart, char* ssid, char* pass); // Connects to a WiFi network with given SSID and password
-void WiFi_SendDataToLaptop(UART_HandleTypeDef *huart, BMS_Data_t *bmsData); //  Sends BMS data to a laptop via a TCP tunnel
+void WiFi_SendDataToLaptop(UART_HandleTypeDef *huart, BMS_Data_t *bmsData); //  Sends BMS data to a laptop via a TCP tunnel *** NOT WORKING***
 void WiFi_SendDataToThingSpeak(UART_HandleTypeDef *huart, BMS_Data_t *bmsData); // Sends BMS data to ThingSpeak for cloud logging
-void WiFi_SendDataToBlynk(UART_HandleTypeDef *huart, BMS_Data_t *bmsData); // Sends BMS data to Blynk for mobile app monitoring
+void WiFi_SendDataToBlynk(UART_HandleTypeDef *huart, BMS_Data_t *bmsData); // Sends BMS data to Blynk for mobile app monitoring *** NOT WORKING***
 
 // ThingSpeak Read Function
 void WiFi_ReadThingSpeak(UART_HandleTypeDef *huart,
@@ -39,6 +39,6 @@ void WiFi_ReadThingSpeak(UART_HandleTypeDef *huart,
 // Health Check
 uint8_t WiFi_IsModuleAlive(UART_HandleTypeDef *huart);
 // Utility Functions
-void urlDecode(char *src, char *dest);
+void urlDecode(char *src, char *dest); // *** NOT WORKING *** 
 
 #endif
